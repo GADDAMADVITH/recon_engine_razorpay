@@ -11,8 +11,8 @@ from evaluation metadata.
 | `data_gen.py` | Generates synthetic CSV inputs and evaluation metadata | Writes it |
 | `data/*.csv` | Production-style reconciliation inputs | No |
 | `data/ground_truth.json` | Evaluation-only expected outcomes for `metrics.py` | N/A |
-| `recon_engine.py` | *(planned)* Discovers relationships from CSVs | **Must not** |
-| `metrics.py` | *(planned)* Scores engine output against ground truth | Yes |
+| `recon_engine.py` | Reconciliation engine; discovers relationships from CSVs | **Must not** |
+| `metrics.py` | Scores engine output against ground truth | Yes |
 
 ## Production input CSVs
 
@@ -68,6 +68,26 @@ future extension.
 | `expected_status` | Expected reconciliation outcome | `unreconciled_refund_not_adjusted` |
 
 These are intentionally separate.
+
+### Evaluation metrics (`metrics.py`)
+
+`metrics.py` consumes only:
+
+- `data/report.json` (engine output)
+- `data/ground_truth.json` (expected outcomes)
+
+It does **not** read production CSVs or re-run reconciliation.
+
+Output: `data/evaluation.json`
+
+**Primary metric (Layer A):** binary classification comparing
+`report.reconciled` vs `ground_truth.expected_reconciled`.
+
+**Status metrics (Layer B):**
+
+- **Strict:** exact `report.status` vs `expected_status`
+- **Relaxed:** treats `reconciled` and `reconciled_within_timestamp_tolerance`
+  as equivalent successful statuses (evaluation policy only)
 
 ### Expected status vocabulary
 
@@ -133,8 +153,9 @@ produces identical CSV and ground-truth output.
 ```
 data_gen.py
     ├── data/orders.csv      ──┐
-    ├── data/settlements.csv   ├──► recon_engine.py (planned)
-    ├── data/refunds.csv       │
-    └── data/bank.csv        ──┘
-    └── data/ground_truth.json ──► metrics.py (planned)
+    ├── data/settlements.csv   ├──► recon_engine.py
+    ├── data/refunds.csv       │       └──► data/report.json
+    └── data/bank.csv        ──┘                └──► metrics.py
+    └── data/ground_truth.json ────────────────────────┘
+                                                      └──► data/evaluation.json
 ```

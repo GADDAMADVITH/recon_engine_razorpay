@@ -1,0 +1,1220 @@
+{
+  "metadata": {
+    "evaluator": "metrics",
+    "evaluation_grain": "order",
+    "orders_evaluated": 50,
+    "report_generated_at": "2026-09-02T10:49:00",
+    "ground_truth_generated_at": "2026-08-01T10:00:00",
+    "evaluation_policy": {
+      "primary_metric": "binary expected_reconciled vs report.reconciled",
+      "strict_status_metric": "exact expected_status vs report.status",
+      "relaxed_status_equivalence": [
+        "reconciled",
+        "reconciled_within_timestamp_tolerance"
+      ]
+    }
+  },
+  "summary": {
+    "orders_evaluated": 50,
+    "binary_accuracy": 1.0,
+    "binary_precision": 1.0,
+    "binary_recall": 1.0,
+    "binary_f1_score": 1.0,
+    "strict_status_accuracy": 0.78,
+    "relaxed_status_accuracy": 1.0,
+    "primary_settlement_match_rate": 1.0,
+    "primary_bank_match_rate": 1.0,
+    "valid_bank_set_match_rate": 1.0
+  },
+  "binary_classification": {
+    "true_positives": 26,
+    "false_positives": 0,
+    "false_negatives": 0,
+    "true_negatives": 24,
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "mismatch_count": 0,
+    "mismatches": []
+  },
+  "status_evaluation": {
+    "strict": {
+      "correct": 39,
+      "incorrect": 11,
+      "accuracy": 0.78,
+      "mismatches": [
+        {
+          "order_id": "ORD_0001",
+          "expected_status": "reconciled",
+          "actual_status": "reconciled_within_timestamp_tolerance",
+          "scenario_type": "exact_match"
+        },
+        {
+          "order_id": "ORD_0002",
+          "expected_status": "reconciled",
+          "actual_status": "reconciled_within_timestamp_tolerance",
+          "scenario_type": "exact_match"
+        },
+        {
+          "order_id": "ORD_0003",
+          "expected_status": "reconciled",
+          "actual_status": "reconciled_within_timestamp_tolerance",
+          "scenario_type": "exact_match"
+        },
+        {
+          "order_id": "ORD_0004",
+          "expected_status": "reconciled",
+          "actual_status": "reconciled_within_timestamp_tolerance",
+          "scenario_type": "exact_match"
+        },
+        {
+          "order_id": "ORD_0006",
+          "expected_status": "reconciled",
+          "actual_status": "reconciled_within_timestamp_tolerance",
+          "scenario_type": "exact_match"
+        },
+        {
+          "order_id": "ORD_0007",
+          "expected_status": "reconciled",
+          "actual_status": "reconciled_within_timestamp_tolerance",
+          "scenario_type": "exact_match"
+        },
+        {
+          "order_id": "ORD_0009",
+          "expected_status": "reconciled",
+          "actual_status": "reconciled_within_timestamp_tolerance",
+          "scenario_type": "exact_match"
+        },
+        {
+          "order_id": "ORD_0011",
+          "expected_status": "reconciled",
+          "actual_status": "reconciled_within_timestamp_tolerance",
+          "scenario_type": "exact_match"
+        },
+        {
+          "order_id": "ORD_0012",
+          "expected_status": "reconciled",
+          "actual_status": "reconciled_within_timestamp_tolerance",
+          "scenario_type": "exact_match"
+        },
+        {
+          "order_id": "ORD_0045",
+          "expected_status": "reconciled",
+          "actual_status": "reconciled_within_timestamp_tolerance",
+          "scenario_type": "exact_match"
+        },
+        {
+          "order_id": "ORD_0050",
+          "expected_status": "reconciled",
+          "actual_status": "reconciled_within_timestamp_tolerance",
+          "scenario_type": "exact_match"
+        }
+      ]
+    },
+    "relaxed": {
+      "equivalence_policy": [
+        "reconciled",
+        "reconciled_within_timestamp_tolerance"
+      ],
+      "correct": 50,
+      "incorrect": 0,
+      "accuracy": 1.0,
+      "mismatches": []
+    },
+    "expected_status_counts": {
+      "partially_reconciled_duplicate_settlement": 4,
+      "reconciled": 11,
+      "reconciled_with_reference_variation": 5,
+      "reconciled_with_refund_adjustment": 5,
+      "reconciled_within_timestamp_tolerance": 5,
+      "unreconciled_missing_bank": 5,
+      "unreconciled_missing_settlement": 4,
+      "unreconciled_refund_not_adjusted": 5,
+      "unreconciled_settlement_amount": 5,
+      "unreconciled_timestamp_exceeded": 1
+    },
+    "actual_status_counts": {
+      "partially_reconciled_duplicate_settlement": 4,
+      "reconciled_with_reference_variation": 5,
+      "reconciled_with_refund_adjustment": 5,
+      "reconciled_within_timestamp_tolerance": 16,
+      "unreconciled_missing_bank": 5,
+      "unreconciled_missing_settlement": 4,
+      "unreconciled_refund_not_adjusted": 5,
+      "unreconciled_settlement_amount": 5,
+      "unreconciled_timestamp_exceeded": 1
+    },
+    "confusion_matrix": {
+      "partially_reconciled_duplicate_settlement": {
+        "partially_reconciled_duplicate_settlement": 4
+      },
+      "reconciled": {
+        "reconciled_within_timestamp_tolerance": 11
+      },
+      "reconciled_with_reference_variation": {
+        "reconciled_with_reference_variation": 5
+      },
+      "reconciled_with_refund_adjustment": {
+        "reconciled_with_refund_adjustment": 5
+      },
+      "reconciled_within_timestamp_tolerance": {
+        "reconciled_within_timestamp_tolerance": 5
+      },
+      "unreconciled_missing_bank": {
+        "unreconciled_missing_bank": 5
+      },
+      "unreconciled_missing_settlement": {
+        "unreconciled_missing_settlement": 4
+      },
+      "unreconciled_refund_not_adjusted": {
+        "unreconciled_refund_not_adjusted": 5
+      },
+      "unreconciled_settlement_amount": {
+        "unreconciled_settlement_amount": 5
+      },
+      "unreconciled_timestamp_exceeded": {
+        "unreconciled_timestamp_exceeded": 1
+      }
+    }
+  },
+  "link_level_evaluation": {
+    "primary_settlement_match_count": 50,
+    "primary_settlement_match_rate": 1.0,
+    "primary_bank_match_count": 50,
+    "primary_bank_match_rate": 1.0,
+    "valid_bank_set_match_count": 50,
+    "valid_bank_set_match_rate": 1.0,
+    "valid_bank_set_applicable_orders": 50,
+    "per_order": [
+      {
+        "order_id": "ORD_0001",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0001",
+        "actual_primary_settlement_id": "SET_0001",
+        "expected_primary_bank_transaction_id": "BNK_0001",
+        "actual_valid_bank_transaction_id": "BNK_0001",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0001"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0001"
+        ]
+      },
+      {
+        "order_id": "ORD_0002",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0002",
+        "actual_primary_settlement_id": "SET_0002",
+        "expected_primary_bank_transaction_id": "BNK_0002",
+        "actual_valid_bank_transaction_id": "BNK_0002",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0002"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0002"
+        ]
+      },
+      {
+        "order_id": "ORD_0003",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0003",
+        "actual_primary_settlement_id": "SET_0003",
+        "expected_primary_bank_transaction_id": "BNK_0003",
+        "actual_valid_bank_transaction_id": "BNK_0003",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0003"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0003"
+        ]
+      },
+      {
+        "order_id": "ORD_0004",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0004",
+        "actual_primary_settlement_id": "SET_0004",
+        "expected_primary_bank_transaction_id": "BNK_0004",
+        "actual_valid_bank_transaction_id": "BNK_0004",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0004"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0004"
+        ]
+      },
+      {
+        "order_id": "ORD_0005",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0005",
+        "actual_primary_settlement_id": "SET_0005",
+        "expected_primary_bank_transaction_id": "BNK_0005",
+        "actual_valid_bank_transaction_id": "BNK_0005",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0005"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0005"
+        ]
+      },
+      {
+        "order_id": "ORD_0006",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0006",
+        "actual_primary_settlement_id": "SET_0006",
+        "expected_primary_bank_transaction_id": "BNK_0006",
+        "actual_valid_bank_transaction_id": "BNK_0006",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0006"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0006"
+        ]
+      },
+      {
+        "order_id": "ORD_0007",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0007",
+        "actual_primary_settlement_id": "SET_0007",
+        "expected_primary_bank_transaction_id": "BNK_0007",
+        "actual_valid_bank_transaction_id": "BNK_0007",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0007"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0007"
+        ]
+      },
+      {
+        "order_id": "ORD_0008",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0008",
+        "actual_primary_settlement_id": "SET_0008",
+        "expected_primary_bank_transaction_id": "BNK_0008",
+        "actual_valid_bank_transaction_id": "BNK_0008",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0008"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0008"
+        ]
+      },
+      {
+        "order_id": "ORD_0009",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0009",
+        "actual_primary_settlement_id": "SET_0009",
+        "expected_primary_bank_transaction_id": "BNK_0009",
+        "actual_valid_bank_transaction_id": "BNK_0009",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0009"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0009"
+        ]
+      },
+      {
+        "order_id": "ORD_0010",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0010",
+        "actual_primary_settlement_id": "SET_0010",
+        "expected_primary_bank_transaction_id": "BNK_0010",
+        "actual_valid_bank_transaction_id": "BNK_0010",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0010"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0010"
+        ]
+      },
+      {
+        "order_id": "ORD_0011",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0011",
+        "actual_primary_settlement_id": "SET_0011",
+        "expected_primary_bank_transaction_id": "BNK_0011",
+        "actual_valid_bank_transaction_id": "BNK_0011",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0011"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0011"
+        ]
+      },
+      {
+        "order_id": "ORD_0012",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0012",
+        "actual_primary_settlement_id": "SET_0012",
+        "expected_primary_bank_transaction_id": "BNK_0012",
+        "actual_valid_bank_transaction_id": "BNK_0012",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0012"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0012"
+        ]
+      },
+      {
+        "order_id": "ORD_0013",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0013",
+        "actual_primary_settlement_id": "SET_0013",
+        "expected_primary_bank_transaction_id": "BNK_0013",
+        "actual_valid_bank_transaction_id": "BNK_0013",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0013"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0013"
+        ]
+      },
+      {
+        "order_id": "ORD_0014",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0014",
+        "actual_primary_settlement_id": "SET_0014",
+        "expected_primary_bank_transaction_id": "BNK_0014",
+        "actual_valid_bank_transaction_id": "BNK_0014",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0014"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0014"
+        ]
+      },
+      {
+        "order_id": "ORD_0015",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0015",
+        "actual_primary_settlement_id": "SET_0015",
+        "expected_primary_bank_transaction_id": "BNK_0015",
+        "actual_valid_bank_transaction_id": "BNK_0015",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0015"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0015"
+        ]
+      },
+      {
+        "order_id": "ORD_0016",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0016",
+        "actual_primary_settlement_id": "SET_0016",
+        "expected_primary_bank_transaction_id": "BNK_0016",
+        "actual_valid_bank_transaction_id": "BNK_0016",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0016"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0016"
+        ]
+      },
+      {
+        "order_id": "ORD_0017",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0017",
+        "actual_primary_settlement_id": "SET_0017",
+        "expected_primary_bank_transaction_id": "BNK_0017",
+        "actual_valid_bank_transaction_id": "BNK_0017",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0017"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0017"
+        ]
+      },
+      {
+        "order_id": "ORD_0018",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0018",
+        "actual_primary_settlement_id": "SET_0018",
+        "expected_primary_bank_transaction_id": "BNK_0018",
+        "actual_valid_bank_transaction_id": "BNK_0018",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0018"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0018"
+        ]
+      },
+      {
+        "order_id": "ORD_0019",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0019",
+        "actual_primary_settlement_id": "SET_0019",
+        "expected_primary_bank_transaction_id": "BNK_0019",
+        "actual_valid_bank_transaction_id": "BNK_0019",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0019"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0019"
+        ]
+      },
+      {
+        "order_id": "ORD_0020",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0020",
+        "actual_primary_settlement_id": "SET_0020",
+        "expected_primary_bank_transaction_id": "BNK_0020",
+        "actual_valid_bank_transaction_id": "BNK_0020",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0020"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0020"
+        ]
+      },
+      {
+        "order_id": "ORD_0021",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0021",
+        "actual_primary_settlement_id": "SET_0021",
+        "expected_primary_bank_transaction_id": "BNK_0021",
+        "actual_valid_bank_transaction_id": "BNK_0021",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0021"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0021"
+        ]
+      },
+      {
+        "order_id": "ORD_0022",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0022",
+        "actual_primary_settlement_id": "SET_0022",
+        "expected_primary_bank_transaction_id": "BNK_0022",
+        "actual_valid_bank_transaction_id": "BNK_0022",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0022"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0022"
+        ]
+      },
+      {
+        "order_id": "ORD_0023",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0023",
+        "actual_primary_settlement_id": "SET_0023",
+        "expected_primary_bank_transaction_id": "BNK_0023",
+        "actual_valid_bank_transaction_id": "BNK_0023",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0023"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0023"
+        ]
+      },
+      {
+        "order_id": "ORD_0024",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": null,
+        "actual_primary_settlement_id": null,
+        "expected_primary_bank_transaction_id": null,
+        "actual_valid_bank_transaction_id": null,
+        "expected_valid_bank_transaction_ids": [],
+        "actual_bank_transaction_ids_considered": []
+      },
+      {
+        "order_id": "ORD_0025",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": null,
+        "actual_primary_settlement_id": null,
+        "expected_primary_bank_transaction_id": null,
+        "actual_valid_bank_transaction_id": null,
+        "expected_valid_bank_transaction_ids": [],
+        "actual_bank_transaction_ids_considered": []
+      },
+      {
+        "order_id": "ORD_0026",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": null,
+        "actual_primary_settlement_id": null,
+        "expected_primary_bank_transaction_id": null,
+        "actual_valid_bank_transaction_id": null,
+        "expected_valid_bank_transaction_ids": [],
+        "actual_bank_transaction_ids_considered": []
+      },
+      {
+        "order_id": "ORD_0027",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": null,
+        "actual_primary_settlement_id": null,
+        "expected_primary_bank_transaction_id": null,
+        "actual_valid_bank_transaction_id": null,
+        "expected_valid_bank_transaction_ids": [],
+        "actual_bank_transaction_ids_considered": []
+      },
+      {
+        "order_id": "ORD_0028",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0024",
+        "actual_primary_settlement_id": "SET_0024",
+        "expected_primary_bank_transaction_id": null,
+        "actual_valid_bank_transaction_id": null,
+        "expected_valid_bank_transaction_ids": [],
+        "actual_bank_transaction_ids_considered": []
+      },
+      {
+        "order_id": "ORD_0029",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0025",
+        "actual_primary_settlement_id": "SET_0025",
+        "expected_primary_bank_transaction_id": null,
+        "actual_valid_bank_transaction_id": null,
+        "expected_valid_bank_transaction_ids": [],
+        "actual_bank_transaction_ids_considered": []
+      },
+      {
+        "order_id": "ORD_0030",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0026",
+        "actual_primary_settlement_id": "SET_0026",
+        "expected_primary_bank_transaction_id": null,
+        "actual_valid_bank_transaction_id": null,
+        "expected_valid_bank_transaction_ids": [],
+        "actual_bank_transaction_ids_considered": []
+      },
+      {
+        "order_id": "ORD_0031",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0027",
+        "actual_primary_settlement_id": "SET_0027",
+        "expected_primary_bank_transaction_id": null,
+        "actual_valid_bank_transaction_id": null,
+        "expected_valid_bank_transaction_ids": [],
+        "actual_bank_transaction_ids_considered": []
+      },
+      {
+        "order_id": "ORD_0032",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0028",
+        "actual_primary_settlement_id": "SET_0028",
+        "expected_primary_bank_transaction_id": null,
+        "actual_valid_bank_transaction_id": null,
+        "expected_valid_bank_transaction_ids": [],
+        "actual_bank_transaction_ids_considered": []
+      },
+      {
+        "order_id": "ORD_0033",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0029",
+        "actual_primary_settlement_id": "SET_0029",
+        "expected_primary_bank_transaction_id": "BNK_0024",
+        "actual_valid_bank_transaction_id": "BNK_0024",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0024"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0024"
+        ]
+      },
+      {
+        "order_id": "ORD_0034",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0030",
+        "actual_primary_settlement_id": "SET_0030",
+        "expected_primary_bank_transaction_id": "BNK_0025",
+        "actual_valid_bank_transaction_id": "BNK_0025",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0025"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0025"
+        ]
+      },
+      {
+        "order_id": "ORD_0035",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0031",
+        "actual_primary_settlement_id": "SET_0031",
+        "expected_primary_bank_transaction_id": "BNK_0026",
+        "actual_valid_bank_transaction_id": "BNK_0026",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0026"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0026"
+        ]
+      },
+      {
+        "order_id": "ORD_0036",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0032",
+        "actual_primary_settlement_id": "SET_0032",
+        "expected_primary_bank_transaction_id": "BNK_0027",
+        "actual_valid_bank_transaction_id": "BNK_0027",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0027"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0027"
+        ]
+      },
+      {
+        "order_id": "ORD_0037",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0033",
+        "actual_primary_settlement_id": "SET_0033",
+        "expected_primary_bank_transaction_id": "BNK_0028",
+        "actual_valid_bank_transaction_id": "BNK_0028",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0028"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0028"
+        ]
+      },
+      {
+        "order_id": "ORD_0038",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0034",
+        "actual_primary_settlement_id": "SET_0034",
+        "expected_primary_bank_transaction_id": "BNK_0029",
+        "actual_valid_bank_transaction_id": "BNK_0029",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0029"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0029"
+        ]
+      },
+      {
+        "order_id": "ORD_0039",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0035",
+        "actual_primary_settlement_id": "SET_0035",
+        "expected_primary_bank_transaction_id": "BNK_0030",
+        "actual_valid_bank_transaction_id": "BNK_0030",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0030"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0030"
+        ]
+      },
+      {
+        "order_id": "ORD_0040",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0036",
+        "actual_primary_settlement_id": "SET_0036",
+        "expected_primary_bank_transaction_id": "BNK_0031",
+        "actual_valid_bank_transaction_id": "BNK_0031",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0031"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0031"
+        ]
+      },
+      {
+        "order_id": "ORD_0041",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0037",
+        "actual_primary_settlement_id": "SET_0037",
+        "expected_primary_bank_transaction_id": "BNK_0032",
+        "actual_valid_bank_transaction_id": "BNK_0032",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0032"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0032"
+        ]
+      },
+      {
+        "order_id": "ORD_0042",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0038",
+        "actual_primary_settlement_id": "SET_0038",
+        "expected_primary_bank_transaction_id": "BNK_0033",
+        "actual_valid_bank_transaction_id": "BNK_0033",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0033"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0033"
+        ]
+      },
+      {
+        "order_id": "ORD_0043",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0039",
+        "actual_primary_settlement_id": "SET_0039",
+        "expected_primary_bank_transaction_id": "BNK_0034",
+        "actual_valid_bank_transaction_id": "BNK_0034",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0034"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0034"
+        ]
+      },
+      {
+        "order_id": "ORD_0044",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0040",
+        "actual_primary_settlement_id": "SET_0040",
+        "expected_primary_bank_transaction_id": "BNK_0035",
+        "actual_valid_bank_transaction_id": "BNK_0035",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0035"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0035"
+        ]
+      },
+      {
+        "order_id": "ORD_0045",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0041",
+        "actual_primary_settlement_id": "SET_0041",
+        "expected_primary_bank_transaction_id": "BNK_0036",
+        "actual_valid_bank_transaction_id": "BNK_0036",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0036"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0036"
+        ]
+      },
+      {
+        "order_id": "ORD_0046",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0042",
+        "actual_primary_settlement_id": "SET_0042",
+        "expected_primary_bank_transaction_id": "BNK_0037",
+        "actual_valid_bank_transaction_id": "BNK_0037",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0037"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0037"
+        ]
+      },
+      {
+        "order_id": "ORD_0047",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0044",
+        "actual_primary_settlement_id": "SET_0044",
+        "expected_primary_bank_transaction_id": "BNK_0038",
+        "actual_valid_bank_transaction_id": "BNK_0038",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0038"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0038"
+        ]
+      },
+      {
+        "order_id": "ORD_0048",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0046",
+        "actual_primary_settlement_id": "SET_0046",
+        "expected_primary_bank_transaction_id": "BNK_0039",
+        "actual_valid_bank_transaction_id": "BNK_0039",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0039"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0039"
+        ]
+      },
+      {
+        "order_id": "ORD_0049",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0048",
+        "actual_primary_settlement_id": "SET_0048",
+        "expected_primary_bank_transaction_id": "BNK_0040",
+        "actual_valid_bank_transaction_id": "BNK_0040",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0040"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0040"
+        ]
+      },
+      {
+        "order_id": "ORD_0050",
+        "primary_settlement_match": true,
+        "primary_bank_match": true,
+        "valid_bank_set_match": true,
+        "expected_primary_settlement_id": "SET_0050",
+        "actual_primary_settlement_id": "SET_0050",
+        "expected_primary_bank_transaction_id": "BNK_0041",
+        "actual_valid_bank_transaction_id": "BNK_0041",
+        "expected_valid_bank_transaction_ids": [
+          "BNK_0041"
+        ],
+        "actual_bank_transaction_ids_considered": [
+          "BNK_0041"
+        ]
+      }
+    ]
+  },
+  "scenario_evaluation": {
+    "duplicate_settlement": {
+      "total_orders": 4,
+      "binary_correct": 4,
+      "binary_accuracy": 1.0,
+      "strict_status_correct": 4,
+      "strict_status_accuracy": 1.0,
+      "relaxed_status_correct": 4,
+      "relaxed_status_accuracy": 1.0,
+      "primary_settlement_match_count": 4,
+      "primary_settlement_match_rate": 1.0,
+      "primary_bank_match_count": 4,
+      "primary_bank_match_rate": 1.0
+    },
+    "exact_match": {
+      "total_orders": 11,
+      "binary_correct": 11,
+      "binary_accuracy": 1.0,
+      "strict_status_correct": 0,
+      "strict_status_accuracy": 0.0,
+      "relaxed_status_correct": 11,
+      "relaxed_status_accuracy": 1.0,
+      "primary_settlement_match_count": 11,
+      "primary_settlement_match_rate": 1.0,
+      "primary_bank_match_count": 11,
+      "primary_bank_match_rate": 1.0
+    },
+    "missing_bank_transaction": {
+      "total_orders": 5,
+      "binary_correct": 5,
+      "binary_accuracy": 1.0,
+      "strict_status_correct": 5,
+      "strict_status_accuracy": 1.0,
+      "relaxed_status_correct": 5,
+      "relaxed_status_accuracy": 1.0,
+      "primary_settlement_match_count": 5,
+      "primary_settlement_match_rate": 1.0,
+      "primary_bank_match_count": 5,
+      "primary_bank_match_rate": 1.0
+    },
+    "missing_settlement": {
+      "total_orders": 4,
+      "binary_correct": 4,
+      "binary_accuracy": 1.0,
+      "strict_status_correct": 4,
+      "strict_status_accuracy": 1.0,
+      "relaxed_status_correct": 4,
+      "relaxed_status_accuracy": 1.0,
+      "primary_settlement_match_count": 4,
+      "primary_settlement_match_rate": 1.0,
+      "primary_bank_match_count": 4,
+      "primary_bank_match_rate": 1.0
+    },
+    "reference_variation": {
+      "total_orders": 5,
+      "binary_correct": 5,
+      "binary_accuracy": 1.0,
+      "strict_status_correct": 5,
+      "strict_status_accuracy": 1.0,
+      "relaxed_status_correct": 5,
+      "relaxed_status_accuracy": 1.0,
+      "primary_settlement_match_count": 5,
+      "primary_settlement_match_rate": 1.0,
+      "primary_bank_match_count": 5,
+      "primary_bank_match_rate": 1.0
+    },
+    "refund_adjusted": {
+      "total_orders": 5,
+      "binary_correct": 5,
+      "binary_accuracy": 1.0,
+      "strict_status_correct": 5,
+      "strict_status_accuracy": 1.0,
+      "relaxed_status_correct": 5,
+      "relaxed_status_accuracy": 1.0,
+      "primary_settlement_match_count": 5,
+      "primary_settlement_match_rate": 1.0,
+      "primary_bank_match_count": 5,
+      "primary_bank_match_rate": 1.0
+    },
+    "refund_unadjusted_mismatch": {
+      "total_orders": 5,
+      "binary_correct": 5,
+      "binary_accuracy": 1.0,
+      "strict_status_correct": 5,
+      "strict_status_accuracy": 1.0,
+      "relaxed_status_correct": 5,
+      "relaxed_status_accuracy": 1.0,
+      "primary_settlement_match_count": 5,
+      "primary_settlement_match_rate": 1.0,
+      "primary_bank_match_count": 5,
+      "primary_bank_match_rate": 1.0
+    },
+    "settlement_amount_mismatch": {
+      "total_orders": 5,
+      "binary_correct": 5,
+      "binary_accuracy": 1.0,
+      "strict_status_correct": 5,
+      "strict_status_accuracy": 1.0,
+      "relaxed_status_correct": 5,
+      "relaxed_status_accuracy": 1.0,
+      "primary_settlement_match_count": 5,
+      "primary_settlement_match_rate": 1.0,
+      "primary_bank_match_count": 5,
+      "primary_bank_match_rate": 1.0
+    },
+    "timestamp_outside_tolerance": {
+      "total_orders": 1,
+      "binary_correct": 1,
+      "binary_accuracy": 1.0,
+      "strict_status_correct": 1,
+      "strict_status_accuracy": 1.0,
+      "relaxed_status_correct": 1,
+      "relaxed_status_accuracy": 1.0,
+      "primary_settlement_match_count": 1,
+      "primary_settlement_match_rate": 1.0,
+      "primary_bank_match_count": 1,
+      "primary_bank_match_rate": 1.0
+    },
+    "timestamp_within_tolerance": {
+      "total_orders": 5,
+      "binary_correct": 5,
+      "binary_accuracy": 1.0,
+      "strict_status_correct": 5,
+      "strict_status_accuracy": 1.0,
+      "relaxed_status_correct": 5,
+      "relaxed_status_accuracy": 1.0,
+      "primary_settlement_match_count": 5,
+      "primary_settlement_match_rate": 1.0,
+      "primary_bank_match_count": 5,
+      "primary_bank_match_rate": 1.0
+    }
+  },
+  "global_exception_evaluation": {
+    "orphan_bank_transactions": {
+      "expected_count": 4,
+      "detected_count": 4,
+      "matched_ids": [
+        "BNK_0042",
+        "BNK_0043",
+        "BNK_0044",
+        "BNK_0045"
+      ],
+      "missing_ids": [],
+      "unexpected_ids": [],
+      "detection_rate": 1.0
+    },
+    "duplicate_bank_transactions": {
+      "expected_count": 5,
+      "detected_count": 5,
+      "matched_ids": [
+        "BNK_0046",
+        "BNK_0047",
+        "BNK_0048",
+        "BNK_0049",
+        "BNK_0050"
+      ],
+      "missing_ids": [],
+      "unexpected_ids": [],
+      "detection_rate": 1.0
+    },
+    "settlements_without_bank": {
+      "expected_count": 9,
+      "detected_count": 9,
+      "matched_ids": [
+        "SET_0024",
+        "SET_0025",
+        "SET_0026",
+        "SET_0027",
+        "SET_0028",
+        "SET_0043",
+        "SET_0045",
+        "SET_0047",
+        "SET_0049"
+      ],
+      "missing_ids": [],
+      "unexpected_ids": [],
+      "detection_rate": 1.0
+    }
+  },
+  "amount_validation": {
+    "mismatch_cases_checked": 5,
+    "mismatch_cases_correctly_represented": 5,
+    "mismatch_validation_rate": 1.0,
+    "disagreements": []
+  },
+  "mismatches": [
+    {
+      "order_id": "ORD_0001",
+      "expected_status": "reconciled",
+      "actual_status": "reconciled_within_timestamp_tolerance",
+      "scenario_type": "exact_match",
+      "mismatch_type": "strict_status"
+    },
+    {
+      "order_id": "ORD_0002",
+      "expected_status": "reconciled",
+      "actual_status": "reconciled_within_timestamp_tolerance",
+      "scenario_type": "exact_match",
+      "mismatch_type": "strict_status"
+    },
+    {
+      "order_id": "ORD_0003",
+      "expected_status": "reconciled",
+      "actual_status": "reconciled_within_timestamp_tolerance",
+      "scenario_type": "exact_match",
+      "mismatch_type": "strict_status"
+    },
+    {
+      "order_id": "ORD_0004",
+      "expected_status": "reconciled",
+      "actual_status": "reconciled_within_timestamp_tolerance",
+      "scenario_type": "exact_match",
+      "mismatch_type": "strict_status"
+    },
+    {
+      "order_id": "ORD_0006",
+      "expected_status": "reconciled",
+      "actual_status": "reconciled_within_timestamp_tolerance",
+      "scenario_type": "exact_match",
+      "mismatch_type": "strict_status"
+    },
+    {
+      "order_id": "ORD_0007",
+      "expected_status": "reconciled",
+      "actual_status": "reconciled_within_timestamp_tolerance",
+      "scenario_type": "exact_match",
+      "mismatch_type": "strict_status"
+    },
+    {
+      "order_id": "ORD_0009",
+      "expected_status": "reconciled",
+      "actual_status": "reconciled_within_timestamp_tolerance",
+      "scenario_type": "exact_match",
+      "mismatch_type": "strict_status"
+    },
+    {
+      "order_id": "ORD_0011",
+      "expected_status": "reconciled",
+      "actual_status": "reconciled_within_timestamp_tolerance",
+      "scenario_type": "exact_match",
+      "mismatch_type": "strict_status"
+    },
+    {
+      "order_id": "ORD_0012",
+      "expected_status": "reconciled",
+      "actual_status": "reconciled_within_timestamp_tolerance",
+      "scenario_type": "exact_match",
+      "mismatch_type": "strict_status"
+    },
+    {
+      "order_id": "ORD_0045",
+      "expected_status": "reconciled",
+      "actual_status": "reconciled_within_timestamp_tolerance",
+      "scenario_type": "exact_match",
+      "mismatch_type": "strict_status"
+    },
+    {
+      "order_id": "ORD_0050",
+      "expected_status": "reconciled",
+      "actual_status": "reconciled_within_timestamp_tolerance",
+      "scenario_type": "exact_match",
+      "mismatch_type": "strict_status"
+    }
+  ]
+}
