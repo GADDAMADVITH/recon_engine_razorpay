@@ -1,0 +1,1211 @@
+{
+  "metadata": {
+    "random_seed": 42,
+    "generated_at": "2026-08-01T10:00:00",
+    "timestamp_tolerance_hours": 24,
+    "currency": "INR",
+    "minor_unit": "paise",
+    "evaluation_grain": "order",
+    "expected_status_vocabulary": [
+      "partially_reconciled_duplicate_settlement",
+      "reconciled",
+      "reconciled_with_reference_variation",
+      "reconciled_with_refund_adjustment",
+      "reconciled_within_timestamp_tolerance",
+      "unreconciled_missing_bank",
+      "unreconciled_missing_settlement",
+      "unreconciled_refund_not_adjusted",
+      "unreconciled_settlement_amount",
+      "unreconciled_timestamp_exceeded"
+    ],
+    "true_negative_definition": "At order-level grain: TN is an order the engine correctly marks as not fully reconciled (expected_reconciled=false) when ground truth expected_reconciled is false. Link-level or transaction-level metrics may omit TN where negative predictions are not meaningfully defined.",
+    "record_counts": {
+      "orders": 50,
+      "settlements": 50,
+      "refunds": 10,
+      "bank_transactions": 50
+    }
+  },
+  "scenario_counts": {
+    "exact_match": 11,
+    "refund_unadjusted_mismatch": 5,
+    "timestamp_within_tolerance": 5,
+    "timestamp_outside_tolerance": 1,
+    "settlement_amount_mismatch": 5,
+    "missing_settlement": 4,
+    "missing_bank_transaction": 5,
+    "refund_adjusted": 5,
+    "reference_variation": 5,
+    "duplicate_settlement": 4
+  },
+  "expected_status_counts": {
+    "reconciled": 11,
+    "unreconciled_refund_not_adjusted": 5,
+    "reconciled_within_timestamp_tolerance": 5,
+    "unreconciled_timestamp_exceeded": 1,
+    "unreconciled_settlement_amount": 5,
+    "unreconciled_missing_settlement": 4,
+    "unreconciled_missing_bank": 5,
+    "reconciled_with_refund_adjustment": 5,
+    "reconciled_with_reference_variation": 5,
+    "partially_reconciled_duplicate_settlement": 4
+  },
+  "scenarios": [
+    {
+      "order_id": "ORD_0001",
+      "scenario_type": "exact_match",
+      "expected_status": "reconciled",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0001",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0001",
+      "order_amount_paise": 385243,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0001"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0001"
+      ],
+      "notes": "Order, settlement, and bank amounts align via settlement_ref linkage."
+    },
+    {
+      "order_id": "ORD_0002",
+      "scenario_type": "exact_match",
+      "expected_status": "reconciled",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0002",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0002",
+      "order_amount_paise": 63112,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0002"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0002"
+      ],
+      "notes": "Order, settlement, and bank amounts align via settlement_ref linkage."
+    },
+    {
+      "order_id": "ORD_0003",
+      "scenario_type": "exact_match",
+      "expected_status": "reconciled",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0003",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0003",
+      "order_amount_paise": 178393,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0003"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0003"
+      ],
+      "notes": "Order, settlement, and bank amounts align via settlement_ref linkage."
+    },
+    {
+      "order_id": "ORD_0004",
+      "scenario_type": "exact_match",
+      "expected_status": "reconciled",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0004",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0004",
+      "order_amount_paise": 123158,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0004"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0004"
+      ],
+      "notes": "Order, settlement, and bank amounts align via settlement_ref linkage."
+    },
+    {
+      "order_id": "ORD_0005",
+      "scenario_type": "refund_unadjusted_mismatch",
+      "expected_status": "unreconciled_refund_not_adjusted",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0005",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0005",
+      "order_amount_paise": 404785,
+      "total_refund_paise": 40478,
+      "settlement_ids": [
+        "SET_0005"
+      ],
+      "refund_ids": [
+        "RFN_0001"
+      ],
+      "valid_bank_transaction_ids": [
+        "BNK_0005"
+      ],
+      "notes": "Refund exists but settlement gross was not adjusted; total_refund_paise=40478."
+    },
+    {
+      "order_id": "ORD_0006",
+      "scenario_type": "exact_match",
+      "expected_status": "reconciled",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0006",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0006",
+      "order_amount_paise": 95580,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0006"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0006"
+      ],
+      "notes": "Order, settlement, and bank amounts align via settlement_ref linkage."
+    },
+    {
+      "order_id": "ORD_0007",
+      "scenario_type": "exact_match",
+      "expected_status": "reconciled",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0007",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0007",
+      "order_amount_paise": 271208,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0007"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0007"
+      ],
+      "notes": "Order, settlement, and bank amounts align via settlement_ref linkage."
+    },
+    {
+      "order_id": "ORD_0008",
+      "scenario_type": "refund_unadjusted_mismatch",
+      "expected_status": "unreconciled_refund_not_adjusted",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0008",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0008",
+      "order_amount_paise": 65622,
+      "total_refund_paise": 13124,
+      "settlement_ids": [
+        "SET_0008"
+      ],
+      "refund_ids": [
+        "RFN_0002"
+      ],
+      "valid_bank_transaction_ids": [
+        "BNK_0008"
+      ],
+      "notes": "Refund exists but settlement gross was not adjusted; total_refund_paise=13124."
+    },
+    {
+      "order_id": "ORD_0009",
+      "scenario_type": "exact_match",
+      "expected_status": "reconciled",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0009",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0009",
+      "order_amount_paise": 164629,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0009"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0009"
+      ],
+      "notes": "Order, settlement, and bank amounts align via settlement_ref linkage."
+    },
+    {
+      "order_id": "ORD_0010",
+      "scenario_type": "refund_unadjusted_mismatch",
+      "expected_status": "unreconciled_refund_not_adjusted",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0010",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0010",
+      "order_amount_paise": 314951,
+      "total_refund_paise": 15747,
+      "settlement_ids": [
+        "SET_0010"
+      ],
+      "refund_ids": [
+        "RFN_0003"
+      ],
+      "valid_bank_transaction_ids": [
+        "BNK_0010"
+      ],
+      "notes": "Refund exists but settlement gross was not adjusted; total_refund_paise=15747."
+    },
+    {
+      "order_id": "ORD_0011",
+      "scenario_type": "exact_match",
+      "expected_status": "reconciled",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0011",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0011",
+      "order_amount_paise": 63912,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0011"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0011"
+      ],
+      "notes": "Order, settlement, and bank amounts align via settlement_ref linkage."
+    },
+    {
+      "order_id": "ORD_0012",
+      "scenario_type": "exact_match",
+      "expected_status": "reconciled",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0012",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0012",
+      "order_amount_paise": 154248,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0012"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0012"
+      ],
+      "notes": "Order, settlement, and bank amounts align via settlement_ref linkage."
+    },
+    {
+      "order_id": "ORD_0013",
+      "scenario_type": "timestamp_within_tolerance",
+      "expected_status": "reconciled_within_timestamp_tolerance",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0013",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0013",
+      "order_amount_paise": 417696,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0013"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0013"
+      ],
+      "notes": "Bank timestamp within 24h of settlement settled_at."
+    },
+    {
+      "order_id": "ORD_0014",
+      "scenario_type": "timestamp_within_tolerance",
+      "expected_status": "reconciled_within_timestamp_tolerance",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0014",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0014",
+      "order_amount_paise": 269949,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0014"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0014"
+      ],
+      "notes": "Bank timestamp within 24h of settlement settled_at."
+    },
+    {
+      "order_id": "ORD_0015",
+      "scenario_type": "timestamp_within_tolerance",
+      "expected_status": "reconciled_within_timestamp_tolerance",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0015",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0015",
+      "order_amount_paise": 285514,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0015"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0015"
+      ],
+      "notes": "Bank timestamp within 24h of settlement settled_at."
+    },
+    {
+      "order_id": "ORD_0016",
+      "scenario_type": "timestamp_within_tolerance",
+      "expected_status": "reconciled_within_timestamp_tolerance",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0016",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0016",
+      "order_amount_paise": 195852,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0016"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0016"
+      ],
+      "notes": "Bank timestamp within 24h of settlement settled_at."
+    },
+    {
+      "order_id": "ORD_0017",
+      "scenario_type": "timestamp_within_tolerance",
+      "expected_status": "reconciled_within_timestamp_tolerance",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0017",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0017",
+      "order_amount_paise": 447833,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0017"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0017"
+      ],
+      "notes": "Bank timestamp within 24h of settlement settled_at."
+    },
+    {
+      "order_id": "ORD_0018",
+      "scenario_type": "timestamp_outside_tolerance",
+      "expected_status": "unreconciled_timestamp_exceeded",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0018",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0018",
+      "order_amount_paise": 416026,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0018"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0018"
+      ],
+      "notes": "Bank timestamp exceeds 24h tolerance from settled_at."
+    },
+    {
+      "order_id": "ORD_0019",
+      "scenario_type": "settlement_amount_mismatch",
+      "expected_status": "unreconciled_settlement_amount",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0019",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0019",
+      "order_amount_paise": 228389,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0019"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0019"
+      ],
+      "notes": "Settlement gross_amount differs from order amount; bank amount differs from settlement net by 2500 paise.",
+      "mismatch_details": {
+        "order_amount_paise": 228389,
+        "settlement_gross_paise": 235289,
+        "settlement_net_paise": 226349,
+        "bank_amount_paise": 228849,
+        "settlement_gross_delta_paise": 6900,
+        "bank_net_delta_paise": 2500
+      }
+    },
+    {
+      "order_id": "ORD_0020",
+      "scenario_type": "settlement_amount_mismatch",
+      "expected_status": "unreconciled_settlement_amount",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0020",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0020",
+      "order_amount_paise": 131516,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0020"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0020"
+      ],
+      "notes": "Settlement gross_amount differs from order amount; bank amount differs from settlement net by 2500 paise.",
+      "mismatch_details": {
+        "order_amount_paise": 131516,
+        "settlement_gross_paise": 138516,
+        "settlement_net_paise": 133253,
+        "bank_amount_paise": 135753,
+        "settlement_gross_delta_paise": 7000,
+        "bank_net_delta_paise": 2500
+      }
+    },
+    {
+      "order_id": "ORD_0021",
+      "scenario_type": "settlement_amount_mismatch",
+      "expected_status": "unreconciled_settlement_amount",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0021",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0021",
+      "order_amount_paise": 450290,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0021"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0021"
+      ],
+      "notes": "Settlement gross_amount differs from order amount; bank amount differs from settlement net by 2500 paise.",
+      "mismatch_details": {
+        "order_amount_paise": 450290,
+        "settlement_gross_paise": 457390,
+        "settlement_net_paise": 440010,
+        "bank_amount_paise": 442510,
+        "settlement_gross_delta_paise": 7100,
+        "bank_net_delta_paise": 2500
+      }
+    },
+    {
+      "order_id": "ORD_0022",
+      "scenario_type": "settlement_amount_mismatch",
+      "expected_status": "unreconciled_settlement_amount",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0022",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0022",
+      "order_amount_paise": 103587,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0022"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0022"
+      ],
+      "notes": "Settlement gross_amount differs from order amount; bank amount differs from settlement net by 2500 paise.",
+      "mismatch_details": {
+        "order_amount_paise": 103587,
+        "settlement_gross_paise": 110787,
+        "settlement_net_paise": 106578,
+        "bank_amount_paise": 109078,
+        "settlement_gross_delta_paise": 7200,
+        "bank_net_delta_paise": 2500
+      }
+    },
+    {
+      "order_id": "ORD_0023",
+      "scenario_type": "settlement_amount_mismatch",
+      "expected_status": "unreconciled_settlement_amount",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0023",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0023",
+      "order_amount_paise": 249191,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0023"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0023"
+      ],
+      "notes": "Settlement gross_amount differs from order amount; bank amount differs from settlement net by 2500 paise.",
+      "mismatch_details": {
+        "order_amount_paise": 249191,
+        "settlement_gross_paise": 256491,
+        "settlement_net_paise": 246746,
+        "bank_amount_paise": 249246,
+        "settlement_gross_delta_paise": 7300,
+        "bank_net_delta_paise": 2500
+      }
+    },
+    {
+      "order_id": "ORD_0024",
+      "scenario_type": "missing_settlement",
+      "expected_status": "unreconciled_missing_settlement",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": null,
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": null,
+      "order_amount_paise": 238208,
+      "total_refund_paise": 0,
+      "settlement_ids": [],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [],
+      "notes": "Order exists; no settlement record was generated."
+    },
+    {
+      "order_id": "ORD_0025",
+      "scenario_type": "missing_settlement",
+      "expected_status": "unreconciled_missing_settlement",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": null,
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": null,
+      "order_amount_paise": 366526,
+      "total_refund_paise": 0,
+      "settlement_ids": [],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [],
+      "notes": "Order exists; no settlement record was generated."
+    },
+    {
+      "order_id": "ORD_0026",
+      "scenario_type": "missing_settlement",
+      "expected_status": "unreconciled_missing_settlement",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": null,
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": null,
+      "order_amount_paise": 473167,
+      "total_refund_paise": 0,
+      "settlement_ids": [],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [],
+      "notes": "Order exists; no settlement record was generated."
+    },
+    {
+      "order_id": "ORD_0027",
+      "scenario_type": "missing_settlement",
+      "expected_status": "unreconciled_missing_settlement",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": null,
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": null,
+      "order_amount_paise": 432589,
+      "total_refund_paise": 0,
+      "settlement_ids": [],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [],
+      "notes": "Order exists; no settlement record was generated."
+    },
+    {
+      "order_id": "ORD_0028",
+      "scenario_type": "missing_bank_transaction",
+      "expected_status": "unreconciled_missing_bank",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0024",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": null,
+      "order_amount_paise": 331137,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0024"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [],
+      "notes": "Settlement exists; no valid bank transaction references it via settlement_ref."
+    },
+    {
+      "order_id": "ORD_0029",
+      "scenario_type": "missing_bank_transaction",
+      "expected_status": "unreconciled_missing_bank",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0025",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": null,
+      "order_amount_paise": 248461,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0025"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [],
+      "notes": "Settlement exists; no valid bank transaction references it via settlement_ref."
+    },
+    {
+      "order_id": "ORD_0030",
+      "scenario_type": "missing_bank_transaction",
+      "expected_status": "unreconciled_missing_bank",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0026",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": null,
+      "order_amount_paise": 339428,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0026"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [],
+      "notes": "Settlement exists; no valid bank transaction references it via settlement_ref."
+    },
+    {
+      "order_id": "ORD_0031",
+      "scenario_type": "missing_bank_transaction",
+      "expected_status": "unreconciled_missing_bank",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0027",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": null,
+      "order_amount_paise": 484846,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0027"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [],
+      "notes": "Settlement exists; no valid bank transaction references it via settlement_ref."
+    },
+    {
+      "order_id": "ORD_0032",
+      "scenario_type": "missing_bank_transaction",
+      "expected_status": "unreconciled_missing_bank",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0028",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": null,
+      "order_amount_paise": 374282,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0028"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [],
+      "notes": "Settlement exists; no valid bank transaction references it via settlement_ref."
+    },
+    {
+      "order_id": "ORD_0033",
+      "scenario_type": "refund_adjusted",
+      "expected_status": "reconciled_with_refund_adjustment",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0029",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0024",
+      "order_amount_paise": 352698,
+      "total_refund_paise": 88174,
+      "settlement_ids": [
+        "SET_0029"
+      ],
+      "refund_ids": [
+        "RFN_0004"
+      ],
+      "valid_bank_transaction_ids": [
+        "BNK_0024"
+      ],
+      "notes": "Settlement gross reflects refund deduction; bank matches settlement net."
+    },
+    {
+      "order_id": "ORD_0034",
+      "scenario_type": "refund_adjusted",
+      "expected_status": "reconciled_with_refund_adjustment",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0030",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0025",
+      "order_amount_paise": 419398,
+      "total_refund_paise": 209699,
+      "settlement_ids": [
+        "SET_0030"
+      ],
+      "refund_ids": [
+        "RFN_0005"
+      ],
+      "valid_bank_transaction_ids": [
+        "BNK_0025"
+      ],
+      "notes": "Settlement gross reflects refund deduction; bank matches settlement net."
+    },
+    {
+      "order_id": "ORD_0035",
+      "scenario_type": "refund_adjusted",
+      "expected_status": "reconciled_with_refund_adjustment",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0031",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0026",
+      "order_amount_paise": 74025,
+      "total_refund_paise": 55518,
+      "settlement_ids": [
+        "SET_0031"
+      ],
+      "refund_ids": [
+        "RFN_0006"
+      ],
+      "valid_bank_transaction_ids": [
+        "BNK_0026"
+      ],
+      "notes": "Settlement gross reflects refund deduction; bank matches settlement net."
+    },
+    {
+      "order_id": "ORD_0036",
+      "scenario_type": "refund_adjusted",
+      "expected_status": "reconciled_with_refund_adjustment",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0032",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0027",
+      "order_amount_paise": 455310,
+      "total_refund_paise": 136593,
+      "settlement_ids": [
+        "SET_0032"
+      ],
+      "refund_ids": [
+        "RFN_0007"
+      ],
+      "valid_bank_transaction_ids": [
+        "BNK_0027"
+      ],
+      "notes": "Settlement gross reflects refund deduction; bank matches settlement net."
+    },
+    {
+      "order_id": "ORD_0037",
+      "scenario_type": "refund_adjusted",
+      "expected_status": "reconciled_with_refund_adjustment",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0033",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0028",
+      "order_amount_paise": 91833,
+      "total_refund_paise": 13774,
+      "settlement_ids": [
+        "SET_0033"
+      ],
+      "refund_ids": [
+        "RFN_0008"
+      ],
+      "valid_bank_transaction_ids": [
+        "BNK_0028"
+      ],
+      "notes": "Settlement gross reflects refund deduction; bank matches settlement net."
+    },
+    {
+      "order_id": "ORD_0038",
+      "scenario_type": "reference_variation",
+      "expected_status": "reconciled_with_reference_variation",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0034",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0029",
+      "order_amount_paise": 102953,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0034"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0029"
+      ],
+      "notes": "Bank settlement_ref uses STL- prefix; normalizes to SET_ settlement_id."
+    },
+    {
+      "order_id": "ORD_0039",
+      "scenario_type": "reference_variation",
+      "expected_status": "reconciled_with_reference_variation",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0035",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0030",
+      "order_amount_paise": 195738,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0035"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0030"
+      ],
+      "notes": "Bank settlement_ref uses STL- prefix; normalizes to SET_ settlement_id."
+    },
+    {
+      "order_id": "ORD_0040",
+      "scenario_type": "reference_variation",
+      "expected_status": "reconciled_with_reference_variation",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0036",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0031",
+      "order_amount_paise": 383281,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0036"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0031"
+      ],
+      "notes": "Bank settlement_ref uses STL- prefix; normalizes to SET_ settlement_id."
+    },
+    {
+      "order_id": "ORD_0041",
+      "scenario_type": "reference_variation",
+      "expected_status": "reconciled_with_reference_variation",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0037",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0032",
+      "order_amount_paise": 135277,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0037"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0032"
+      ],
+      "notes": "Bank settlement_ref uses STL- prefix; normalizes to SET_ settlement_id."
+    },
+    {
+      "order_id": "ORD_0042",
+      "scenario_type": "reference_variation",
+      "expected_status": "reconciled_with_reference_variation",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0038",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0033",
+      "order_amount_paise": 236264,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0038"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0033"
+      ],
+      "notes": "Bank settlement_ref uses STL- prefix; normalizes to SET_ settlement_id."
+    },
+    {
+      "order_id": "ORD_0043",
+      "scenario_type": "refund_unadjusted_mismatch",
+      "expected_status": "unreconciled_refund_not_adjusted",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0039",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0034",
+      "order_amount_paise": 401364,
+      "total_refund_paise": 48163,
+      "settlement_ids": [
+        "SET_0039"
+      ],
+      "refund_ids": [
+        "RFN_0009"
+      ],
+      "valid_bank_transaction_ids": [
+        "BNK_0034"
+      ],
+      "notes": "Refund exists but settlement gross was not adjusted; total_refund_paise=48163."
+    },
+    {
+      "order_id": "ORD_0044",
+      "scenario_type": "refund_unadjusted_mismatch",
+      "expected_status": "unreconciled_refund_not_adjusted",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0040",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0035",
+      "order_amount_paise": 417955,
+      "total_refund_paise": 33436,
+      "settlement_ids": [
+        "SET_0040"
+      ],
+      "refund_ids": [
+        "RFN_0010"
+      ],
+      "valid_bank_transaction_ids": [
+        "BNK_0035"
+      ],
+      "notes": "Refund exists but settlement gross was not adjusted; total_refund_paise=33436."
+    },
+    {
+      "order_id": "ORD_0045",
+      "scenario_type": "exact_match",
+      "expected_status": "reconciled",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0041",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0036",
+      "order_amount_paise": 87435,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0041"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0036"
+      ],
+      "notes": "Order, settlement, and bank amounts align via settlement_ref linkage."
+    },
+    {
+      "order_id": "ORD_0046",
+      "scenario_type": "duplicate_settlement",
+      "expected_status": "partially_reconciled_duplicate_settlement",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0042",
+      "secondary_settlement_id": "SET_0043",
+      "primary_bank_transaction_id": "BNK_0037",
+      "order_amount_paise": 382911,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0042",
+        "SET_0043"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0037"
+      ],
+      "notes": "Two settlements exist; only the primary settlement has a valid bank transaction via settlement_ref."
+    },
+    {
+      "order_id": "ORD_0047",
+      "scenario_type": "duplicate_settlement",
+      "expected_status": "partially_reconciled_duplicate_settlement",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0044",
+      "secondary_settlement_id": "SET_0045",
+      "primary_bank_transaction_id": "BNK_0038",
+      "order_amount_paise": 330043,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0044",
+        "SET_0045"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0038"
+      ],
+      "notes": "Two settlements exist; only the primary settlement has a valid bank transaction via settlement_ref."
+    },
+    {
+      "order_id": "ORD_0048",
+      "scenario_type": "duplicate_settlement",
+      "expected_status": "partially_reconciled_duplicate_settlement",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0046",
+      "secondary_settlement_id": "SET_0047",
+      "primary_bank_transaction_id": "BNK_0039",
+      "order_amount_paise": 135669,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0046",
+        "SET_0047"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0039"
+      ],
+      "notes": "Two settlements exist; only the primary settlement has a valid bank transaction via settlement_ref."
+    },
+    {
+      "order_id": "ORD_0049",
+      "scenario_type": "duplicate_settlement",
+      "expected_status": "partially_reconciled_duplicate_settlement",
+      "expected_reconciled": false,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0048",
+      "secondary_settlement_id": "SET_0049",
+      "primary_bank_transaction_id": "BNK_0040",
+      "order_amount_paise": 248943,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0048",
+        "SET_0049"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0040"
+      ],
+      "notes": "Two settlements exist; only the primary settlement has a valid bank transaction via settlement_ref."
+    },
+    {
+      "order_id": "ORD_0050",
+      "scenario_type": "exact_match",
+      "expected_status": "reconciled",
+      "expected_reconciled": true,
+      "evaluation_grain": "order",
+      "primary_settlement_id": "SET_0050",
+      "secondary_settlement_id": null,
+      "primary_bank_transaction_id": "BNK_0041",
+      "order_amount_paise": 385544,
+      "total_refund_paise": 0,
+      "settlement_ids": [
+        "SET_0050"
+      ],
+      "refund_ids": [],
+      "valid_bank_transaction_ids": [
+        "BNK_0041"
+      ],
+      "notes": "Order, settlement, and bank amounts align via settlement_ref linkage."
+    }
+  ],
+  "special_records": {
+    "orphan_bank_transactions": [
+      {
+        "bank_transaction_id": "BNK_0042",
+        "settlement_ref": "ORPHAN-ORD_0024",
+        "related_order_id": "ORD_0024",
+        "resolves_to_settlement": false
+      },
+      {
+        "bank_transaction_id": "BNK_0043",
+        "settlement_ref": "ORPHAN-ORD_0025",
+        "related_order_id": "ORD_0025",
+        "resolves_to_settlement": false
+      },
+      {
+        "bank_transaction_id": "BNK_0044",
+        "settlement_ref": "ORPHAN-ORD_0026",
+        "related_order_id": "ORD_0026",
+        "resolves_to_settlement": false
+      },
+      {
+        "bank_transaction_id": "BNK_0045",
+        "settlement_ref": "ORPHAN-ORD_0027",
+        "related_order_id": "ORD_0027",
+        "resolves_to_settlement": false
+      }
+    ],
+    "duplicate_bank_transactions": [
+      {
+        "bank_transaction_id": "BNK_0046",
+        "settlement_ref": "DUP-SET_0046",
+        "source_settlement_id": "SET_0046",
+        "related_order_id": "ORD_0048",
+        "is_valid_bank_link": false,
+        "erroneous_duplicate": true
+      },
+      {
+        "bank_transaction_id": "BNK_0047",
+        "settlement_ref": "DUP-SET_0047",
+        "source_settlement_id": "SET_0047",
+        "related_order_id": "ORD_0048",
+        "is_valid_bank_link": false,
+        "erroneous_duplicate": true
+      },
+      {
+        "bank_transaction_id": "BNK_0048",
+        "settlement_ref": "DUP-SET_0048",
+        "source_settlement_id": "SET_0048",
+        "related_order_id": "ORD_0049",
+        "is_valid_bank_link": false,
+        "erroneous_duplicate": true
+      },
+      {
+        "bank_transaction_id": "BNK_0049",
+        "settlement_ref": "DUP-SET_0049",
+        "source_settlement_id": "SET_0049",
+        "related_order_id": "ORD_0049",
+        "is_valid_bank_link": false,
+        "erroneous_duplicate": true
+      },
+      {
+        "bank_transaction_id": "BNK_0050",
+        "settlement_ref": "DUP-SET_0050",
+        "source_settlement_id": "SET_0050",
+        "related_order_id": "ORD_0050",
+        "is_valid_bank_link": false,
+        "erroneous_duplicate": true
+      }
+    ],
+    "duplicate_settlements": [
+      {
+        "order_id": "ORD_0046",
+        "primary_settlement_id": "SET_0042",
+        "secondary_settlement_id": "SET_0043",
+        "primary_bank_transaction_id": "BNK_0037",
+        "secondary_has_valid_bank": false
+      },
+      {
+        "order_id": "ORD_0047",
+        "primary_settlement_id": "SET_0044",
+        "secondary_settlement_id": "SET_0045",
+        "primary_bank_transaction_id": "BNK_0038",
+        "secondary_has_valid_bank": false
+      },
+      {
+        "order_id": "ORD_0048",
+        "primary_settlement_id": "SET_0046",
+        "secondary_settlement_id": "SET_0047",
+        "primary_bank_transaction_id": "BNK_0039",
+        "secondary_has_valid_bank": false
+      },
+      {
+        "order_id": "ORD_0049",
+        "primary_settlement_id": "SET_0048",
+        "secondary_settlement_id": "SET_0049",
+        "primary_bank_transaction_id": "BNK_0040",
+        "secondary_has_valid_bank": false
+      }
+    ],
+    "settlements_without_bank": [
+      "SET_0024",
+      "SET_0025",
+      "SET_0026",
+      "SET_0027",
+      "SET_0028",
+      "SET_0043",
+      "SET_0045",
+      "SET_0047",
+      "SET_0049"
+    ],
+    "alternate_reference_map": {
+      "SET_0034": "STL-0034",
+      "SET_0035": "STL-0035",
+      "SET_0036": "STL-0036",
+      "SET_0037": "STL-0037",
+      "SET_0038": "STL-0038"
+    }
+  }
+}

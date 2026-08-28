@@ -1,0 +1,3506 @@
+{
+  "metadata": {
+    "engine": "recon_engine",
+    "generated_at": "2026-09-02T10:49:00",
+    "evaluation_grain": "order",
+    "currency": "INR",
+    "minor_unit": "paise"
+  },
+  "configuration": {
+    "timestamp_tolerance_hours": 24,
+    "reference_normalization": {
+      "STL-": "SET_",
+      "ORPHAN-*": "unresolved",
+      "DUP-*": "unresolved"
+    },
+    "reconciliation_status_vocabulary": [
+      "partially_reconciled_duplicate_settlement",
+      "reconciled",
+      "reconciled_with_reference_variation",
+      "reconciled_with_refund_adjustment",
+      "reconciled_within_timestamp_tolerance",
+      "unreconciled_missing_bank",
+      "unreconciled_missing_settlement",
+      "unreconciled_refund_not_adjusted",
+      "unreconciled_settlement_amount",
+      "unreconciled_timestamp_exceeded"
+    ],
+    "exception_vocabulary": [
+      "BANK_AMOUNT_MISMATCH",
+      "DUPLICATE_BANK_TRANSACTION",
+      "DUPLICATE_SETTLEMENT",
+      "MISSING_BANK_TRANSACTION",
+      "MISSING_SETTLEMENT",
+      "ORPHAN_BANK_TRANSACTION",
+      "REFERENCE_VARIATION",
+      "REFUND_ADJUSTED",
+      "REFUND_NOT_REFLECTED",
+      "SETTLEMENT_AMOUNT_MISMATCH",
+      "TIMESTAMP_OUTSIDE_TOLERANCE",
+      "TIMESTAMP_WITHIN_TOLERANCE"
+    ]
+  },
+  "summary": {
+    "total_orders": 50,
+    "reconciled_orders": 26,
+    "unreconciled_orders": 24,
+    "missing_settlements": 4,
+    "missing_bank_transactions": 5,
+    "settlement_amount_mismatches": 5,
+    "bank_amount_mismatches": 5,
+    "timestamp_violations": 1,
+    "refund_mismatches": 5,
+    "refund_adjusted": 5,
+    "duplicate_settlements": 4,
+    "duplicate_bank_transactions": 5,
+    "orphan_bank_transactions": 4,
+    "reference_variations": 5
+  },
+  "status_counts": {
+    "partially_reconciled_duplicate_settlement": 4,
+    "reconciled_with_reference_variation": 5,
+    "reconciled_with_refund_adjustment": 5,
+    "reconciled_within_timestamp_tolerance": 16,
+    "unreconciled_missing_bank": 5,
+    "unreconciled_missing_settlement": 4,
+    "unreconciled_refund_not_adjusted": 5,
+    "unreconciled_settlement_amount": 5,
+    "unreconciled_timestamp_exceeded": 1
+  },
+  "order_results": [
+    {
+      "order_id": "ORD_0001",
+      "status": "reconciled_within_timestamp_tolerance",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 385243,
+      "settlement_ids_considered": [
+        "SET_0001"
+      ],
+      "primary_settlement_id": "SET_0001",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0001"
+      ],
+      "valid_bank_transaction_id": "BNK_0001",
+      "normalized_references": {
+        "SET_0001": "SET_0001"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 385243,
+        "settlement_gross_paise": 385243,
+        "settlement_net_paise": 370605,
+        "bank_amount_paise": 370605,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-07T18:36:00",
+        "bank_transaction_date": "2026-08-08T01:36:00",
+        "difference_hours": 7.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 7.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-07T18:36:00",
+            "bank_transaction_date": "2026-08-08T01:36:00",
+            "difference_hours": 7.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0001 amount=385243 paise.",
+        "Primary settlement SET_0001 gross=385243 paise.",
+        "Order reconciled with status=reconciled_within_timestamp_tolerance."
+      ]
+    },
+    {
+      "order_id": "ORD_0002",
+      "status": "reconciled_within_timestamp_tolerance",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 63112,
+      "settlement_ids_considered": [
+        "SET_0002"
+      ],
+      "primary_settlement_id": "SET_0002",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0002"
+      ],
+      "valid_bank_transaction_id": "BNK_0002",
+      "normalized_references": {
+        "SET_0002": "SET_0002"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 63112,
+        "settlement_gross_paise": 63112,
+        "settlement_net_paise": 60714,
+        "bank_amount_paise": 60714,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-15T12:24:00",
+        "bank_transaction_date": "2026-08-15T20:24:00",
+        "difference_hours": 8.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 8.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-15T12:24:00",
+            "bank_transaction_date": "2026-08-15T20:24:00",
+            "difference_hours": 8.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0002 amount=63112 paise.",
+        "Primary settlement SET_0002 gross=63112 paise.",
+        "Order reconciled with status=reconciled_within_timestamp_tolerance."
+      ]
+    },
+    {
+      "order_id": "ORD_0003",
+      "status": "reconciled_within_timestamp_tolerance",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 178393,
+      "settlement_ids_considered": [
+        "SET_0003"
+      ],
+      "primary_settlement_id": "SET_0003",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0003"
+      ],
+      "valid_bank_transaction_id": "BNK_0003",
+      "normalized_references": {
+        "SET_0003": "SET_0003"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 178393,
+        "settlement_gross_paise": 178393,
+        "settlement_net_paise": 171615,
+        "bank_amount_paise": 171615,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-13T10:48:00",
+        "bank_transaction_date": "2026-08-13T19:48:00",
+        "difference_hours": 9.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 9.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-13T10:48:00",
+            "bank_transaction_date": "2026-08-13T19:48:00",
+            "difference_hours": 9.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0003 amount=178393 paise.",
+        "Primary settlement SET_0003 gross=178393 paise.",
+        "Order reconciled with status=reconciled_within_timestamp_tolerance."
+      ]
+    },
+    {
+      "order_id": "ORD_0004",
+      "status": "reconciled_within_timestamp_tolerance",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 123158,
+      "settlement_ids_considered": [
+        "SET_0004"
+      ],
+      "primary_settlement_id": "SET_0004",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0004"
+      ],
+      "valid_bank_transaction_id": "BNK_0004",
+      "normalized_references": {
+        "SET_0004": "SET_0004"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 123158,
+        "settlement_gross_paise": 123158,
+        "settlement_net_paise": 118479,
+        "bank_amount_paise": 118479,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-08T05:57:00",
+        "bank_transaction_date": "2026-08-08T15:57:00",
+        "difference_hours": 10.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 10.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-08T05:57:00",
+            "bank_transaction_date": "2026-08-08T15:57:00",
+            "difference_hours": 10.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0004 amount=123158 paise.",
+        "Primary settlement SET_0004 gross=123158 paise.",
+        "Order reconciled with status=reconciled_within_timestamp_tolerance."
+      ]
+    },
+    {
+      "order_id": "ORD_0005",
+      "status": "unreconciled_refund_not_adjusted",
+      "reconciled": false,
+      "confidence_score": 80,
+      "order_amount_paise": 404785,
+      "settlement_ids_considered": [
+        "SET_0005"
+      ],
+      "primary_settlement_id": "SET_0005",
+      "secondary_settlement_ids": [],
+      "refund_ids": [
+        "RFN_0001"
+      ],
+      "total_refund_paise": 40478,
+      "bank_transaction_ids_considered": [
+        "BNK_0005"
+      ],
+      "valid_bank_transaction_id": "BNK_0005",
+      "normalized_references": {
+        "SET_0005": "SET_0005"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 404785,
+        "settlement_gross_paise": 404785,
+        "settlement_net_paise": 389404,
+        "bank_amount_paise": 389404,
+        "expected_post_refund_gross_paise": 364307,
+        "total_refund_paise": 40478,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": false,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-28T16:41:00",
+        "bank_transaction_date": "2026-08-29T03:41:00",
+        "difference_hours": 11.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_3_REFUND_ADJUSTMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "REFUND_NOT_REFLECTED",
+          "message": "Refund exists but settlement gross was not adjusted.",
+          "details": {
+            "total_refund_paise": 40478,
+            "settlement_gross_paise": 404785,
+            "expected_post_refund_gross_paise": 364307
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 11.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-28T16:41:00",
+            "bank_transaction_date": "2026-08-29T03:41:00",
+            "difference_hours": 11.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0005 amount=404785 paise.",
+        "Primary settlement SET_0005 gross=404785 paise.",
+        "Refund not reflected in settlement gross.",
+        "Order not reconciled; status=unreconciled_refund_not_adjusted."
+      ]
+    },
+    {
+      "order_id": "ORD_0006",
+      "status": "reconciled_within_timestamp_tolerance",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 95580,
+      "settlement_ids_considered": [
+        "SET_0006"
+      ],
+      "primary_settlement_id": "SET_0006",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0006"
+      ],
+      "valid_bank_transaction_id": "BNK_0006",
+      "normalized_references": {
+        "SET_0006": "SET_0006"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 95580,
+        "settlement_gross_paise": 95580,
+        "settlement_net_paise": 91949,
+        "bank_amount_paise": 91949,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-31T00:58:00",
+        "bank_transaction_date": "2026-08-31T12:58:00",
+        "difference_hours": 12.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 12.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-31T00:58:00",
+            "bank_transaction_date": "2026-08-31T12:58:00",
+            "difference_hours": 12.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0006 amount=95580 paise.",
+        "Primary settlement SET_0006 gross=95580 paise.",
+        "Order reconciled with status=reconciled_within_timestamp_tolerance."
+      ]
+    },
+    {
+      "order_id": "ORD_0007",
+      "status": "reconciled_within_timestamp_tolerance",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 271208,
+      "settlement_ids_considered": [
+        "SET_0007"
+      ],
+      "primary_settlement_id": "SET_0007",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0007"
+      ],
+      "valid_bank_transaction_id": "BNK_0007",
+      "normalized_references": {
+        "SET_0007": "SET_0007"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 271208,
+        "settlement_gross_paise": 271208,
+        "settlement_net_paise": 260903,
+        "bank_amount_paise": 260903,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-05T21:42:00",
+        "bank_transaction_date": "2026-08-06T10:42:00",
+        "difference_hours": 13.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 13.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-05T21:42:00",
+            "bank_transaction_date": "2026-08-06T10:42:00",
+            "difference_hours": 13.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0007 amount=271208 paise.",
+        "Primary settlement SET_0007 gross=271208 paise.",
+        "Order reconciled with status=reconciled_within_timestamp_tolerance."
+      ]
+    },
+    {
+      "order_id": "ORD_0008",
+      "status": "unreconciled_refund_not_adjusted",
+      "reconciled": false,
+      "confidence_score": 80,
+      "order_amount_paise": 65622,
+      "settlement_ids_considered": [
+        "SET_0008"
+      ],
+      "primary_settlement_id": "SET_0008",
+      "secondary_settlement_ids": [],
+      "refund_ids": [
+        "RFN_0002"
+      ],
+      "total_refund_paise": 13124,
+      "bank_transaction_ids_considered": [
+        "BNK_0008"
+      ],
+      "valid_bank_transaction_id": "BNK_0008",
+      "normalized_references": {
+        "SET_0008": "SET_0008"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 65622,
+        "settlement_gross_paise": 65622,
+        "settlement_net_paise": 63129,
+        "bank_amount_paise": 63129,
+        "expected_post_refund_gross_paise": 52498,
+        "total_refund_paise": 13124,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": false,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-09T00:20:00",
+        "bank_transaction_date": "2026-08-09T14:20:00",
+        "difference_hours": 14.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_3_REFUND_ADJUSTMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "REFUND_NOT_REFLECTED",
+          "message": "Refund exists but settlement gross was not adjusted.",
+          "details": {
+            "total_refund_paise": 13124,
+            "settlement_gross_paise": 65622,
+            "expected_post_refund_gross_paise": 52498
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 14.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-09T00:20:00",
+            "bank_transaction_date": "2026-08-09T14:20:00",
+            "difference_hours": 14.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0008 amount=65622 paise.",
+        "Primary settlement SET_0008 gross=65622 paise.",
+        "Refund not reflected in settlement gross.",
+        "Order not reconciled; status=unreconciled_refund_not_adjusted."
+      ]
+    },
+    {
+      "order_id": "ORD_0009",
+      "status": "reconciled_within_timestamp_tolerance",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 164629,
+      "settlement_ids_considered": [
+        "SET_0009"
+      ],
+      "primary_settlement_id": "SET_0009",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0009"
+      ],
+      "valid_bank_transaction_id": "BNK_0009",
+      "normalized_references": {
+        "SET_0009": "SET_0009"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 164629,
+        "settlement_gross_paise": 164629,
+        "settlement_net_paise": 158374,
+        "bank_amount_paise": 158374,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-15T15:07:00",
+        "bank_transaction_date": "2026-08-16T06:07:00",
+        "difference_hours": 15.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 15.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-15T15:07:00",
+            "bank_transaction_date": "2026-08-16T06:07:00",
+            "difference_hours": 15.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0009 amount=164629 paise.",
+        "Primary settlement SET_0009 gross=164629 paise.",
+        "Order reconciled with status=reconciled_within_timestamp_tolerance."
+      ]
+    },
+    {
+      "order_id": "ORD_0010",
+      "status": "unreconciled_refund_not_adjusted",
+      "reconciled": false,
+      "confidence_score": 80,
+      "order_amount_paise": 314951,
+      "settlement_ids_considered": [
+        "SET_0010"
+      ],
+      "primary_settlement_id": "SET_0010",
+      "secondary_settlement_ids": [],
+      "refund_ids": [
+        "RFN_0003"
+      ],
+      "total_refund_paise": 15747,
+      "bank_transaction_ids_considered": [
+        "BNK_0010"
+      ],
+      "valid_bank_transaction_id": "BNK_0010",
+      "normalized_references": {
+        "SET_0010": "SET_0010"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 314951,
+        "settlement_gross_paise": 314951,
+        "settlement_net_paise": 302983,
+        "bank_amount_paise": 302983,
+        "expected_post_refund_gross_paise": 299204,
+        "total_refund_paise": 15747,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": false,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-09-01T17:33:00",
+        "bank_transaction_date": "2026-09-02T09:33:00",
+        "difference_hours": 16.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_3_REFUND_ADJUSTMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "REFUND_NOT_REFLECTED",
+          "message": "Refund exists but settlement gross was not adjusted.",
+          "details": {
+            "total_refund_paise": 15747,
+            "settlement_gross_paise": 314951,
+            "expected_post_refund_gross_paise": 299204
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 16.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-09-01T17:33:00",
+            "bank_transaction_date": "2026-09-02T09:33:00",
+            "difference_hours": 16.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0010 amount=314951 paise.",
+        "Primary settlement SET_0010 gross=314951 paise.",
+        "Refund not reflected in settlement gross.",
+        "Order not reconciled; status=unreconciled_refund_not_adjusted."
+      ]
+    },
+    {
+      "order_id": "ORD_0011",
+      "status": "reconciled_within_timestamp_tolerance",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 63912,
+      "settlement_ids_considered": [
+        "SET_0011"
+      ],
+      "primary_settlement_id": "SET_0011",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0011"
+      ],
+      "valid_bank_transaction_id": "BNK_0011",
+      "normalized_references": {
+        "SET_0011": "SET_0011"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 63912,
+        "settlement_gross_paise": 63912,
+        "settlement_net_paise": 61484,
+        "bank_amount_paise": 61484,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-28T04:01:00",
+        "bank_transaction_date": "2026-08-28T21:01:00",
+        "difference_hours": 17.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 17.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-28T04:01:00",
+            "bank_transaction_date": "2026-08-28T21:01:00",
+            "difference_hours": 17.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0011 amount=63912 paise.",
+        "Primary settlement SET_0011 gross=63912 paise.",
+        "Order reconciled with status=reconciled_within_timestamp_tolerance."
+      ]
+    },
+    {
+      "order_id": "ORD_0012",
+      "status": "reconciled_within_timestamp_tolerance",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 154248,
+      "settlement_ids_considered": [
+        "SET_0012"
+      ],
+      "primary_settlement_id": "SET_0012",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0012"
+      ],
+      "valid_bank_transaction_id": "BNK_0012",
+      "normalized_references": {
+        "SET_0012": "SET_0012"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 154248,
+        "settlement_gross_paise": 154248,
+        "settlement_net_paise": 148388,
+        "bank_amount_paise": 148388,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-09-01T11:50:00",
+        "bank_transaction_date": "2026-09-01T17:50:00",
+        "difference_hours": 6.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 6.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-09-01T11:50:00",
+            "bank_transaction_date": "2026-09-01T17:50:00",
+            "difference_hours": 6.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0012 amount=154248 paise.",
+        "Primary settlement SET_0012 gross=154248 paise.",
+        "Order reconciled with status=reconciled_within_timestamp_tolerance."
+      ]
+    },
+    {
+      "order_id": "ORD_0013",
+      "status": "reconciled_within_timestamp_tolerance",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 417696,
+      "settlement_ids_considered": [
+        "SET_0013"
+      ],
+      "primary_settlement_id": "SET_0013",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0013"
+      ],
+      "valid_bank_transaction_id": "BNK_0013",
+      "normalized_references": {
+        "SET_0013": "SET_0013"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 417696,
+        "settlement_gross_paise": 417696,
+        "settlement_net_paise": 401825,
+        "bank_amount_paise": 401825,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-28T00:13:00",
+        "bank_transaction_date": "2026-08-28T03:13:00",
+        "difference_hours": 3.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 3.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-28T00:13:00",
+            "bank_transaction_date": "2026-08-28T03:13:00",
+            "difference_hours": 3.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0013 amount=417696 paise.",
+        "Primary settlement SET_0013 gross=417696 paise.",
+        "Order reconciled with status=reconciled_within_timestamp_tolerance."
+      ]
+    },
+    {
+      "order_id": "ORD_0014",
+      "status": "reconciled_within_timestamp_tolerance",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 269949,
+      "settlement_ids_considered": [
+        "SET_0014"
+      ],
+      "primary_settlement_id": "SET_0014",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0014"
+      ],
+      "valid_bank_transaction_id": "BNK_0014",
+      "normalized_references": {
+        "SET_0014": "SET_0014"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 269949,
+        "settlement_gross_paise": 269949,
+        "settlement_net_paise": 259692,
+        "bank_amount_paise": 259692,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-13T12:46:00",
+        "bank_transaction_date": "2026-08-13T16:46:00",
+        "difference_hours": 4.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 4.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-13T12:46:00",
+            "bank_transaction_date": "2026-08-13T16:46:00",
+            "difference_hours": 4.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0014 amount=269949 paise.",
+        "Primary settlement SET_0014 gross=269949 paise.",
+        "Order reconciled with status=reconciled_within_timestamp_tolerance."
+      ]
+    },
+    {
+      "order_id": "ORD_0015",
+      "status": "reconciled_within_timestamp_tolerance",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 285514,
+      "settlement_ids_considered": [
+        "SET_0015"
+      ],
+      "primary_settlement_id": "SET_0015",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0015"
+      ],
+      "valid_bank_transaction_id": "BNK_0015",
+      "normalized_references": {
+        "SET_0015": "SET_0015"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 285514,
+        "settlement_gross_paise": 285514,
+        "settlement_net_paise": 274665,
+        "bank_amount_paise": 274665,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-30T14:38:00",
+        "bank_transaction_date": "2026-08-30T19:38:00",
+        "difference_hours": 5.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 5.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-30T14:38:00",
+            "bank_transaction_date": "2026-08-30T19:38:00",
+            "difference_hours": 5.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0015 amount=285514 paise.",
+        "Primary settlement SET_0015 gross=285514 paise.",
+        "Order reconciled with status=reconciled_within_timestamp_tolerance."
+      ]
+    },
+    {
+      "order_id": "ORD_0016",
+      "status": "reconciled_within_timestamp_tolerance",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 195852,
+      "settlement_ids_considered": [
+        "SET_0016"
+      ],
+      "primary_settlement_id": "SET_0016",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0016"
+      ],
+      "valid_bank_transaction_id": "BNK_0016",
+      "normalized_references": {
+        "SET_0016": "SET_0016"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 195852,
+        "settlement_gross_paise": 195852,
+        "settlement_net_paise": 188410,
+        "bank_amount_paise": 188410,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-04T09:05:00",
+        "bank_transaction_date": "2026-08-04T15:05:00",
+        "difference_hours": 6.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 6.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-04T09:05:00",
+            "bank_transaction_date": "2026-08-04T15:05:00",
+            "difference_hours": 6.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0016 amount=195852 paise.",
+        "Primary settlement SET_0016 gross=195852 paise.",
+        "Order reconciled with status=reconciled_within_timestamp_tolerance."
+      ]
+    },
+    {
+      "order_id": "ORD_0017",
+      "status": "reconciled_within_timestamp_tolerance",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 447833,
+      "settlement_ids_considered": [
+        "SET_0017"
+      ],
+      "primary_settlement_id": "SET_0017",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0017"
+      ],
+      "valid_bank_transaction_id": "BNK_0017",
+      "normalized_references": {
+        "SET_0017": "SET_0017"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 447833,
+        "settlement_gross_paise": 447833,
+        "settlement_net_paise": 430817,
+        "bank_amount_paise": 430817,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-11T15:23:00",
+        "bank_transaction_date": "2026-08-11T22:23:00",
+        "difference_hours": 7.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 7.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-11T15:23:00",
+            "bank_transaction_date": "2026-08-11T22:23:00",
+            "difference_hours": 7.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0017 amount=447833 paise.",
+        "Primary settlement SET_0017 gross=447833 paise.",
+        "Order reconciled with status=reconciled_within_timestamp_tolerance."
+      ]
+    },
+    {
+      "order_id": "ORD_0018",
+      "status": "unreconciled_timestamp_exceeded",
+      "reconciled": false,
+      "confidence_score": 85,
+      "order_amount_paise": 416026,
+      "settlement_ids_considered": [
+        "SET_0018"
+      ],
+      "primary_settlement_id": "SET_0018",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0018"
+      ],
+      "valid_bank_transaction_id": "BNK_0018",
+      "normalized_references": {
+        "SET_0018": "SET_0018"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 416026,
+        "settlement_gross_paise": 416026,
+        "settlement_net_paise": 400218,
+        "bank_amount_paise": 400218,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-23T21:36:00",
+        "bank_transaction_date": "2026-08-26T15:36:00",
+        "difference_hours": 66.0,
+        "tolerance_hours": 24,
+        "within_tolerance": false
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "TIMESTAMP_OUTSIDE_TOLERANCE",
+          "message": "Timestamp difference 66.0h exceeds 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-23T21:36:00",
+            "bank_transaction_date": "2026-08-26T15:36:00",
+            "difference_hours": 66.0,
+            "tolerance_hours": 24,
+            "within_tolerance": false
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0018 amount=416026 paise.",
+        "Primary settlement SET_0018 gross=416026 paise.",
+        "Timestamp outside tolerance: 66.0h > 24h.",
+        "Order not reconciled; status=unreconciled_timestamp_exceeded."
+      ]
+    },
+    {
+      "order_id": "ORD_0019",
+      "status": "unreconciled_settlement_amount",
+      "reconciled": false,
+      "confidence_score": 45,
+      "order_amount_paise": 228389,
+      "settlement_ids_considered": [
+        "SET_0019"
+      ],
+      "primary_settlement_id": "SET_0019",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0019"
+      ],
+      "valid_bank_transaction_id": "BNK_0019",
+      "normalized_references": {
+        "SET_0019": "SET_0019"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 228389,
+        "settlement_gross_paise": 235289,
+        "settlement_net_paise": 226349,
+        "bank_amount_paise": 228849,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": false,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": false
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-17T14:30:00",
+        "bank_transaction_date": "2026-08-18T03:30:00",
+        "difference_hours": 13.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "SETTLEMENT_AMOUNT_MISMATCH",
+          "message": "Settlement gross differs from order amount.",
+          "details": {
+            "order_amount_paise": 228389,
+            "settlement_gross_paise": 235289,
+            "delta_paise": 6900
+          }
+        },
+        {
+          "type": "BANK_AMOUNT_MISMATCH",
+          "message": "Bank amount differs from settlement net amount.",
+          "details": {
+            "settlement_net_paise": 226349,
+            "bank_amount_paise": 228849,
+            "delta_paise": 2500
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 13.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-17T14:30:00",
+            "bank_transaction_date": "2026-08-18T03:30:00",
+            "difference_hours": 13.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0019 amount=228389 paise.",
+        "Primary settlement SET_0019 gross=235289 paise.",
+        "Settlement gross mismatch: 235289 != 228389.",
+        "Bank amount mismatch: bank 228849 != net 226349.",
+        "Order not reconciled; status=unreconciled_settlement_amount."
+      ]
+    },
+    {
+      "order_id": "ORD_0020",
+      "status": "unreconciled_settlement_amount",
+      "reconciled": false,
+      "confidence_score": 45,
+      "order_amount_paise": 131516,
+      "settlement_ids_considered": [
+        "SET_0020"
+      ],
+      "primary_settlement_id": "SET_0020",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0020"
+      ],
+      "valid_bank_transaction_id": "BNK_0020",
+      "normalized_references": {
+        "SET_0020": "SET_0020"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 131516,
+        "settlement_gross_paise": 138516,
+        "settlement_net_paise": 133253,
+        "bank_amount_paise": 135753,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": false,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": false
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-15T01:10:00",
+        "bank_transaction_date": "2026-08-15T15:10:00",
+        "difference_hours": 14.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "SETTLEMENT_AMOUNT_MISMATCH",
+          "message": "Settlement gross differs from order amount.",
+          "details": {
+            "order_amount_paise": 131516,
+            "settlement_gross_paise": 138516,
+            "delta_paise": 7000
+          }
+        },
+        {
+          "type": "BANK_AMOUNT_MISMATCH",
+          "message": "Bank amount differs from settlement net amount.",
+          "details": {
+            "settlement_net_paise": 133253,
+            "bank_amount_paise": 135753,
+            "delta_paise": 2500
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 14.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-15T01:10:00",
+            "bank_transaction_date": "2026-08-15T15:10:00",
+            "difference_hours": 14.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0020 amount=131516 paise.",
+        "Primary settlement SET_0020 gross=138516 paise.",
+        "Settlement gross mismatch: 138516 != 131516.",
+        "Bank amount mismatch: bank 135753 != net 133253.",
+        "Order not reconciled; status=unreconciled_settlement_amount."
+      ]
+    },
+    {
+      "order_id": "ORD_0021",
+      "status": "unreconciled_settlement_amount",
+      "reconciled": false,
+      "confidence_score": 45,
+      "order_amount_paise": 450290,
+      "settlement_ids_considered": [
+        "SET_0021"
+      ],
+      "primary_settlement_id": "SET_0021",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0021"
+      ],
+      "valid_bank_transaction_id": "BNK_0021",
+      "normalized_references": {
+        "SET_0021": "SET_0021"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 450290,
+        "settlement_gross_paise": 457390,
+        "settlement_net_paise": 440010,
+        "bank_amount_paise": 442510,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": false,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": false
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-17T20:39:00",
+        "bank_transaction_date": "2026-08-18T11:39:00",
+        "difference_hours": 15.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "SETTLEMENT_AMOUNT_MISMATCH",
+          "message": "Settlement gross differs from order amount.",
+          "details": {
+            "order_amount_paise": 450290,
+            "settlement_gross_paise": 457390,
+            "delta_paise": 7100
+          }
+        },
+        {
+          "type": "BANK_AMOUNT_MISMATCH",
+          "message": "Bank amount differs from settlement net amount.",
+          "details": {
+            "settlement_net_paise": 440010,
+            "bank_amount_paise": 442510,
+            "delta_paise": 2500
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 15.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-17T20:39:00",
+            "bank_transaction_date": "2026-08-18T11:39:00",
+            "difference_hours": 15.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0021 amount=450290 paise.",
+        "Primary settlement SET_0021 gross=457390 paise.",
+        "Settlement gross mismatch: 457390 != 450290.",
+        "Bank amount mismatch: bank 442510 != net 440010.",
+        "Order not reconciled; status=unreconciled_settlement_amount."
+      ]
+    },
+    {
+      "order_id": "ORD_0022",
+      "status": "unreconciled_settlement_amount",
+      "reconciled": false,
+      "confidence_score": 45,
+      "order_amount_paise": 103587,
+      "settlement_ids_considered": [
+        "SET_0022"
+      ],
+      "primary_settlement_id": "SET_0022",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0022"
+      ],
+      "valid_bank_transaction_id": "BNK_0022",
+      "normalized_references": {
+        "SET_0022": "SET_0022"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 103587,
+        "settlement_gross_paise": 110787,
+        "settlement_net_paise": 106578,
+        "bank_amount_paise": 109078,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": false,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": false
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-07T01:18:00",
+        "bank_transaction_date": "2026-08-07T17:18:00",
+        "difference_hours": 16.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "SETTLEMENT_AMOUNT_MISMATCH",
+          "message": "Settlement gross differs from order amount.",
+          "details": {
+            "order_amount_paise": 103587,
+            "settlement_gross_paise": 110787,
+            "delta_paise": 7200
+          }
+        },
+        {
+          "type": "BANK_AMOUNT_MISMATCH",
+          "message": "Bank amount differs from settlement net amount.",
+          "details": {
+            "settlement_net_paise": 106578,
+            "bank_amount_paise": 109078,
+            "delta_paise": 2500
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 16.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-07T01:18:00",
+            "bank_transaction_date": "2026-08-07T17:18:00",
+            "difference_hours": 16.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0022 amount=103587 paise.",
+        "Primary settlement SET_0022 gross=110787 paise.",
+        "Settlement gross mismatch: 110787 != 103587.",
+        "Bank amount mismatch: bank 109078 != net 106578.",
+        "Order not reconciled; status=unreconciled_settlement_amount."
+      ]
+    },
+    {
+      "order_id": "ORD_0023",
+      "status": "unreconciled_settlement_amount",
+      "reconciled": false,
+      "confidence_score": 45,
+      "order_amount_paise": 249191,
+      "settlement_ids_considered": [
+        "SET_0023"
+      ],
+      "primary_settlement_id": "SET_0023",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0023"
+      ],
+      "valid_bank_transaction_id": "BNK_0023",
+      "normalized_references": {
+        "SET_0023": "SET_0023"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 249191,
+        "settlement_gross_paise": 256491,
+        "settlement_net_paise": 246746,
+        "bank_amount_paise": 249246,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": false,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": false
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-07T12:38:00",
+        "bank_transaction_date": "2026-08-08T05:38:00",
+        "difference_hours": 17.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "SETTLEMENT_AMOUNT_MISMATCH",
+          "message": "Settlement gross differs from order amount.",
+          "details": {
+            "order_amount_paise": 249191,
+            "settlement_gross_paise": 256491,
+            "delta_paise": 7300
+          }
+        },
+        {
+          "type": "BANK_AMOUNT_MISMATCH",
+          "message": "Bank amount differs from settlement net amount.",
+          "details": {
+            "settlement_net_paise": 246746,
+            "bank_amount_paise": 249246,
+            "delta_paise": 2500
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 17.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-07T12:38:00",
+            "bank_transaction_date": "2026-08-08T05:38:00",
+            "difference_hours": 17.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0023 amount=249191 paise.",
+        "Primary settlement SET_0023 gross=256491 paise.",
+        "Settlement gross mismatch: 256491 != 249191.",
+        "Bank amount mismatch: bank 249246 != net 246746.",
+        "Order not reconciled; status=unreconciled_settlement_amount."
+      ]
+    },
+    {
+      "order_id": "ORD_0024",
+      "status": "unreconciled_missing_settlement",
+      "reconciled": false,
+      "confidence_score": 0,
+      "order_amount_paise": 238208,
+      "settlement_ids_considered": [],
+      "primary_settlement_id": null,
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [],
+      "valid_bank_transaction_id": null,
+      "normalized_references": {},
+      "amount_comparison": {
+        "order_amount_paise": 238208,
+        "settlement_gross_paise": null,
+        "settlement_net_paise": null,
+        "bank_amount_paise": null,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": null,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": null
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": null,
+        "bank_transaction_date": null,
+        "difference_hours": null,
+        "tolerance_hours": 24,
+        "within_tolerance": null
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT"
+      ],
+      "exceptions": [
+        {
+          "type": "MISSING_SETTLEMENT",
+          "message": "No settlement found for order ORD_0024."
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0024 amount=238208 paise.",
+        "No settlements reference this order."
+      ]
+    },
+    {
+      "order_id": "ORD_0025",
+      "status": "unreconciled_missing_settlement",
+      "reconciled": false,
+      "confidence_score": 0,
+      "order_amount_paise": 366526,
+      "settlement_ids_considered": [],
+      "primary_settlement_id": null,
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [],
+      "valid_bank_transaction_id": null,
+      "normalized_references": {},
+      "amount_comparison": {
+        "order_amount_paise": 366526,
+        "settlement_gross_paise": null,
+        "settlement_net_paise": null,
+        "bank_amount_paise": null,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": null,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": null
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": null,
+        "bank_transaction_date": null,
+        "difference_hours": null,
+        "tolerance_hours": 24,
+        "within_tolerance": null
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT"
+      ],
+      "exceptions": [
+        {
+          "type": "MISSING_SETTLEMENT",
+          "message": "No settlement found for order ORD_0025."
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0025 amount=366526 paise.",
+        "No settlements reference this order."
+      ]
+    },
+    {
+      "order_id": "ORD_0026",
+      "status": "unreconciled_missing_settlement",
+      "reconciled": false,
+      "confidence_score": 0,
+      "order_amount_paise": 473167,
+      "settlement_ids_considered": [],
+      "primary_settlement_id": null,
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [],
+      "valid_bank_transaction_id": null,
+      "normalized_references": {},
+      "amount_comparison": {
+        "order_amount_paise": 473167,
+        "settlement_gross_paise": null,
+        "settlement_net_paise": null,
+        "bank_amount_paise": null,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": null,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": null
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": null,
+        "bank_transaction_date": null,
+        "difference_hours": null,
+        "tolerance_hours": 24,
+        "within_tolerance": null
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT"
+      ],
+      "exceptions": [
+        {
+          "type": "MISSING_SETTLEMENT",
+          "message": "No settlement found for order ORD_0026."
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0026 amount=473167 paise.",
+        "No settlements reference this order."
+      ]
+    },
+    {
+      "order_id": "ORD_0027",
+      "status": "unreconciled_missing_settlement",
+      "reconciled": false,
+      "confidence_score": 0,
+      "order_amount_paise": 432589,
+      "settlement_ids_considered": [],
+      "primary_settlement_id": null,
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [],
+      "valid_bank_transaction_id": null,
+      "normalized_references": {},
+      "amount_comparison": {
+        "order_amount_paise": 432589,
+        "settlement_gross_paise": null,
+        "settlement_net_paise": null,
+        "bank_amount_paise": null,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": null,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": null
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": null,
+        "bank_transaction_date": null,
+        "difference_hours": null,
+        "tolerance_hours": 24,
+        "within_tolerance": null
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT"
+      ],
+      "exceptions": [
+        {
+          "type": "MISSING_SETTLEMENT",
+          "message": "No settlement found for order ORD_0027."
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0027 amount=432589 paise.",
+        "No settlements reference this order."
+      ]
+    },
+    {
+      "order_id": "ORD_0028",
+      "status": "unreconciled_missing_bank",
+      "reconciled": false,
+      "confidence_score": 40,
+      "order_amount_paise": 331137,
+      "settlement_ids_considered": [
+        "SET_0024"
+      ],
+      "primary_settlement_id": "SET_0024",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [],
+      "valid_bank_transaction_id": null,
+      "normalized_references": {},
+      "amount_comparison": {
+        "order_amount_paise": 331137,
+        "settlement_gross_paise": 331137,
+        "settlement_net_paise": 318555,
+        "bank_amount_paise": null,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": null
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-10T06:20:00",
+        "bank_transaction_date": null,
+        "difference_hours": null,
+        "tolerance_hours": 24,
+        "within_tolerance": null
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "MISSING_BANK_TRANSACTION",
+          "message": "No valid bank transaction resolves to settlement SET_0024."
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0028 amount=331137 paise.",
+        "Primary settlement SET_0024 gross=331137 paise.",
+        "No valid bank transaction found via settlement_ref.",
+        "Order not reconciled; status=unreconciled_missing_bank."
+      ]
+    },
+    {
+      "order_id": "ORD_0029",
+      "status": "unreconciled_missing_bank",
+      "reconciled": false,
+      "confidence_score": 40,
+      "order_amount_paise": 248461,
+      "settlement_ids_considered": [
+        "SET_0025"
+      ],
+      "primary_settlement_id": "SET_0025",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [],
+      "valid_bank_transaction_id": null,
+      "normalized_references": {},
+      "amount_comparison": {
+        "order_amount_paise": 248461,
+        "settlement_gross_paise": 248461,
+        "settlement_net_paise": 239020,
+        "bank_amount_paise": null,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": null
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-08T11:04:00",
+        "bank_transaction_date": null,
+        "difference_hours": null,
+        "tolerance_hours": 24,
+        "within_tolerance": null
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "MISSING_BANK_TRANSACTION",
+          "message": "No valid bank transaction resolves to settlement SET_0025."
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0029 amount=248461 paise.",
+        "Primary settlement SET_0025 gross=248461 paise.",
+        "No valid bank transaction found via settlement_ref.",
+        "Order not reconciled; status=unreconciled_missing_bank."
+      ]
+    },
+    {
+      "order_id": "ORD_0030",
+      "status": "unreconciled_missing_bank",
+      "reconciled": false,
+      "confidence_score": 40,
+      "order_amount_paise": 339428,
+      "settlement_ids_considered": [
+        "SET_0026"
+      ],
+      "primary_settlement_id": "SET_0026",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [],
+      "valid_bank_transaction_id": null,
+      "normalized_references": {},
+      "amount_comparison": {
+        "order_amount_paise": 339428,
+        "settlement_gross_paise": 339428,
+        "settlement_net_paise": 326531,
+        "bank_amount_paise": null,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": null
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-18T12:13:00",
+        "bank_transaction_date": null,
+        "difference_hours": null,
+        "tolerance_hours": 24,
+        "within_tolerance": null
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "MISSING_BANK_TRANSACTION",
+          "message": "No valid bank transaction resolves to settlement SET_0026."
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0030 amount=339428 paise.",
+        "Primary settlement SET_0026 gross=339428 paise.",
+        "No valid bank transaction found via settlement_ref.",
+        "Order not reconciled; status=unreconciled_missing_bank."
+      ]
+    },
+    {
+      "order_id": "ORD_0031",
+      "status": "unreconciled_missing_bank",
+      "reconciled": false,
+      "confidence_score": 40,
+      "order_amount_paise": 484846,
+      "settlement_ids_considered": [
+        "SET_0027"
+      ],
+      "primary_settlement_id": "SET_0027",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [],
+      "valid_bank_transaction_id": null,
+      "normalized_references": {},
+      "amount_comparison": {
+        "order_amount_paise": 484846,
+        "settlement_gross_paise": 484846,
+        "settlement_net_paise": 466423,
+        "bank_amount_paise": null,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": null
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-31T01:38:00",
+        "bank_transaction_date": null,
+        "difference_hours": null,
+        "tolerance_hours": 24,
+        "within_tolerance": null
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "MISSING_BANK_TRANSACTION",
+          "message": "No valid bank transaction resolves to settlement SET_0027."
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0031 amount=484846 paise.",
+        "Primary settlement SET_0027 gross=484846 paise.",
+        "No valid bank transaction found via settlement_ref.",
+        "Order not reconciled; status=unreconciled_missing_bank."
+      ]
+    },
+    {
+      "order_id": "ORD_0032",
+      "status": "unreconciled_missing_bank",
+      "reconciled": false,
+      "confidence_score": 40,
+      "order_amount_paise": 374282,
+      "settlement_ids_considered": [
+        "SET_0028"
+      ],
+      "primary_settlement_id": "SET_0028",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [],
+      "valid_bank_transaction_id": null,
+      "normalized_references": {},
+      "amount_comparison": {
+        "order_amount_paise": 374282,
+        "settlement_gross_paise": 374282,
+        "settlement_net_paise": 360060,
+        "bank_amount_paise": null,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": null
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-19T05:00:00",
+        "bank_transaction_date": null,
+        "difference_hours": null,
+        "tolerance_hours": 24,
+        "within_tolerance": null
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "MISSING_BANK_TRANSACTION",
+          "message": "No valid bank transaction resolves to settlement SET_0028."
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0032 amount=374282 paise.",
+        "Primary settlement SET_0028 gross=374282 paise.",
+        "No valid bank transaction found via settlement_ref.",
+        "Order not reconciled; status=unreconciled_missing_bank."
+      ]
+    },
+    {
+      "order_id": "ORD_0033",
+      "status": "reconciled_with_refund_adjustment",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 352698,
+      "settlement_ids_considered": [
+        "SET_0029"
+      ],
+      "primary_settlement_id": "SET_0029",
+      "secondary_settlement_ids": [],
+      "refund_ids": [
+        "RFN_0004"
+      ],
+      "total_refund_paise": 88174,
+      "bank_transaction_ids_considered": [
+        "BNK_0024"
+      ],
+      "valid_bank_transaction_id": "BNK_0024",
+      "normalized_references": {
+        "SET_0029": "SET_0029"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 352698,
+        "settlement_gross_paise": 264524,
+        "settlement_net_paise": 254473,
+        "bank_amount_paise": 254473,
+        "expected_post_refund_gross_paise": 264524,
+        "total_refund_paise": 88174,
+        "settlement_gross_matches_order": false,
+        "settlement_reflects_refund": true,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-11T19:01:00",
+        "bank_transaction_date": "2026-08-12T01:01:00",
+        "difference_hours": 6.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_3_REFUND_ADJUSTMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "REFUND_ADJUSTED",
+          "message": "Settlement gross reflects refund deduction.",
+          "details": {
+            "total_refund_paise": 88174
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 6.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-11T19:01:00",
+            "bank_transaction_date": "2026-08-12T01:01:00",
+            "difference_hours": 6.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0033 amount=352698 paise.",
+        "Primary settlement SET_0029 gross=264524 paise.",
+        "Refund adjusted: gross 264524 == order 352698 - refund 88174.",
+        "Order reconciled with status=reconciled_with_refund_adjustment."
+      ]
+    },
+    {
+      "order_id": "ORD_0034",
+      "status": "reconciled_with_refund_adjustment",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 419398,
+      "settlement_ids_considered": [
+        "SET_0030"
+      ],
+      "primary_settlement_id": "SET_0030",
+      "secondary_settlement_ids": [],
+      "refund_ids": [
+        "RFN_0005"
+      ],
+      "total_refund_paise": 209699,
+      "bank_transaction_ids_considered": [
+        "BNK_0025"
+      ],
+      "valid_bank_transaction_id": "BNK_0025",
+      "normalized_references": {
+        "SET_0030": "SET_0030"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 419398,
+        "settlement_gross_paise": 209699,
+        "settlement_net_paise": 201732,
+        "bank_amount_paise": 201732,
+        "expected_post_refund_gross_paise": 209699,
+        "total_refund_paise": 209699,
+        "settlement_gross_matches_order": false,
+        "settlement_reflects_refund": true,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-06T11:58:00",
+        "bank_transaction_date": "2026-08-06T18:58:00",
+        "difference_hours": 7.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_3_REFUND_ADJUSTMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "REFUND_ADJUSTED",
+          "message": "Settlement gross reflects refund deduction.",
+          "details": {
+            "total_refund_paise": 209699
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 7.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-06T11:58:00",
+            "bank_transaction_date": "2026-08-06T18:58:00",
+            "difference_hours": 7.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0034 amount=419398 paise.",
+        "Primary settlement SET_0030 gross=209699 paise.",
+        "Refund adjusted: gross 209699 == order 419398 - refund 209699.",
+        "Order reconciled with status=reconciled_with_refund_adjustment."
+      ]
+    },
+    {
+      "order_id": "ORD_0035",
+      "status": "reconciled_with_refund_adjustment",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 74025,
+      "settlement_ids_considered": [
+        "SET_0031"
+      ],
+      "primary_settlement_id": "SET_0031",
+      "secondary_settlement_ids": [],
+      "refund_ids": [
+        "RFN_0006"
+      ],
+      "total_refund_paise": 55518,
+      "bank_transaction_ids_considered": [
+        "BNK_0026"
+      ],
+      "valid_bank_transaction_id": "BNK_0026",
+      "normalized_references": {
+        "SET_0031": "SET_0031"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 74025,
+        "settlement_gross_paise": 18507,
+        "settlement_net_paise": 17804,
+        "bank_amount_paise": 17804,
+        "expected_post_refund_gross_paise": 18507,
+        "total_refund_paise": 55518,
+        "settlement_gross_matches_order": false,
+        "settlement_reflects_refund": true,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-13T23:55:00",
+        "bank_transaction_date": "2026-08-14T07:55:00",
+        "difference_hours": 8.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_3_REFUND_ADJUSTMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "REFUND_ADJUSTED",
+          "message": "Settlement gross reflects refund deduction.",
+          "details": {
+            "total_refund_paise": 55518
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 8.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-13T23:55:00",
+            "bank_transaction_date": "2026-08-14T07:55:00",
+            "difference_hours": 8.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0035 amount=74025 paise.",
+        "Primary settlement SET_0031 gross=18507 paise.",
+        "Refund adjusted: gross 18507 == order 74025 - refund 55518.",
+        "Order reconciled with status=reconciled_with_refund_adjustment."
+      ]
+    },
+    {
+      "order_id": "ORD_0036",
+      "status": "reconciled_with_refund_adjustment",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 455310,
+      "settlement_ids_considered": [
+        "SET_0032"
+      ],
+      "primary_settlement_id": "SET_0032",
+      "secondary_settlement_ids": [],
+      "refund_ids": [
+        "RFN_0007"
+      ],
+      "total_refund_paise": 136593,
+      "bank_transaction_ids_considered": [
+        "BNK_0027"
+      ],
+      "valid_bank_transaction_id": "BNK_0027",
+      "normalized_references": {
+        "SET_0032": "SET_0032"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 455310,
+        "settlement_gross_paise": 318717,
+        "settlement_net_paise": 306607,
+        "bank_amount_paise": 306607,
+        "expected_post_refund_gross_paise": 318717,
+        "total_refund_paise": 136593,
+        "settlement_gross_matches_order": false,
+        "settlement_reflects_refund": true,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-17T02:05:00",
+        "bank_transaction_date": "2026-08-17T11:05:00",
+        "difference_hours": 9.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_3_REFUND_ADJUSTMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "REFUND_ADJUSTED",
+          "message": "Settlement gross reflects refund deduction.",
+          "details": {
+            "total_refund_paise": 136593
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 9.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-17T02:05:00",
+            "bank_transaction_date": "2026-08-17T11:05:00",
+            "difference_hours": 9.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0036 amount=455310 paise.",
+        "Primary settlement SET_0032 gross=318717 paise.",
+        "Refund adjusted: gross 318717 == order 455310 - refund 136593.",
+        "Order reconciled with status=reconciled_with_refund_adjustment."
+      ]
+    },
+    {
+      "order_id": "ORD_0037",
+      "status": "reconciled_with_refund_adjustment",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 91833,
+      "settlement_ids_considered": [
+        "SET_0033"
+      ],
+      "primary_settlement_id": "SET_0033",
+      "secondary_settlement_ids": [],
+      "refund_ids": [
+        "RFN_0008"
+      ],
+      "total_refund_paise": 13774,
+      "bank_transaction_ids_considered": [
+        "BNK_0028"
+      ],
+      "valid_bank_transaction_id": "BNK_0028",
+      "normalized_references": {
+        "SET_0033": "SET_0033"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 91833,
+        "settlement_gross_paise": 78059,
+        "settlement_net_paise": 75093,
+        "bank_amount_paise": 75093,
+        "expected_post_refund_gross_paise": 78059,
+        "total_refund_paise": 13774,
+        "settlement_gross_matches_order": false,
+        "settlement_reflects_refund": true,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-14T19:16:00",
+        "bank_transaction_date": "2026-08-15T05:16:00",
+        "difference_hours": 10.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_3_REFUND_ADJUSTMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "REFUND_ADJUSTED",
+          "message": "Settlement gross reflects refund deduction.",
+          "details": {
+            "total_refund_paise": 13774
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 10.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-14T19:16:00",
+            "bank_transaction_date": "2026-08-15T05:16:00",
+            "difference_hours": 10.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0037 amount=91833 paise.",
+        "Primary settlement SET_0033 gross=78059 paise.",
+        "Refund adjusted: gross 78059 == order 91833 - refund 13774.",
+        "Order reconciled with status=reconciled_with_refund_adjustment."
+      ]
+    },
+    {
+      "order_id": "ORD_0038",
+      "status": "reconciled_with_reference_variation",
+      "reconciled": true,
+      "confidence_score": 95,
+      "order_amount_paise": 102953,
+      "settlement_ids_considered": [
+        "SET_0034"
+      ],
+      "primary_settlement_id": "SET_0034",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0029"
+      ],
+      "valid_bank_transaction_id": "BNK_0029",
+      "normalized_references": {
+        "STL-0034": "SET_0034"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 102953,
+        "settlement_gross_paise": 102953,
+        "settlement_net_paise": 99041,
+        "bank_amount_paise": 99041,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-21T19:11:00",
+        "bank_transaction_date": "2026-08-22T06:11:00",
+        "difference_hours": 11.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "REFERENCE_VARIATION",
+          "message": "Bank ref STL-0034 normalizes to SET_0034.",
+          "details": {
+            "bank_settlement_ref": "STL-0034",
+            "normalized_settlement_id": "SET_0034"
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 11.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-21T19:11:00",
+            "bank_transaction_date": "2026-08-22T06:11:00",
+            "difference_hours": 11.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0038 amount=102953 paise.",
+        "Primary settlement SET_0034 gross=102953 paise.",
+        "Reference variation: STL-0034 -> SET_0034.",
+        "Order reconciled with status=reconciled_with_reference_variation."
+      ]
+    },
+    {
+      "order_id": "ORD_0039",
+      "status": "reconciled_with_reference_variation",
+      "reconciled": true,
+      "confidence_score": 95,
+      "order_amount_paise": 195738,
+      "settlement_ids_considered": [
+        "SET_0035"
+      ],
+      "primary_settlement_id": "SET_0035",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0030"
+      ],
+      "valid_bank_transaction_id": "BNK_0030",
+      "normalized_references": {
+        "STL-0035": "SET_0035"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 195738,
+        "settlement_gross_paise": 195738,
+        "settlement_net_paise": 188301,
+        "bank_amount_paise": 188301,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-25T10:14:00",
+        "bank_transaction_date": "2026-08-25T22:14:00",
+        "difference_hours": 12.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "REFERENCE_VARIATION",
+          "message": "Bank ref STL-0035 normalizes to SET_0035.",
+          "details": {
+            "bank_settlement_ref": "STL-0035",
+            "normalized_settlement_id": "SET_0035"
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 12.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-25T10:14:00",
+            "bank_transaction_date": "2026-08-25T22:14:00",
+            "difference_hours": 12.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0039 amount=195738 paise.",
+        "Primary settlement SET_0035 gross=195738 paise.",
+        "Reference variation: STL-0035 -> SET_0035.",
+        "Order reconciled with status=reconciled_with_reference_variation."
+      ]
+    },
+    {
+      "order_id": "ORD_0040",
+      "status": "reconciled_with_reference_variation",
+      "reconciled": true,
+      "confidence_score": 95,
+      "order_amount_paise": 383281,
+      "settlement_ids_considered": [
+        "SET_0036"
+      ],
+      "primary_settlement_id": "SET_0036",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0031"
+      ],
+      "valid_bank_transaction_id": "BNK_0031",
+      "normalized_references": {
+        "STL-0036": "SET_0036"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 383281,
+        "settlement_gross_paise": 383281,
+        "settlement_net_paise": 368717,
+        "bank_amount_paise": 368717,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-21T16:29:00",
+        "bank_transaction_date": "2026-08-22T05:29:00",
+        "difference_hours": 13.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "REFERENCE_VARIATION",
+          "message": "Bank ref STL-0036 normalizes to SET_0036.",
+          "details": {
+            "bank_settlement_ref": "STL-0036",
+            "normalized_settlement_id": "SET_0036"
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 13.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-21T16:29:00",
+            "bank_transaction_date": "2026-08-22T05:29:00",
+            "difference_hours": 13.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0040 amount=383281 paise.",
+        "Primary settlement SET_0036 gross=383281 paise.",
+        "Reference variation: STL-0036 -> SET_0036.",
+        "Order reconciled with status=reconciled_with_reference_variation."
+      ]
+    },
+    {
+      "order_id": "ORD_0041",
+      "status": "reconciled_with_reference_variation",
+      "reconciled": true,
+      "confidence_score": 95,
+      "order_amount_paise": 135277,
+      "settlement_ids_considered": [
+        "SET_0037"
+      ],
+      "primary_settlement_id": "SET_0037",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0032"
+      ],
+      "valid_bank_transaction_id": "BNK_0032",
+      "normalized_references": {
+        "STL-0037": "SET_0037"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 135277,
+        "settlement_gross_paise": 135277,
+        "settlement_net_paise": 130138,
+        "bank_amount_paise": 130138,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-22T05:20:00",
+        "bank_transaction_date": "2026-08-22T19:20:00",
+        "difference_hours": 14.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "REFERENCE_VARIATION",
+          "message": "Bank ref STL-0037 normalizes to SET_0037.",
+          "details": {
+            "bank_settlement_ref": "STL-0037",
+            "normalized_settlement_id": "SET_0037"
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 14.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-22T05:20:00",
+            "bank_transaction_date": "2026-08-22T19:20:00",
+            "difference_hours": 14.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0041 amount=135277 paise.",
+        "Primary settlement SET_0037 gross=135277 paise.",
+        "Reference variation: STL-0037 -> SET_0037.",
+        "Order reconciled with status=reconciled_with_reference_variation."
+      ]
+    },
+    {
+      "order_id": "ORD_0042",
+      "status": "reconciled_with_reference_variation",
+      "reconciled": true,
+      "confidence_score": 95,
+      "order_amount_paise": 236264,
+      "settlement_ids_considered": [
+        "SET_0038"
+      ],
+      "primary_settlement_id": "SET_0038",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0033"
+      ],
+      "valid_bank_transaction_id": "BNK_0033",
+      "normalized_references": {
+        "STL-0038": "SET_0038"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 236264,
+        "settlement_gross_paise": 236264,
+        "settlement_net_paise": 227287,
+        "bank_amount_paise": 227287,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-12T04:50:00",
+        "bank_transaction_date": "2026-08-12T19:50:00",
+        "difference_hours": 15.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "REFERENCE_VARIATION",
+          "message": "Bank ref STL-0038 normalizes to SET_0038.",
+          "details": {
+            "bank_settlement_ref": "STL-0038",
+            "normalized_settlement_id": "SET_0038"
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 15.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-12T04:50:00",
+            "bank_transaction_date": "2026-08-12T19:50:00",
+            "difference_hours": 15.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0042 amount=236264 paise.",
+        "Primary settlement SET_0038 gross=236264 paise.",
+        "Reference variation: STL-0038 -> SET_0038.",
+        "Order reconciled with status=reconciled_with_reference_variation."
+      ]
+    },
+    {
+      "order_id": "ORD_0043",
+      "status": "unreconciled_refund_not_adjusted",
+      "reconciled": false,
+      "confidence_score": 80,
+      "order_amount_paise": 401364,
+      "settlement_ids_considered": [
+        "SET_0039"
+      ],
+      "primary_settlement_id": "SET_0039",
+      "secondary_settlement_ids": [],
+      "refund_ids": [
+        "RFN_0009"
+      ],
+      "total_refund_paise": 48163,
+      "bank_transaction_ids_considered": [
+        "BNK_0034"
+      ],
+      "valid_bank_transaction_id": "BNK_0034",
+      "normalized_references": {
+        "SET_0039": "SET_0039"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 401364,
+        "settlement_gross_paise": 401364,
+        "settlement_net_paise": 386113,
+        "bank_amount_paise": 386113,
+        "expected_post_refund_gross_paise": 353201,
+        "total_refund_paise": 48163,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": false,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-15T02:36:00",
+        "bank_transaction_date": "2026-08-15T18:36:00",
+        "difference_hours": 16.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_3_REFUND_ADJUSTMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "REFUND_NOT_REFLECTED",
+          "message": "Refund exists but settlement gross was not adjusted.",
+          "details": {
+            "total_refund_paise": 48163,
+            "settlement_gross_paise": 401364,
+            "expected_post_refund_gross_paise": 353201
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 16.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-15T02:36:00",
+            "bank_transaction_date": "2026-08-15T18:36:00",
+            "difference_hours": 16.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0043 amount=401364 paise.",
+        "Primary settlement SET_0039 gross=401364 paise.",
+        "Refund not reflected in settlement gross.",
+        "Order not reconciled; status=unreconciled_refund_not_adjusted."
+      ]
+    },
+    {
+      "order_id": "ORD_0044",
+      "status": "unreconciled_refund_not_adjusted",
+      "reconciled": false,
+      "confidence_score": 80,
+      "order_amount_paise": 417955,
+      "settlement_ids_considered": [
+        "SET_0040"
+      ],
+      "primary_settlement_id": "SET_0040",
+      "secondary_settlement_ids": [],
+      "refund_ids": [
+        "RFN_0010"
+      ],
+      "total_refund_paise": 33436,
+      "bank_transaction_ids_considered": [
+        "BNK_0035"
+      ],
+      "valid_bank_transaction_id": "BNK_0035",
+      "normalized_references": {
+        "SET_0040": "SET_0040"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 417955,
+        "settlement_gross_paise": 417955,
+        "settlement_net_paise": 402073,
+        "bank_amount_paise": 402073,
+        "expected_post_refund_gross_paise": 384519,
+        "total_refund_paise": 33436,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": false,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-09-01T17:49:00",
+        "bank_transaction_date": "2026-09-02T10:49:00",
+        "difference_hours": 17.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_3_REFUND_ADJUSTMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "REFUND_NOT_REFLECTED",
+          "message": "Refund exists but settlement gross was not adjusted.",
+          "details": {
+            "total_refund_paise": 33436,
+            "settlement_gross_paise": 417955,
+            "expected_post_refund_gross_paise": 384519
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 17.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-09-01T17:49:00",
+            "bank_transaction_date": "2026-09-02T10:49:00",
+            "difference_hours": 17.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0044 amount=417955 paise.",
+        "Primary settlement SET_0040 gross=417955 paise.",
+        "Refund not reflected in settlement gross.",
+        "Order not reconciled; status=unreconciled_refund_not_adjusted."
+      ]
+    },
+    {
+      "order_id": "ORD_0045",
+      "status": "reconciled_within_timestamp_tolerance",
+      "reconciled": true,
+      "confidence_score": 100,
+      "order_amount_paise": 87435,
+      "settlement_ids_considered": [
+        "SET_0041"
+      ],
+      "primary_settlement_id": "SET_0041",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0036"
+      ],
+      "valid_bank_transaction_id": "BNK_0036",
+      "normalized_references": {
+        "SET_0041": "SET_0041"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 87435,
+        "settlement_gross_paise": 87435,
+        "settlement_net_paise": 84114,
+        "bank_amount_paise": 84114,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-31T06:20:00",
+        "bank_transaction_date": "2026-08-31T12:20:00",
+        "difference_hours": 6.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 6.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-31T06:20:00",
+            "bank_transaction_date": "2026-08-31T12:20:00",
+            "difference_hours": 6.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0045 amount=87435 paise.",
+        "Primary settlement SET_0041 gross=87435 paise.",
+        "Order reconciled with status=reconciled_within_timestamp_tolerance."
+      ]
+    },
+    {
+      "order_id": "ORD_0046",
+      "status": "partially_reconciled_duplicate_settlement",
+      "reconciled": false,
+      "confidence_score": 90,
+      "order_amount_paise": 382911,
+      "settlement_ids_considered": [
+        "SET_0042",
+        "SET_0043"
+      ],
+      "primary_settlement_id": "SET_0042",
+      "secondary_settlement_ids": [
+        "SET_0043"
+      ],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0037"
+      ],
+      "valid_bank_transaction_id": "BNK_0037",
+      "normalized_references": {
+        "SET_0042": "SET_0042"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 382911,
+        "settlement_gross_paise": 382911,
+        "settlement_net_paise": 368361,
+        "bank_amount_paise": 368361,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-11T14:55:00",
+        "bank_transaction_date": "2026-08-11T21:55:00",
+        "difference_hours": 7.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "DUPLICATE_SETTLEMENT",
+          "message": "Multiple settlements found; primary=SET_0042, secondary=['SET_0043'].",
+          "details": {
+            "primary_settlement_id": "SET_0042",
+            "secondary_settlement_ids": [
+              "SET_0043"
+            ]
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 7.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-11T14:55:00",
+            "bank_transaction_date": "2026-08-11T21:55:00",
+            "difference_hours": 7.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0046 amount=382911 paise.",
+        "Primary settlement SET_0042 gross=382911 paise.",
+        "Secondary settlements present: ['SET_0043'].",
+        "Order not reconciled; status=partially_reconciled_duplicate_settlement."
+      ]
+    },
+    {
+      "order_id": "ORD_0047",
+      "status": "partially_reconciled_duplicate_settlement",
+      "reconciled": false,
+      "confidence_score": 90,
+      "order_amount_paise": 330043,
+      "settlement_ids_considered": [
+        "SET_0044",
+        "SET_0045"
+      ],
+      "primary_settlement_id": "SET_0044",
+      "secondary_settlement_ids": [
+        "SET_0045"
+      ],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0038"
+      ],
+      "valid_bank_transaction_id": "BNK_0038",
+      "normalized_references": {
+        "SET_0044": "SET_0044"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 330043,
+        "settlement_gross_paise": 330043,
+        "settlement_net_paise": 317503,
+        "bank_amount_paise": 317503,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-15T06:23:00",
+        "bank_transaction_date": "2026-08-15T14:23:00",
+        "difference_hours": 8.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "DUPLICATE_SETTLEMENT",
+          "message": "Multiple settlements found; primary=SET_0044, secondary=['SET_0045'].",
+          "details": {
+            "primary_settlement_id": "SET_0044",
+            "secondary_settlement_ids": [
+              "SET_0045"
+            ]
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 8.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-15T06:23:00",
+            "bank_transaction_date": "2026-08-15T14:23:00",
+            "difference_hours": 8.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0047 amount=330043 paise.",
+        "Primary settlement SET_0044 gross=330043 paise.",
+        "Secondary settlements present: ['SET_0045'].",
+        "Order not reconciled; status=partially_reconciled_duplicate_settlement."
+      ]
+    },
+    {
+      "order_id": "ORD_0048",
+      "status": "partially_reconciled_duplicate_settlement",
+      "reconciled": false,
+      "confidence_score": 85,
+      "order_amount_paise": 135669,
+      "settlement_ids_considered": [
+        "SET_0046",
+        "SET_0047"
+      ],
+      "primary_settlement_id": "SET_0046",
+      "secondary_settlement_ids": [
+        "SET_0047"
+      ],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0039"
+      ],
+      "valid_bank_transaction_id": "BNK_0039",
+      "normalized_references": {
+        "SET_0046": "SET_0046"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 135669,
+        "settlement_gross_paise": 135669,
+        "settlement_net_paise": 130514,
+        "bank_amount_paise": 130514,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-25T10:54:00",
+        "bank_transaction_date": "2026-08-25T19:54:00",
+        "difference_hours": 9.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "DUPLICATE_SETTLEMENT",
+          "message": "Multiple settlements found; primary=SET_0046, secondary=['SET_0047'].",
+          "details": {
+            "primary_settlement_id": "SET_0046",
+            "secondary_settlement_ids": [
+              "SET_0047"
+            ]
+          }
+        },
+        {
+          "type": "DUPLICATE_BANK_TRANSACTION",
+          "message": "Erroneous duplicate bank transaction(s) for settlement SET_0046.",
+          "details": {
+            "bank_transaction_ids": [
+              "BNK_0046"
+            ],
+            "settlement_refs": [
+              "DUP-SET_0046"
+            ]
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 9.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-25T10:54:00",
+            "bank_transaction_date": "2026-08-25T19:54:00",
+            "difference_hours": 9.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0048 amount=135669 paise.",
+        "Primary settlement SET_0046 gross=135669 paise.",
+        "Secondary settlements present: ['SET_0047'].",
+        "Duplicate bank transactions detected: ['BNK_0046'].",
+        "Order not reconciled; status=partially_reconciled_duplicate_settlement."
+      ]
+    },
+    {
+      "order_id": "ORD_0049",
+      "status": "partially_reconciled_duplicate_settlement",
+      "reconciled": false,
+      "confidence_score": 85,
+      "order_amount_paise": 248943,
+      "settlement_ids_considered": [
+        "SET_0048",
+        "SET_0049"
+      ],
+      "primary_settlement_id": "SET_0048",
+      "secondary_settlement_ids": [
+        "SET_0049"
+      ],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0040"
+      ],
+      "valid_bank_transaction_id": "BNK_0040",
+      "normalized_references": {
+        "SET_0048": "SET_0048"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 248943,
+        "settlement_gross_paise": 248943,
+        "settlement_net_paise": 239485,
+        "bank_amount_paise": 239485,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-16T23:51:00",
+        "bank_transaction_date": "2026-08-17T09:51:00",
+        "difference_hours": 10.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "DUPLICATE_SETTLEMENT",
+          "message": "Multiple settlements found; primary=SET_0048, secondary=['SET_0049'].",
+          "details": {
+            "primary_settlement_id": "SET_0048",
+            "secondary_settlement_ids": [
+              "SET_0049"
+            ]
+          }
+        },
+        {
+          "type": "DUPLICATE_BANK_TRANSACTION",
+          "message": "Erroneous duplicate bank transaction(s) for settlement SET_0048.",
+          "details": {
+            "bank_transaction_ids": [
+              "BNK_0048"
+            ],
+            "settlement_refs": [
+              "DUP-SET_0048"
+            ]
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 10.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-16T23:51:00",
+            "bank_transaction_date": "2026-08-17T09:51:00",
+            "difference_hours": 10.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0049 amount=248943 paise.",
+        "Primary settlement SET_0048 gross=248943 paise.",
+        "Secondary settlements present: ['SET_0049'].",
+        "Duplicate bank transactions detected: ['BNK_0048'].",
+        "Order not reconciled; status=partially_reconciled_duplicate_settlement."
+      ]
+    },
+    {
+      "order_id": "ORD_0050",
+      "status": "reconciled_within_timestamp_tolerance",
+      "reconciled": true,
+      "confidence_score": 95,
+      "order_amount_paise": 385544,
+      "settlement_ids_considered": [
+        "SET_0050"
+      ],
+      "primary_settlement_id": "SET_0050",
+      "secondary_settlement_ids": [],
+      "refund_ids": [],
+      "total_refund_paise": 0,
+      "bank_transaction_ids_considered": [
+        "BNK_0041"
+      ],
+      "valid_bank_transaction_id": "BNK_0041",
+      "normalized_references": {
+        "SET_0050": "SET_0050"
+      },
+      "amount_comparison": {
+        "order_amount_paise": 385544,
+        "settlement_gross_paise": 385544,
+        "settlement_net_paise": 370895,
+        "bank_amount_paise": 370895,
+        "expected_post_refund_gross_paise": null,
+        "total_refund_paise": 0,
+        "settlement_gross_matches_order": true,
+        "settlement_reflects_refund": null,
+        "bank_matches_settlement_net": true
+      },
+      "timestamp_comparison": {
+        "settlement_settled_at": "2026-08-30T08:20:00",
+        "bank_transaction_date": "2026-08-30T19:20:00",
+        "difference_hours": 11.0,
+        "tolerance_hours": 24,
+        "within_tolerance": true
+      },
+      "rules_triggered": [
+        "RULE_1_ORDER_TO_SETTLEMENT",
+        "RULE_2_SETTLEMENT_TO_BANK"
+      ],
+      "exceptions": [
+        {
+          "type": "DUPLICATE_BANK_TRANSACTION",
+          "message": "Erroneous duplicate bank transaction(s) for settlement SET_0050.",
+          "details": {
+            "bank_transaction_ids": [
+              "BNK_0050"
+            ],
+            "settlement_refs": [
+              "DUP-SET_0050"
+            ]
+          }
+        },
+        {
+          "type": "TIMESTAMP_WITHIN_TOLERANCE",
+          "message": "Timestamp difference 11.0h within 24h.",
+          "details": {
+            "settlement_settled_at": "2026-08-30T08:20:00",
+            "bank_transaction_date": "2026-08-30T19:20:00",
+            "difference_hours": 11.0,
+            "tolerance_hours": 24,
+            "within_tolerance": true
+          }
+        }
+      ],
+      "audit_trail": [
+        "Evaluating order ORD_0050 amount=385544 paise.",
+        "Primary settlement SET_0050 gross=385544 paise.",
+        "Duplicate bank transactions detected: ['BNK_0050'].",
+        "Order reconciled with status=reconciled_within_timestamp_tolerance."
+      ]
+    }
+  ],
+  "global_exceptions": [
+    {
+      "type": "ORPHAN_BANK_TRANSACTION",
+      "bank_transaction_id": "BNK_0042",
+      "settlement_ref": "ORPHAN-ORD_0024",
+      "related_order_id": "ORD_0024",
+      "amount_paise": 229157,
+      "message": "Bank transaction with no resolvable settlement."
+    },
+    {
+      "type": "ORPHAN_BANK_TRANSACTION",
+      "bank_transaction_id": "BNK_0043",
+      "settlement_ref": "ORPHAN-ORD_0025",
+      "related_order_id": "ORD_0025",
+      "amount_paise": 352599,
+      "message": "Bank transaction with no resolvable settlement."
+    },
+    {
+      "type": "ORPHAN_BANK_TRANSACTION",
+      "bank_transaction_id": "BNK_0044",
+      "settlement_ref": "ORPHAN-ORD_0026",
+      "related_order_id": "ORD_0026",
+      "amount_paise": 455187,
+      "message": "Bank transaction with no resolvable settlement."
+    },
+    {
+      "type": "ORPHAN_BANK_TRANSACTION",
+      "bank_transaction_id": "BNK_0045",
+      "settlement_ref": "ORPHAN-ORD_0027",
+      "related_order_id": "ORD_0027",
+      "amount_paise": 416152,
+      "message": "Bank transaction with no resolvable settlement."
+    },
+    {
+      "type": "DUPLICATE_BANK_TRANSACTION",
+      "bank_transaction_id": "BNK_0046",
+      "settlement_ref": "DUP-SET_0046",
+      "source_settlement_id": "SET_0046",
+      "amount_paise": 130614,
+      "is_valid_bank_link": false,
+      "message": "Erroneous duplicate bank transaction."
+    },
+    {
+      "type": "DUPLICATE_BANK_TRANSACTION",
+      "bank_transaction_id": "BNK_0047",
+      "settlement_ref": "DUP-SET_0047",
+      "source_settlement_id": "SET_0047",
+      "amount_paise": 65357,
+      "is_valid_bank_link": false,
+      "message": "Erroneous duplicate bank transaction."
+    },
+    {
+      "type": "DUPLICATE_BANK_TRANSACTION",
+      "bank_transaction_id": "BNK_0048",
+      "settlement_ref": "DUP-SET_0048",
+      "source_settlement_id": "SET_0048",
+      "amount_paise": 239585,
+      "is_valid_bank_link": false,
+      "message": "Erroneous duplicate bank transaction."
+    },
+    {
+      "type": "DUPLICATE_BANK_TRANSACTION",
+      "bank_transaction_id": "BNK_0049",
+      "settlement_ref": "DUP-SET_0049",
+      "source_settlement_id": "SET_0049",
+      "amount_paise": 119842,
+      "is_valid_bank_link": false,
+      "message": "Erroneous duplicate bank transaction."
+    },
+    {
+      "type": "DUPLICATE_BANK_TRANSACTION",
+      "bank_transaction_id": "BNK_0050",
+      "settlement_ref": "DUP-SET_0050",
+      "source_settlement_id": "SET_0050",
+      "amount_paise": 370995,
+      "is_valid_bank_link": false,
+      "message": "Erroneous duplicate bank transaction."
+    },
+    {
+      "type": "MISSING_BANK_TRANSACTION",
+      "settlement_id": "SET_0024",
+      "order_id": "ORD_0028",
+      "message": "Settlement has no valid bank transaction via settlement_ref."
+    },
+    {
+      "type": "MISSING_BANK_TRANSACTION",
+      "settlement_id": "SET_0025",
+      "order_id": "ORD_0029",
+      "message": "Settlement has no valid bank transaction via settlement_ref."
+    },
+    {
+      "type": "MISSING_BANK_TRANSACTION",
+      "settlement_id": "SET_0026",
+      "order_id": "ORD_0030",
+      "message": "Settlement has no valid bank transaction via settlement_ref."
+    },
+    {
+      "type": "MISSING_BANK_TRANSACTION",
+      "settlement_id": "SET_0027",
+      "order_id": "ORD_0031",
+      "message": "Settlement has no valid bank transaction via settlement_ref."
+    },
+    {
+      "type": "MISSING_BANK_TRANSACTION",
+      "settlement_id": "SET_0028",
+      "order_id": "ORD_0032",
+      "message": "Settlement has no valid bank transaction via settlement_ref."
+    },
+    {
+      "type": "MISSING_BANK_TRANSACTION",
+      "settlement_id": "SET_0043",
+      "order_id": "ORD_0046",
+      "message": "Settlement has no valid bank transaction via settlement_ref."
+    },
+    {
+      "type": "MISSING_BANK_TRANSACTION",
+      "settlement_id": "SET_0045",
+      "order_id": "ORD_0047",
+      "message": "Settlement has no valid bank transaction via settlement_ref."
+    },
+    {
+      "type": "MISSING_BANK_TRANSACTION",
+      "settlement_id": "SET_0047",
+      "order_id": "ORD_0048",
+      "message": "Settlement has no valid bank transaction via settlement_ref."
+    },
+    {
+      "type": "MISSING_BANK_TRANSACTION",
+      "settlement_id": "SET_0049",
+      "order_id": "ORD_0049",
+      "message": "Settlement has no valid bank transaction via settlement_ref."
+    }
+  ]
+}
