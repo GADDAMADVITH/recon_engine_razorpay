@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
@@ -30,6 +31,13 @@ from recon_engine import (
 
 API_VERSION = "v1"
 SERVICE_NAME = "recon-engine-api"
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
 
 
 # ---------------------------------------------------------
@@ -124,6 +132,13 @@ app = FastAPI(
         "evaluation uses ground_truth.json only in the evaluation layer."
     ),
     version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=CORS_ALLOWED_ORIGINS,
+    allow_methods=["GET", "OPTIONS"],
+    allow_headers=["*"],
 )
 
 
