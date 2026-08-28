@@ -13,6 +13,33 @@ from evaluation metadata.
 | `data/ground_truth.json` | Evaluation-only expected outcomes for `metrics.py` | N/A |
 | `recon_engine.py` | Reconciliation engine; discovers relationships from CSVs | **Must not** |
 | `metrics.py` | Scores engine output against ground truth | Yes |
+| `api.py` | HTTP API; orchestrates engine and evaluation | **Must not** (evaluation only) |
+
+## HTTP API (`api.py`)
+
+The API layer exposes reconciliation and evaluation over HTTP. It **does not**
+contain reconciliation business logic. All matching, status, and confidence
+rules remain in `recon_engine.py`.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | API health check |
+| `/api/v1/reconciliation/report` | GET | Run reconciliation on production CSVs; return full `report.json` structure |
+| `/api/v1/reconciliation/summary` | GET | Concise summary: order counts, status counts, exception counts |
+| `/api/v1/evaluation` | GET | Run reconciliation, then evaluate against `ground_truth.json` |
+
+**Ground truth boundary:** `ground_truth.json` is used **only** by the
+evaluation endpoint (via `metrics.py`). Reconciliation endpoints read only the
+four production CSV files.
+
+**Local development:**
+
+```bash
+uvicorn api:app --reload
+```
+
+**Error handling:** Missing input files return HTTP 404; validation failures
+return HTTP 400; unexpected errors return HTTP 500 without Python tracebacks.
 
 ## Production input CSVs
 
@@ -153,9 +180,9 @@ produces identical CSV and ground-truth output.
 ```
 data_gen.py
     ├── data/orders.csv      ──┐
-    ├── data/settlements.csv   ├──► recon_engine.py
-    ├── data/refunds.csv       │       └──► data/report.json
-    └── data/bank.csv        ──┘                └──► metrics.py
-    └── data/ground_truth.json ────────────────────────┘
-                                                      └──► data/evaluation.json
+    ├── data/settlements.csv   ├──► recon_engine.py ──► api.py (reconciliation endpoints)
+    ├── data/refunds.csv       │         │                    │
+    └── data/bank.csv        ──┘         └──► data/report.json (CLI only)
+    └── data/ground_truth.json ───────────────► metrics.py ──► api.py (evaluation endpoint)
+                                                      └──► data/evaluation.json (CLI only)
 ```
