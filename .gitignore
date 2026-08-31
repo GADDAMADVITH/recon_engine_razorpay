@@ -1,4 +1,15 @@
 venv/
+.venv/
 __pycache__/
 *.pyc
+*.pyo
+.pytest_cache/
 .DS_Store
+Thumbs.db
+*~
+*.swp
+.env
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+*.tsbuildinfo
