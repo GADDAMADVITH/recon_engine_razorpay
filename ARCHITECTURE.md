@@ -186,3 +186,27 @@ data_gen.py
     └── data/ground_truth.json ───────────────► metrics.py ──► api.py (evaluation endpoint)
                                                       └──► data/evaluation.json (CLI only)
 ```
+
+## Razorpay integration (Phase 3A — read-only client)
+
+An isolated integration layer lives under `integrations/razorpay/`. It authenticates
+with the official Razorpay REST API using environment variables and exposes **read-only**
+fetch methods. It does **not** modify `recon_engine.py`, CSV ingestion, or the HTTP API.
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `RAZORPAY_KEY_ID` | Yes | Razorpay Test/Live Key ID |
+| `RAZORPAY_KEY_SECRET` | Yes | Razorpay Key Secret (never commit) |
+| `RAZORPAY_BASE_URL` | No | Defaults to `https://api.razorpay.com/v1` |
+| `RAZORPAY_TIMEOUT_SECONDS` | No | Request timeout (default 30) |
+
+**Local connectivity check (developer only):**
+
+```bash
+export RAZORPAY_KEY_ID=...
+export RAZORPAY_KEY_SECRET=...
+python -m integrations.razorpay.verify_connectivity
+```
+
+This performs a minimal `GET /orders?count=1` call. Credentials are never printed or
+returned. Use Razorpay **Test Mode** keys for development.

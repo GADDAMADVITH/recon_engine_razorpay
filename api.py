@@ -15,18 +15,24 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+from integrations.data_sources import load_csv_dataset
+from integrations.razorpay.client import (
+    RazorpayAPIError,
+    RazorpayClient,
+    RazorpayCredentialsError,
+    RazorpayNetworkError,
+)
+from integrations.razorpay.sync import RazorpaySyncService
 from metrics import build_evaluation, load_ground_truth, validate_schemas
 from recon_engine import (
     DATA_DIR,
+    NormalizedBankTransaction,
+    NormalizedOrder,
+    NormalizedRefund,
+    NormalizedSettlement,
     _deterministic_report_timestamp,
     build_report,
-    load_data,
-    normalize_bank_transactions,
-    normalize_orders,
-    normalize_refunds,
-    normalize_settlements,
     reconcile_all,
-    validate_inputs,
 )
 
 API_VERSION = "v1"
@@ -45,18 +51,13 @@ CORS_ALLOWED_ORIGINS = [
 # ---------------------------------------------------------
 
 
-def run_reconciliation_report(data_dir: Path | None = None) -> dict[str, Any]:
-    """Run the reconciliation pipeline and return the report dict (no file write)."""
-    data_dir = data_dir or DATA_DIR
-    raw_data = load_data(data_dir)
-    validate_inputs(raw_data)
-
-    settlements = normalize_settlements(raw_data["settlements"])
-    valid_settlement_ids = {s.settlement_id for s in settlements}
-    orders = normalize_orders(raw_data["orders"])
-    refunds = normalize_refunds(raw_data["refunds"])
-    bank_transactions = normalize_bank_transactions(raw_data["bank"], valid_settlement_ids)
-
+def run_reconciliation_from_records(
+    orders: list[NormalizedOrder],
+    settlements: list[NormalizedSettlement],
+    refunds: list[NormalizedRefund],
+    bank_transactions: list[NormalizedBankTransaction],
+) -> dict[str, Any]:
+    """Run reconciliation on pre-normalized records (any data source)."""
     order_results, global_exceptions = reconcile_all(
         orders, settlements, refunds, bank_transactions
     )
@@ -68,6 +69,38 @@ def run_reconciliation_report(data_dir: Path | None = None) -> dict[str, Any]:
         global_exceptions,
         report_timestamp=report_timestamp,
     )
+
+
+def run_reconciliation_report(data_dir: Path | None = None) -> dict[str, Any]:
+    """Run the reconciliation pipeline and return the report dict (no file write)."""
+    data_dir = data_dir or DATA_DIR
+    dataset = load_csv_dataset(data_dir)
+    report = run_reconciliation_from_records(
+        list(dataset.orders),
+        list(dataset.settlements),
+        list(dataset.refunds),
+        list(dataset.bank_transactions),
+    )
+    report["metadata"]["data_source"] = dataset.source
+    return report
+
+
+def run_razorpay_sync() -> dict[str, Any]:
+    """Fetch Razorpay data, map it, and reconcile when orders exist."""
+    with RazorpayClient.from_env() as client:
+        sync_result = RazorpaySyncService(client).sync()
+
+    reconciliation: dict[str, Any] | None = None
+    if sync_result.has_orders:
+        reconciliation = run_reconciliation_from_records(
+            sync_result.orders,
+            sync_result.settlements,
+            sync_result.refunds,
+            [],
+        )
+        reconciliation["metadata"]["data_source"] = sync_result.source
+
+    return sync_result.to_api_dict(reconciliation=reconciliation)
 
 
 def run_evaluation(data_dir: Path | None = None) -> dict[str, Any]:
@@ -137,9 +170,39 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ALLOWED_ORIGINS,
-    allow_methods=["GET", "OPTIONS"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(RazorpayCredentialsError)
+async def handle_razorpay_credentials(
+    _request: Request, _exc: RazorpayCredentialsError
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=503,
+        content=ErrorResponse(
+            detail="Razorpay credentials are not configured on the server"
+        ).model_dump(),
+    )
+
+
+@app.exception_handler(RazorpayAPIError)
+async def handle_razorpay_api_error(_request: Request, exc: RazorpayAPIError) -> JSONResponse:
+    return JSONResponse(
+        status_code=502,
+        content=ErrorResponse(detail=str(exc)).model_dump(),
+    )
+
+
+@app.exception_handler(RazorpayNetworkError)
+async def handle_razorpay_network_error(
+    _request: Request, exc: RazorpayNetworkError
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=504,
+        content=ErrorResponse(detail=str(exc)).model_dump(),
+    )
 
 
 @app.exception_handler(FileNotFoundError)
@@ -214,3 +277,18 @@ def get_reconciliation_summary() -> ReconciliationSummaryResponse:
 def get_evaluation() -> dict[str, Any]:
     """Run reconciliation and return evaluation metrics against ground truth."""
     return run_evaluation()
+
+
+@app.post(
+    f"/api/{API_VERSION}/sources/razorpay/sync",
+    tags=["sources"],
+    responses={
+        502: {"model": ErrorResponse},
+        503: {"model": ErrorResponse},
+        504: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+)
+def post_razorpay_sync() -> dict[str, Any]:
+    """Fetch Razorpay data, map to ReconEngine records, and reconcile when possible."""
+    return run_razorpay_sync()
