@@ -19,9 +19,11 @@ from integrations.data_sources import load_csv_dataset
 from integrations.razorpay.client import (
     RazorpayAPIError,
     RazorpayClient,
+    RazorpayConfig,
     RazorpayCredentialsError,
     RazorpayNetworkError,
 )
+from integrations.razorpay.payment_verification import verify_payment_signature
 from integrations.razorpay.sync import RazorpaySyncService
 from metrics import build_evaluation, load_ground_truth, validate_schemas
 from recon_engine import (
@@ -150,6 +152,17 @@ class ReconciliationSummaryResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     detail: str
+
+
+class RazorpayPaymentVerificationRequest(BaseModel):
+    razorpay_order_id: str = Field(..., min_length=1)
+    razorpay_payment_id: str = Field(..., min_length=1)
+    razorpay_signature: str = Field(..., min_length=1)
+
+
+class RazorpayPaymentVerificationResponse(BaseModel):
+    verified: bool
+    message: str
 
 
 # ---------------------------------------------------------
@@ -292,3 +305,30 @@ def get_evaluation() -> dict[str, Any]:
 def post_razorpay_sync() -> dict[str, Any]:
     """Fetch Razorpay data, map to ReconEngine records, and reconcile when possible."""
     return run_razorpay_sync()
+
+
+@app.post(
+    f"/api/{API_VERSION}/sources/razorpay/verify-payment",
+    response_model=RazorpayPaymentVerificationResponse,
+    tags=["sources"],
+    responses={
+        503: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+)
+def post_razorpay_verify_payment(
+    body: RazorpayPaymentVerificationRequest,
+) -> RazorpayPaymentVerificationResponse:
+    """Verify Razorpay Checkout signature server-side (dev/test utility)."""
+    config = RazorpayConfig.from_env()
+    verified = verify_payment_signature(
+        order_id=body.razorpay_order_id,
+        payment_id=body.razorpay_payment_id,
+        signature=body.razorpay_signature,
+        key_secret=config.key_secret,
+    )
+    if verified:
+        message = "Payment signature verified by backend"
+    else:
+        message = "Payment signature verification failed"
+    return RazorpayPaymentVerificationResponse(verified=verified, message=message)

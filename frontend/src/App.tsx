@@ -8,6 +8,7 @@ import { ReconciliationPage } from "./pages/ReconciliationPage";
 import { SettingsPage } from "./pages/SettingsPage";
 
 const LandingPage = lazy(() => import("./pages/LandingPage"));
+const TestPaymentPage = lazy(() => import("./test-payment/TestPaymentPage"));
 
 function PageWrapper({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -44,6 +45,14 @@ export default function App() {
         element={
           <Suspense fallback={<div className="marketing min-h-screen" />}>
             <LandingPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/test-payment"
+        element={
+          <Suspense fallback={<div className="min-h-screen bg-[var(--color-bg)]" />}>
+            <TestPaymentPage />
           </Suspense>
         }
       />
