@@ -77,10 +77,39 @@ def test_classify_settlement_ref(ref: str, expected: str):
         ("DUP-SET_0001", {"SET_0001"}, None),
         ("SET_9999", {"SET_0001"}, None),
         ("FOO-BAR", {"SET_0001"}, None),
+        # Razorpay-style IDs: exact match only when present in valid set
+        ("setl_DemoExact001", {"setl_DemoExact001"}, "setl_DemoExact001"),
+        ("setl_DemoExact001", {"SET_0001"}, None),
+        ("setl_Other", {"setl_DemoExact001"}, None),
+        # Orphan/duplicate prefixes must never exact-match even if listed
+        ("ORPHAN-setl_x", {"ORPHAN-setl_x"}, None),
+        ("DUP-setl_x", {"DUP-setl_x"}, None),
     ],
 )
 def test_normalize_settlement_ref(ref: str, valid_ids: set[str], expected: str | None):
     assert normalize_settlement_ref(ref, valid_ids) == expected
+
+
+def test_classify_razorpay_settlement_id_is_unknown():
+    """Prove setl_* is not SET_/STL-; resolution relies on exact-match fallback."""
+    assert classify_settlement_ref("setl_DemoExact001") == "unknown"
+
+
+def test_normalize_bank_resolves_exact_razorpay_settlement_id():
+    df = pd.DataFrame(
+        [
+            {
+                "bank_transaction_id": "BNK_RZ_001",
+                "settlement_ref": "setl_DemoExact001",
+                "amount": 370605,
+                "transaction_date": "2026-01-02T02:00:00",
+                "description": "Synthetic bank fixture (not from Razorpay)",
+            }
+        ]
+    )
+    records = normalize_bank_transactions(df, {"setl_DemoExact001"})
+    assert records[0].ref_category == "unknown"
+    assert records[0].resolved_settlement_id == "setl_DemoExact001"
 
 
 def test_normalize_bank_transactions_does_not_use_description_for_resolution():

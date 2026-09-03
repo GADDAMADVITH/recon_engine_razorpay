@@ -23,6 +23,13 @@ from integrations.razorpay.client import (
     RazorpayCredentialsError,
     RazorpayNetworkError,
 )
+from integrations.razorpay.demo_fixtures import (
+    DEMO_BANK_SOURCE,
+    DEMO_BANK_SOURCE_NOTE,
+    DEMO_DATA_SOURCE,
+    build_demo_reconciliation_input,
+    scenario_expectations,
+)
 from integrations.razorpay.payment_verification import verify_payment_signature
 from integrations.razorpay.sync import RazorpaySyncService
 from metrics import build_evaluation, load_ground_truth, validate_schemas
@@ -103,6 +110,50 @@ def run_razorpay_sync() -> dict[str, Any]:
         reconciliation["metadata"]["data_source"] = sync_result.source
 
     return sync_result.to_api_dict(reconciliation=reconciliation)
+
+
+def run_razorpay_reconcile_demo() -> dict[str, Any]:
+    """Run Phase 4A demo reconciliation with Razorpay-shaped + synthetic bank fixtures.
+
+    Does not call the live Razorpay API. Bank rows are explicitly labelled as
+    synthetic fixtures and are never derived from Razorpay settlement_utr.
+    """
+    demo = build_demo_reconciliation_input()
+    reconciliation = run_reconciliation_from_records(
+        list(demo.orders),
+        list(demo.settlements),
+        list(demo.refunds),
+        list(demo.bank_transactions),
+    )
+    reconciliation["metadata"]["data_source"] = demo.data_source
+    reconciliation["metadata"]["bank_source"] = demo.bank_source
+    reconciliation["metadata"]["bank_source_note"] = demo.bank_source_note
+
+    order_by_id = {r["order_id"]: r for r in reconciliation["order_results"]}
+    scenario_results = []
+    for expectation in scenario_expectations():
+        result = order_by_id[expectation["order_id"]]
+        scenario_results.append(
+            {
+                **expectation,
+                "actual_status": result["status"],
+                "actual_reconciled": result["reconciled"],
+                "matched_expectation": (
+                    result["status"] == expectation["expected_status"]
+                    and result["reconciled"] == expectation["expected_reconciled"]
+                ),
+            }
+        )
+
+    return {
+        "source": DEMO_DATA_SOURCE,
+        "bank_source": DEMO_BANK_SOURCE,
+        "bank_source_note": DEMO_BANK_SOURCE_NOTE,
+        "status": "success",
+        "scenario_count": len(scenario_results),
+        "scenarios": scenario_results,
+        "reconciliation": reconciliation,
+    }
 
 
 def run_evaluation(data_dir: Path | None = None) -> dict[str, Any]:
@@ -305,6 +356,21 @@ def get_evaluation() -> dict[str, Any]:
 def post_razorpay_sync() -> dict[str, Any]:
     """Fetch Razorpay data, map to ReconEngine records, and reconcile when possible."""
     return run_razorpay_sync()
+
+
+@app.post(
+    f"/api/{API_VERSION}/sources/razorpay/reconcile-demo",
+    tags=["sources"],
+    responses={
+        500: {"model": ErrorResponse},
+    },
+)
+def post_razorpay_reconcile_demo() -> dict[str, Any]:
+    """Phase 4A: demonstrate reconciliation with Razorpay-shaped + synthetic bank fixtures.
+
+    Does not call live Razorpay. Bank data is an explicit synthetic fixture source.
+    """
+    return run_razorpay_reconcile_demo()
 
 
 @app.post(

@@ -223,7 +223,13 @@ def normalize_settlement_ref(
     settlement_ref: str,
     valid_settlement_ids: set[str],
 ) -> str | None:
-    """Resolve a bank settlement_ref to a canonical settlement_id."""
+    """Resolve a bank settlement_ref to a canonical settlement_id.
+
+    Prefix rules (SET_/STL-/ORPHAN-/DUP-) are applied first. If those do not
+    resolve, an exact match against ``valid_settlement_ids`` is accepted so
+    external IDs (e.g. Razorpay ``setl_...``) can link without inventing SET_/STL-
+    aliases. Exact match never applies to orphan/duplicate refs.
+    """
     ref = normalize_id(settlement_ref)
     category = classify_settlement_ref(ref)
 
@@ -235,6 +241,9 @@ def normalize_settlement_ref(
         canonical = ref.replace("STL-", "SET_", 1)
         if canonical in valid_settlement_ids:
             return canonical
+    # Exact match for non-prefix / unknown refs (e.g. Razorpay setl_* IDs).
+    if ref in valid_settlement_ids:
+        return ref
     return None
 
 
