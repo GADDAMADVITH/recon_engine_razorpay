@@ -74,14 +74,21 @@ export interface GlobalException {
   is_valid_bank_link?: boolean;
 }
 
+export interface ReconciliationReportMetadata {
+  engine: string;
+  generated_at: string;
+  evaluation_grain: string;
+  currency: string;
+  minor_unit: string;
+  /** Present on API reports: "csv" | "razorpay". Optional for backward compatibility. */
+  data_source?: "csv" | "razorpay";
+  /** Explicit bank-side provenance when not from the primary data source. */
+  bank_source?: string;
+  bank_source_note?: string;
+}
+
 export interface ReconciliationReport {
-  metadata: {
-    engine: string;
-    generated_at: string;
-    evaluation_grain: string;
-    currency: string;
-    minor_unit: string;
-  };
+  metadata: ReconciliationReportMetadata;
   configuration: {
     timestamp_tolerance_hours: number;
     reference_normalization: Record<string, string>;
@@ -180,4 +187,78 @@ export interface EvaluationResponse {
 
 export interface ApiError {
   detail: string;
+}
+
+export type RazorpaySyncStatus = "success" | "empty" | "partial";
+
+/** Compact Razorpay-side entity summaries returned by the sync envelope (not bank rows). */
+export interface RazorpaySyncOrderSummary {
+  order_id: string;
+  amount_paise: number;
+  created_at: string;
+}
+
+export interface RazorpaySyncSettlementSummary {
+  settlement_id: string;
+  order_id: string;
+  gross_amount_paise: number;
+  fee_paise: number;
+  tax_paise: number;
+  net_amount_paise: number;
+  settled_at: string;
+}
+
+export interface RazorpaySyncRefundSummary {
+  refund_id: string;
+  order_id: string;
+  refund_amount_paise: number;
+  created_at: string;
+}
+
+/**
+ * Envelope from POST /api/v1/sources/razorpay/sync.
+ * Nested `reconciliation` reuses ReconciliationReport when present; never invent bank data.
+ */
+export interface RazorpaySyncResponse {
+  source: "razorpay";
+  status: RazorpaySyncStatus;
+  orders_fetched: number;
+  payments_fetched: number;
+  refunds_fetched: number;
+  settlements_fetched: number;
+  recon_items_fetched: number;
+  bank_data_available: boolean;
+  bank_transactions_fetched: number;
+  orders: RazorpaySyncOrderSummary[];
+  settlements: RazorpaySyncSettlementSummary[];
+  refunds: RazorpaySyncRefundSummary[];
+  mapping_warnings: string[];
+  mapping_errors: string[];
+  reconciliation: ReconciliationReport | null;
+}
+
+/** Scenario outcome from POST /api/v1/sources/razorpay/reconcile-demo. */
+export interface RazorpayDemoScenarioResult {
+  scenario_id: string;
+  order_id: string;
+  description: string;
+  expected_status: string;
+  expected_reconciled: boolean;
+  actual_status: string;
+  actual_reconciled: boolean;
+  matched_expectation: boolean;
+}
+
+/**
+ * Envelope from POST /api/v1/sources/razorpay/reconcile-demo.
+ * Bank rows are synthetic fixtures — never live Razorpay bank data.
+ */
+export interface RazorpayReconcileDemoResponse {
+  source: "razorpay";
+  bank_source: string;
+  bank_source_note: string;
+  status: string;
+  scenario_count: number;
+  scenarios: RazorpayDemoScenarioResult[];
+  reconciliation: ReconciliationReport;
 }

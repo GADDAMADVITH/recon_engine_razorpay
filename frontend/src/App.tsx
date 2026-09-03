@@ -1,6 +1,7 @@
 import { lazy, Suspense, useState } from "react";
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { Sidebar, Topbar } from "./components/layout/AppShell";
+import { ConsoleReportProvider } from "./context/ConsoleReportContext";
 import { DashboardPage } from "./pages/DashboardPage";
 import { EvaluationPage } from "./pages/EvaluationPage";
 import { ExceptionsPage } from "./pages/ExceptionsPage";
@@ -23,17 +24,19 @@ function ConsoleLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] lg:flex">
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
-        <Topbar onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 px-4 py-8 lg:px-10 lg:py-10">
-          <PageWrapper>
-            <Outlet />
-          </PageWrapper>
-        </main>
+    <ConsoleReportProvider>
+      <div className="min-h-screen bg-[var(--color-bg)] lg:flex">
+        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <div className="flex min-h-screen min-w-0 flex-1 flex-col">
+          <Topbar onMenuClick={() => setSidebarOpen(true)} />
+          <main className="flex-1 px-4 py-8 lg:px-10 lg:py-10">
+            <PageWrapper>
+              <Outlet />
+            </PageWrapper>
+          </main>
+        </div>
       </div>
-    </div>
+    </ConsoleReportProvider>
   );
 }
 

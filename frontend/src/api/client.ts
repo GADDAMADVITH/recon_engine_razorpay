@@ -1,6 +1,8 @@
 import type {
   EvaluationResponse,
   HealthResponse,
+  RazorpayReconcileDemoResponse,
+  RazorpaySyncResponse,
   ReconciliationReport,
   ReconciliationSummary,
 } from "../types/api";
@@ -18,22 +20,23 @@ export class ApiClientError extends Error {
   }
 }
 
-async function request<T>(path: string): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`);
+async function parseErrorResponse(response: Response): Promise<ApiClientError> {
   const contentType = response.headers.get("content-type") ?? "";
-
-  if (!response.ok) {
-    if (contentType.includes("application/json")) {
-      const body = (await response.json()) as { detail?: string };
-      throw new ApiClientError(
-        body.detail || "The service is temporarily unavailable.",
-        response.status,
-      );
-    }
-    throw new ApiClientError(
-      "The service is temporarily unavailable.",
+  if (contentType.includes("application/json")) {
+    const body = (await response.json()) as { detail?: string };
+    return new ApiClientError(
+      body.detail || "The service is temporarily unavailable.",
       response.status,
     );
+  }
+  return new ApiClientError("The service is temporarily unavailable.", response.status);
+}
+
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(`${API_BASE_URL}${path}`, init);
+
+  if (!response.ok) {
+    throw await parseErrorResponse(response);
   }
 
   return response.json() as Promise<T>;
@@ -47,4 +50,22 @@ export const api = {
   reconciliationSummary: () =>
     request<ReconciliationSummary>("/api/v1/reconciliation/summary"),
   evaluation: () => request<EvaluationResponse>("/api/v1/evaluation"),
+  /**
+   * Trigger server-side Razorpay sync. Credentials remain on the server;
+   * the frontend never sends or receives Razorpay secrets.
+   */
+  razorpaySync: () =>
+    request<RazorpaySyncResponse>("/api/v1/sources/razorpay/sync", {
+      method: "POST",
+      headers: { Accept: "application/json" },
+    }),
+  /**
+   * Phase 4A demo with synthetic bank fixtures. Does not call live Razorpay.
+   * Distinct from razorpaySync — do not merge demo results into live sync state.
+   */
+  razorpayReconcileDemo: () =>
+    request<RazorpayReconcileDemoResponse>("/api/v1/sources/razorpay/reconcile-demo", {
+      method: "POST",
+      headers: { Accept: "application/json" },
+    }),
 };

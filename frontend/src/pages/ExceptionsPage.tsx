@@ -2,14 +2,16 @@ import { ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { OrderDetailDrawer } from "../components/orders/OrderDetailDrawer";
+import { RazorpayBankLimitationBanner } from "../components/sources/DataSourceBar";
 import {
   Button,
+  EmptyState,
   ErrorState,
   LoadingState,
   PageHeader,
   SeverityBadge,
 } from "../components/ui/primitives";
-import { useReconciliationReport } from "../hooks/useApi";
+import { useConsoleReport } from "../context/ConsoleReportContext";
 import type { OrderResult } from "../types/api";
 import { SEVERE_EXCEPTIONS, type ExceptionType } from "../types/reconciliation";
 import { formatExceptionLabel, getExceptionSeverity } from "../utils/format";
@@ -30,7 +32,15 @@ const EXCEPTION_DESCRIPTIONS: Partial<Record<ExceptionType, string>> = {
 };
 
 export function ExceptionsPage() {
-  const { data, loading, error, refetch } = useReconciliationReport();
+  const {
+    isCsv,
+    isRazorpay,
+    report: data,
+    csvLoading,
+    csvError,
+    refetchCsv,
+    razorpay,
+  } = useConsoleReport();
   const [searchParams, setSearchParams] = useSearchParams();
   const [filter, setFilter] = useState(() => searchParams.get("filter") ?? "all");
   const [selectedOrder, setSelectedOrder] = useState<OrderResult | null>(null);
@@ -90,8 +100,36 @@ export function ExceptionsPage() {
     }
   };
 
-  if (loading && !data) return <LoadingState />;
-  if (error || !data) return <ErrorState message={error ?? "No data"} onRetry={() => void refetch()} />;
+  if (isCsv && csvLoading && !data) return <LoadingState />;
+  if (isCsv && (csvError || !data)) {
+    return <ErrorState message={csvError ?? "No data"} onRetry={() => void refetchCsv()} />;
+  }
+  if (isRazorpay && razorpay.loading && !data) {
+    return <LoadingState label="Syncing Razorpay data..." />;
+  }
+  if (isRazorpay && razorpay.error && !data) {
+    return <ErrorState message={razorpay.error} onRetry={() => void razorpay.sync()} />;
+  }
+  if (isRazorpay && !data) {
+    return (
+      <div className="mx-auto max-w-6xl">
+        <PageHeader
+          title="Exceptions"
+          subtitle="Investigate reconciliation failures and anomalies."
+        />
+        <RazorpayBankLimitationBanner />
+        <EmptyState
+          title={razorpay.empty ? "No Razorpay orders to reconcile" : "No Razorpay sync yet"}
+          description={
+            razorpay.empty
+              ? "The last Razorpay sync returned no orders."
+              : "Select Razorpay on the Command Center and click “Sync from Razorpay” first."
+          }
+        />
+      </div>
+    );
+  }
+  if (!data) return <LoadingState />;
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -99,6 +137,8 @@ export function ExceptionsPage() {
         title="Exceptions"
         subtitle="Investigate reconciliation failures and anomalies."
       />
+
+      {isRazorpay ? <RazorpayBankLimitationBanner /> : null}
 
       <div className="mb-8 flex flex-wrap gap-2">
         <Button

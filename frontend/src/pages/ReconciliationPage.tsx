@@ -1,8 +1,10 @@
 import { ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { OrderDetailDrawer } from "../components/orders/OrderDetailDrawer";
+import { RazorpayBankLimitationBanner } from "../components/sources/DataSourceBar";
 import {
   Button,
+  EmptyState,
   ErrorState,
   Input,
   LoadingState,
@@ -11,14 +13,22 @@ import {
   StatPill,
   StatusBadge,
 } from "../components/ui/primitives";
-import { useReconciliationReport } from "../hooks/useApi";
+import { useConsoleReport } from "../context/ConsoleReportContext";
 import type { OrderResult } from "../types/api";
 import { formatPaise } from "../utils/format";
 
 const PAGE_SIZE = 12;
 
 export function ReconciliationPage() {
-  const { data, loading, error, refetch } = useReconciliationReport();
+  const {
+    isCsv,
+    isRazorpay,
+    report: data,
+    csvLoading,
+    csvError,
+    refetchCsv,
+    razorpay,
+  } = useConsoleReport();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [confidenceFilter, setConfidenceFilter] = useState("all");
@@ -52,8 +62,36 @@ export function ReconciliationPage() {
   const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const statuses = data ? Object.keys(data.status_counts) : [];
 
-  if (loading && !data) return <LoadingState />;
-  if (error || !data) return <ErrorState message={error ?? "No data"} onRetry={() => void refetch()} />;
+  if (isCsv && csvLoading && !data) return <LoadingState />;
+  if (isCsv && (csvError || !data)) {
+    return <ErrorState message={csvError ?? "No data"} onRetry={() => void refetchCsv()} />;
+  }
+  if (isRazorpay && razorpay.loading && !data) {
+    return <LoadingState label="Syncing Razorpay data..." />;
+  }
+  if (isRazorpay && razorpay.error && !data) {
+    return <ErrorState message={razorpay.error} onRetry={() => void razorpay.sync()} />;
+  }
+  if (isRazorpay && !data) {
+    return (
+      <div className="mx-auto max-w-6xl">
+        <PageHeader
+          title="Reconciliation"
+          subtitle="Review order-level reconciliation outcomes across the full dataset."
+        />
+        <RazorpayBankLimitationBanner />
+        <EmptyState
+          title={razorpay.empty ? "No Razorpay orders to reconcile" : "No Razorpay sync yet"}
+          description={
+            razorpay.empty
+              ? "The last Razorpay sync returned no orders."
+              : "Select Razorpay on the Command Center and click “Sync from Razorpay” first."
+          }
+        />
+      </div>
+    );
+  }
+  if (!data) return <LoadingState />;
 
   const attentionCount = data.summary.unreconciled_orders;
 
@@ -64,10 +102,13 @@ export function ReconciliationPage() {
         subtitle="Review order-level reconciliation outcomes across the full dataset."
       />
 
+      {isRazorpay ? <RazorpayBankLimitationBanner /> : null}
+
       <div className="mb-8 flex flex-wrap items-center gap-8 border-b border-[var(--color-border)] pb-6">
         <StatPill value={data.summary.total_orders} label="Orders" />
         <StatPill value={data.summary.reconciled_orders} label="Reconciled" />
         <StatPill value={attentionCount} label="Requiring attention" />
+        <StatPill value={isCsv ? "CSV" : "Razorpay"} label="Source" />
       </div>
 
       <div className="mb-6 grid gap-3 sm:grid-cols-3">

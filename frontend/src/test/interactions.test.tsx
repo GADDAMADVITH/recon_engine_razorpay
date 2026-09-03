@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "../App";
 import { OrderDetailDrawer } from "../components/orders/OrderDetailDrawer";
+import { ConsoleReportProvider } from "../context/ConsoleReportContext";
 import { DashboardPage } from "../pages/DashboardPage";
 import { ExceptionsPage } from "../pages/ExceptionsPage";
 import { ReconciliationPage } from "../pages/ReconciliationPage";
@@ -103,6 +104,14 @@ function renderWithRouter(initialPath = "/console") {
   );
 }
 
+function renderConsolePage(ui: React.ReactElement, initialPath = "/") {
+  return render(
+    <MemoryRouter initialEntries={[initialPath]}>
+      <ConsoleReportProvider>{ui}</ConsoleReportProvider>
+    </MemoryRouter>,
+  );
+}
+
 describe("frontend interactions", () => {
   beforeEach(() => {
     mockedUseReport.mockReturnValue(mockHookState(mockReport));
@@ -117,14 +126,10 @@ describe("frontend interactions", () => {
     ).toBeInTheDocument();
 
     await user.click(screen.getByRole("link", { name: /Reconciliation/i }));
-    expect(
-      screen.getByText("Review order-level reconciliation outcomes across the full dataset."),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("table")).toBeInTheDocument();
 
     await user.click(screen.getByRole("link", { name: /Exceptions/i }));
-    expect(
-      screen.getByText("Investigate reconciliation failures and anomalies."),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Investigate reconciliation failures and anomalies\./i)).toBeInTheDocument();
 
     await user.click(screen.getByRole("link", { name: /Evaluation/i }));
     expect(
@@ -137,11 +142,7 @@ describe("frontend interactions", () => {
 
   it("filters reconciliation table by search", async () => {
     const user = userEvent.setup();
-    render(
-      <MemoryRouter>
-        <ReconciliationPage />
-      </MemoryRouter>,
-    );
+    renderConsolePage(<ReconciliationPage />);
 
     expect(table().getByText("ORD_0001")).toBeInTheDocument();
     await user.type(screen.getByPlaceholderText("Search order ID"), "ORD_0011");
@@ -151,11 +152,7 @@ describe("frontend interactions", () => {
 
   it("filters reconciliation table by status", async () => {
     const user = userEvent.setup();
-    render(
-      <MemoryRouter>
-        <ReconciliationPage />
-      </MemoryRouter>,
-    );
+    renderConsolePage(<ReconciliationPage />);
 
     await user.selectOptions(screen.getAllByRole("combobox")[0], "unreconciled_missing_settlement");
     expect(table().getByText("ORD_0011")).toBeInTheDocument();
@@ -164,11 +161,7 @@ describe("frontend interactions", () => {
 
   it("paginates reconciliation results", async () => {
     const user = userEvent.setup();
-    render(
-      <MemoryRouter>
-        <ReconciliationPage />
-      </MemoryRouter>,
-    );
+    renderConsolePage(<ReconciliationPage />);
 
     expect(table().getByText("ORD_0001")).toBeInTheDocument();
     expect(table().queryByText("ORD_0015")).not.toBeInTheDocument();
@@ -182,11 +175,7 @@ describe("frontend interactions", () => {
 
   it("opens and closes order detail drawer from reconciliation row", async () => {
     const user = userEvent.setup();
-    render(
-      <MemoryRouter>
-        <ReconciliationPage />
-      </MemoryRouter>,
-    );
+    renderConsolePage(<ReconciliationPage />);
 
     await user.click(table().getByText("ORD_0001"));
     const dialog = await screen.findByRole("dialog", { name: /Order details for ORD_0001/i });
@@ -210,10 +199,12 @@ describe("frontend interactions", () => {
     const user = userEvent.setup();
     render(
       <MemoryRouter initialEntries={["/console"]}>
-        <Routes>
-          <Route path="/console" element={<DashboardPage />} />
-          <Route path="/console/exceptions" element={<ExceptionsPage />} />
-        </Routes>
+        <ConsoleReportProvider>
+          <Routes>
+            <Route path="/console" element={<DashboardPage />} />
+            <Route path="/console/exceptions" element={<ExceptionsPage />} />
+          </Routes>
+        </ConsoleReportProvider>
       </MemoryRouter>,
     );
 
@@ -226,11 +217,7 @@ describe("frontend interactions", () => {
 
   it("expands exception category and opens order drawer", async () => {
     const user = userEvent.setup();
-    render(
-      <MemoryRouter initialEntries={["/exceptions?filter=MISSING_SETTLEMENT"]}>
-        <ExceptionsPage />
-      </MemoryRouter>,
-    );
+    renderConsolePage(<ExceptionsPage />, "/exceptions?filter=MISSING_SETTLEMENT");
 
     const rows = screen.getAllByRole("button", { name: /Missing Settlement/i });
     const categoryRow = rows.find((el) => el.textContent?.includes("No settlement found"))!;
@@ -256,11 +243,7 @@ describe("frontend interactions", () => {
     });
 
     const user = userEvent.setup();
-    render(
-      <MemoryRouter>
-        <DashboardPage />
-      </MemoryRouter>,
-    );
+    renderConsolePage(<DashboardPage />);
 
     await user.click(screen.getByRole("button", { name: /Run reconciliation/i }));
     expect(refetch).toHaveBeenCalledWith({ silent: true });
