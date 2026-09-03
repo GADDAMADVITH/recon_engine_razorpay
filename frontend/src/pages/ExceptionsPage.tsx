@@ -160,7 +160,7 @@ export function ExceptionsPage() {
         ))}
       </div>
 
-      <div className="space-y-px overflow-hidden rounded-lg border border-[var(--color-border)]">
+      <div className="space-y-px overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white shadow-[0_1px_0_rgba(11,27,43,0.04),0_8px_24px_rgba(11,27,43,0.04)]">
         {visibleTypes.map(([type, info]) => {
           const severity = getExceptionSeverity(type);
           const isExpanded = expandedType === type;
@@ -196,7 +196,7 @@ export function ExceptionsPage() {
               {isExpanded ? (
                 <div className="border-t border-[var(--color-border)] bg-[var(--color-bg)] px-5 py-4">
                   <div className="mb-3 flex items-center justify-between">
-                    <p className="text-xs font-medium uppercase tracking-wide text-[var(--color-muted)]">
+                    <p className="text-xs font-medium text-[var(--color-muted)]">
                       Affected orders
                     </p>
                     {info.orders[0] ? (

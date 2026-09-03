@@ -37,7 +37,7 @@ export function RazorpayDemoPanel() {
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-warning)]">
+          <p className="text-xs font-semibold tracking-wide text-[var(--color-warning)]">
             Demo — Synthetic Bank Data
           </p>
           <h2 className="mt-1 text-base font-semibold text-[var(--color-ink)]">
@@ -121,7 +121,7 @@ export function RazorpayDemoPanel() {
                 </div>
                 <dl className="mt-3 grid gap-2 sm:grid-cols-2">
                   <div>
-                    <dt className="text-[11px] uppercase tracking-wide text-[var(--color-muted)]">
+                    <dt className="text-[11px] font-medium tracking-wide text-[var(--color-muted)]">
                       Expected
                     </dt>
                     <dd className="mt-1 flex flex-wrap items-center gap-2">
@@ -135,7 +135,7 @@ export function RazorpayDemoPanel() {
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[11px] uppercase tracking-wide text-[var(--color-muted)]">
+                    <dt className="text-[11px] font-medium tracking-wide text-[var(--color-muted)]">
                       Actual
                     </dt>
                     <dd className="mt-1 flex flex-wrap items-center gap-2">

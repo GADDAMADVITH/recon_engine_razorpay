@@ -10,11 +10,23 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, Request
+import io
+
+import pandas as pd
+from dotenv import load_dotenv
+from fastapi import FastAPI, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+from ai_explainer import (
+    GeminiConfigurationError,
+    GeminiServiceError,
+    chat_with_gemini,
+    explain_structured_audit_with_gemini,
+)
+from audit import build_structured_audit
+from chat_context import build_chat_grounding
 from integrations.data_sources import load_csv_dataset
 from integrations.razorpay.client import (
     RazorpayAPIError,
@@ -43,6 +55,24 @@ from recon_engine import (
     build_report,
     reconcile_all,
 )
+
+# Load local .env into process environment at import time (development).
+# Does not override variables already set in the shell/process environment.
+# Secrets never appear in source; .env remains gitignored.
+PROJECT_ROOT = Path(__file__).resolve().parent
+
+
+def load_project_env(env_file: Path | None = None) -> bool:
+    """Load key/value pairs from a .env file into os.environ.
+
+    Returns True if a file was found and processed. Existing environment
+    variables take precedence (override=False).
+    """
+    path = env_file if env_file is not None else PROJECT_ROOT / ".env"
+    return load_dotenv(path, override=False)
+
+
+load_project_env()
 
 API_VERSION = "v1"
 SERVICE_NAME = "recon-engine-api"
@@ -156,6 +186,52 @@ def run_razorpay_reconcile_demo() -> dict[str, Any]:
     }
 
 
+_BANK_REQUIRED_COLUMNS = frozenset(
+    {"bank_transaction_id", "settlement_ref", "amount", "transaction_date", "description"}
+)
+
+
+def run_bank_import(bank_csv_bytes: bytes) -> dict[str, Any]:
+    """Parse uploaded bank CSV, normalise, reconcile against production CSV orders/settlements.
+
+    The bank rows come from the upload; orders/settlements/refunds come from the
+    production CSV dataset on disk (same source as GET /api/v1/reconciliation/report).
+    """
+    from recon_engine import normalize_bank_transactions
+
+    try:
+        bank_df = pd.read_csv(io.StringIO(bank_csv_bytes.decode("utf-8")))
+    except Exception as exc:
+        raise ValueError(f"Bank CSV could not be parsed: {exc}") from exc
+
+    missing_cols = _BANK_REQUIRED_COLUMNS - set(bank_df.columns)
+    if missing_cols:
+        raise ValueError(
+            f"Bank CSV is missing required columns: {', '.join(sorted(missing_cols))}. "
+            f"Required: {', '.join(sorted(_BANK_REQUIRED_COLUMNS))}"
+        )
+
+    # Load existing orders/settlements/refunds from production CSVs
+    dataset = load_csv_dataset(DATA_DIR)
+
+    valid_settlement_ids = {s.settlement_id for s in dataset.settlements}
+    try:
+        bank_transactions = normalize_bank_transactions(bank_df, valid_settlement_ids)
+    except Exception as exc:
+        raise ValueError(f"Bank CSV rows could not be normalised: {exc}") from exc
+
+    reconciliation = run_reconciliation_from_records(
+        list(dataset.orders),
+        list(dataset.settlements),
+        list(dataset.refunds),
+        bank_transactions,
+    )
+    reconciliation["metadata"]["data_source"] = "csv"
+    reconciliation["metadata"]["bank_source"] = "uploaded_csv"
+    reconciliation["metadata"]["bank_rows_imported"] = len(bank_transactions)
+    return reconciliation
+
+
 def run_evaluation(data_dir: Path | None = None) -> dict[str, Any]:
     """Run reconciliation and evaluate against ground truth (evaluation layer only)."""
     data_dir = data_dir or DATA_DIR
@@ -203,6 +279,44 @@ class ReconciliationSummaryResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     detail: str
+
+
+class AuditExplanationResponse(BaseModel):
+    order_id: str
+    status: str
+    reconciled: bool
+    confidence_score: int
+    explanation: str
+    provider: str = "gemini"
+    model: str | None = None
+
+
+class OrderAuditFromResultRequest(BaseModel):
+    """Audit/explain from an already-computed order_result (e.g. bank-import run).
+
+    Does not re-run reconciliation — only transforms the provided engine output.
+    """
+
+    order_result: dict[str, Any]
+
+
+class ChatRequest(BaseModel):
+    """Conversational question for ReconEngine AI.
+
+    Financial facts in ``page_context`` are ignored. Optional ``order_result``
+    must be engine-computed output (same contract as audit/explain POST).
+    """
+
+    message: str = Field(..., min_length=1, max_length=4000)
+    order_id: str | None = Field(default=None, max_length=64)
+    order_result: dict[str, Any] | None = None
+    page_context: dict[str, Any] | None = None
+
+
+class ChatResponse(BaseModel):
+    message: str
+    provider: str = "gemini"
+    model: str | None = None
 
 
 class RazorpayPaymentVerificationRequest(BaseModel):
@@ -285,6 +399,26 @@ async def handle_value_error(_request: Request, exc: ValueError) -> JSONResponse
     )
 
 
+@app.exception_handler(GeminiConfigurationError)
+async def handle_gemini_configuration_error(
+    _request: Request, exc: GeminiConfigurationError
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=503,
+        content=ErrorResponse(detail=str(exc)).model_dump(),
+    )
+
+
+@app.exception_handler(GeminiServiceError)
+async def handle_gemini_service_error(
+    _request: Request, exc: GeminiServiceError
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=502,
+        content=ErrorResponse(detail=str(exc)).model_dump(),
+    )
+
+
 @app.exception_handler(Exception)
 async def handle_unexpected_error(_request: Request, _exc: Exception) -> JSONResponse:
     return JSONResponse(
@@ -330,6 +464,152 @@ def get_reconciliation_summary() -> ReconciliationSummaryResponse:
 
 
 @app.get(
+    f"/api/{API_VERSION}/reconciliation/{{order_id}}/audit",
+    tags=["reconciliation"],
+    responses={
+        404: {"model": ErrorResponse},
+        400: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+)
+def get_order_audit(order_id: str) -> dict[str, Any]:
+    """Return a structured audit trail for a specific order."""
+    report = run_reconciliation_report()
+    order_result = next(
+        (r for r in report["order_results"] if r["order_id"] == order_id),
+        None,
+    )
+    if order_result is None:
+        raise ValueError(f"Order {order_id!r} not found in reconciliation report")
+    return build_structured_audit(order_result)
+
+
+@app.get(
+    f"/api/{API_VERSION}/reconciliation/{{order_id}}/audit/explain",
+    response_model=AuditExplanationResponse,
+    tags=["reconciliation"],
+    responses={
+        404: {"model": ErrorResponse},
+        400: {"model": ErrorResponse},
+        502: {"model": ErrorResponse},
+        503: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+)
+def get_order_audit_explanation(order_id: str) -> AuditExplanationResponse:
+    """Return a grounded Gemini explanation for a specific order's structured audit."""
+    report = run_reconciliation_report()
+    order_result = next(
+        (r for r in report["order_results"] if r["order_id"] == order_id),
+        None,
+    )
+    if order_result is None:
+        raise ValueError(f"Order {order_id!r} not found in reconciliation report")
+
+    structured_audit = build_structured_audit(order_result)
+    result = explain_structured_audit_with_gemini(structured_audit)
+    return AuditExplanationResponse(
+        order_id=structured_audit["order_id"],
+        status=structured_audit["status"],
+        reconciled=structured_audit["reconciled"],
+        confidence_score=structured_audit["confidence_score"],
+        explanation=result.explanation,
+        provider="gemini",
+        model=result.model,
+    )
+
+
+def _audit_from_order_result_payload(order_result: dict[str, Any]) -> dict[str, Any]:
+    """Validate a client-supplied order_result and build structured audit (read-only)."""
+    if not isinstance(order_result, dict):
+        raise ValueError("order_result must be an object")
+    order_id = order_result.get("order_id")
+    if not isinstance(order_id, str) or not order_id.strip():
+        raise ValueError("order_result.order_id is required")
+    if "status" not in order_result or "reconciled" not in order_result:
+        raise ValueError("order_result must include status and reconciled")
+    return build_structured_audit(order_result)
+
+
+@app.post(
+    f"/api/{API_VERSION}/reconciliation/audit",
+    tags=["reconciliation"],
+    responses={
+        400: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+)
+def post_order_audit_from_result(body: OrderAuditFromResultRequest) -> dict[str, Any]:
+    """Build structured audit from a provided order_result (bank-import / drawer context).
+
+    Prefer this over GET .../{order_id}/audit when the UI already has a specific
+    reconciliation run's order payload (e.g. after CSV bank import).
+    """
+    return _audit_from_order_result_payload(body.order_result)
+
+
+@app.post(
+    f"/api/{API_VERSION}/reconciliation/audit/explain",
+    response_model=AuditExplanationResponse,
+    tags=["reconciliation"],
+    responses={
+        400: {"model": ErrorResponse},
+        502: {"model": ErrorResponse},
+        503: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+)
+def post_order_audit_explanation_from_result(
+    body: OrderAuditFromResultRequest,
+) -> AuditExplanationResponse:
+    """Gemini explanation grounded on a provided order_result's structured audit."""
+    structured_audit = _audit_from_order_result_payload(body.order_result)
+    result = explain_structured_audit_with_gemini(structured_audit)
+    return AuditExplanationResponse(
+        order_id=structured_audit["order_id"],
+        status=structured_audit["status"],
+        reconciled=structured_audit["reconciled"],
+        confidence_score=structured_audit["confidence_score"],
+        explanation=result.explanation,
+        provider="gemini",
+        model=result.model,
+    )
+
+
+@app.post(
+    f"/api/{API_VERSION}/chat",
+    response_model=ChatResponse,
+    tags=["chat"],
+    responses={
+        400: {"model": ErrorResponse},
+        502: {"model": ErrorResponse},
+        503: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+)
+def post_chat(body: ChatRequest) -> ChatResponse:
+    """Answer a natural-language question grounded on current reconciliation data.
+
+    Gemini explains evidence only. Reconciliation facts always come from the
+    deterministic engine / structured audit — never from client-claimed amounts.
+    """
+    report = run_reconciliation_report()
+    grounding = build_chat_grounding(
+        report=report,
+        message=body.message,
+        order_id=body.order_id,
+        order_result=body.order_result,
+        page_context=body.page_context,
+    )
+    result = chat_with_gemini(message=body.message, grounding=grounding)
+    return ChatResponse(
+        message=result.explanation,
+        provider="gemini",
+        model=result.model,
+    )
+
+
+@app.get(
     f"/api/{API_VERSION}/evaluation",
     tags=["evaluation"],
     responses={
@@ -371,6 +651,26 @@ def post_razorpay_reconcile_demo() -> dict[str, Any]:
     Does not call live Razorpay. Bank data is an explicit synthetic fixture source.
     """
     return run_razorpay_reconcile_demo()
+
+
+@app.post(
+    f"/api/{API_VERSION}/reconciliation/import-bank",
+    tags=["reconciliation"],
+    responses={
+        400: {"model": ErrorResponse},
+        422: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+)
+async def post_import_bank(file: UploadFile) -> dict[str, Any]:
+    """Upload a bank CSV and reconcile against production orders/settlements.
+
+    Accepts multipart/form-data with field name ``file`` containing a CSV with
+    columns: bank_transaction_id, settlement_ref, amount, transaction_date, description.
+    Returns the full reconciliation report with an additional bank_source field.
+    """
+    contents = await file.read()
+    return run_bank_import(contents)
 
 
 @app.post(

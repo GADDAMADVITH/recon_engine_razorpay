@@ -10,11 +10,13 @@ import {
 } from "../components/sources/DataSourceBar";
 import { RazorpayDemoPanel } from "../components/sources/RazorpayDemoPanel";
 import {
+  Button,
   EmptyState,
   EngineStatus,
   ErrorState,
   InteractiveRow,
   LoadingState,
+  MetricCard,
   PageHeader,
   PrimaryCTA,
   SectionLabel,
@@ -39,6 +41,26 @@ function DashboardReportBody({
 
   return (
     <>
+      {/* KPI cards */}
+      <div className="mb-12 grid grid-cols-2 gap-5 sm:grid-cols-4">
+        <MetricCard value={data.summary.total_orders} label="Total orders" accent="brand" />
+        <MetricCard
+          value={data.summary.reconciled_orders}
+          label="Reconciled"
+          accent="success"
+        />
+        <MetricCard
+          value={data.summary.unreconciled_orders}
+          label="Unreconciled"
+          accent={data.summary.unreconciled_orders > 0 ? "danger" : "default"}
+        />
+        <MetricCard
+          value={`${Math.round(reconciliationRate * 100)}%`}
+          label="Match rate"
+          accent={reconciliationRate >= 0.95 ? "success" : reconciliationRate >= 0.7 ? "warning" : "danger"}
+        />
+      </div>
+
       <section className="mb-14 border-b border-[var(--color-border)] pb-14">
         <SectionLabel title="Reconciliation Health" />
         <ReconciliationHealthRing
@@ -69,7 +91,7 @@ function DashboardReportBody({
               </button>
             }
           />
-          <div className="rounded-lg border border-[var(--color-border)] bg-white px-4">
+          <div className="rounded-xl border border-[var(--color-border)] bg-white px-4 shadow-[0_1px_3px_rgba(11,27,43,0.04)]">
             {exceptions.length ? (
               exceptions.map((item) => (
                 <InteractiveRow
@@ -172,6 +194,22 @@ export function DashboardPage() {
           {isCsv ? "Local CSV dataset" : "Live Razorpay sync (explicit)"}
         </span>
       </div>
+
+      {isCsv ? (
+        <section className="mb-8 flex flex-col gap-3 rounded-xl border border-[var(--color-border)] bg-white px-5 py-4 shadow-[0_1px_3px_rgba(11,27,43,0.04)] sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-[13px] font-medium tracking-tight text-[var(--color-ink)]">
+              Demo walkthrough
+            </p>
+            <p className="mt-1 text-sm text-[var(--color-ink)]">
+              Bank Import uses a deterministic CSV. It does not wait on live Razorpay settlements.
+            </p>
+          </div>
+          <Button variant="secondary" onClick={() => navigate(CONSOLE_PATHS.bankImport)}>
+            Open Bank Import
+          </Button>
+        </section>
+      ) : null}
 
       {isRazorpay ? <RazorpayBankLimitationBanner /> : null}
 

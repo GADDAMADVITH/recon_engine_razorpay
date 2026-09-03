@@ -19,15 +19,18 @@ export function formatPercent(value: number, digits = 1): string {
 }
 
 export function formatStatusLabel(status: string): string {
-  return status
+  const words = status
     .replace(/^unreconciled_/, "")
     .replace(/^reconciled_/, "")
     .replace(/_/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+    .toLowerCase();
+  return words.replace(/^\w/, (c) => c.toUpperCase());
 }
 
+/** Sentence-case label for exception enum types (e.g. MISSING_SETTLEMENT → "Missing settlement"). */
 export function formatExceptionLabel(type: string): string {
-  return type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  const words = type.replace(/_/g, " ").toLowerCase();
+  return words.replace(/^\w/, (c) => c.toUpperCase());
 }
 
 export function getPrimaryException(
@@ -116,6 +119,7 @@ export const CONSOLE_PATHS = {
   reconciliation: "/console/reconciliation",
   exceptions: "/console/exceptions",
   evaluation: "/console/evaluation",
+  bankImport: "/console/bank-import",
   settings: "/console/settings",
 } as const;
 
@@ -146,6 +150,11 @@ export const ROUTE_META: Record<
   "/console/evaluation": {
     title: "Engine Evaluation",
     subtitle: "Measure reconciliation engine correctness",
+    group: "Operations",
+  },
+  "/console/bank-import": {
+    title: "Bank CSV Import",
+    subtitle: "Deterministic demo CSV — not live Razorpay settlements",
     group: "Operations",
   },
   "/console/settings": {

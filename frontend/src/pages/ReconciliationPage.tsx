@@ -8,14 +8,14 @@ import {
   ErrorState,
   Input,
   LoadingState,
+  MetricCard,
   PageHeader,
   Select,
-  StatPill,
   StatusBadge,
 } from "../components/ui/primitives";
 import { useConsoleReport } from "../context/ConsoleReportContext";
 import type { OrderResult } from "../types/api";
-import { formatPaise } from "../utils/format";
+import { cn, formatPaise } from "../utils/format";
 
 const PAGE_SIZE = 12;
 
@@ -104,11 +104,15 @@ export function ReconciliationPage() {
 
       {isRazorpay ? <RazorpayBankLimitationBanner /> : null}
 
-      <div className="mb-8 flex flex-wrap items-center gap-8 border-b border-[var(--color-border)] pb-6">
-        <StatPill value={data.summary.total_orders} label="Orders" />
-        <StatPill value={data.summary.reconciled_orders} label="Reconciled" />
-        <StatPill value={attentionCount} label="Requiring attention" />
-        <StatPill value={isCsv ? "CSV" : "Razorpay"} label="Source" />
+      <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <MetricCard value={data.summary.total_orders} label="Total orders" accent="brand" />
+        <MetricCard value={data.summary.reconciled_orders} label="Reconciled" accent="success" />
+        <MetricCard
+          value={attentionCount}
+          label="Requiring attention"
+          accent={attentionCount > 0 ? "danger" : "default"}
+        />
+        <MetricCard value={isCsv ? "CSV" : "Razorpay"} label="Source" />
       </div>
 
       <div className="mb-6 grid gap-3 sm:grid-cols-3">
@@ -149,18 +153,19 @@ export function ReconciliationPage() {
         </Select>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white shadow-[0_1px_0_rgba(11,27,43,0.04),0_8px_24px_rgba(11,27,43,0.04)]">
+      <div className="overflow-x-auto px-4 pb-2">
         <table className="w-full min-w-[800px] text-left text-sm">
           <thead>
-            <tr className="border-b border-[var(--color-border)] text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--color-muted)]">
-              <th className="pb-3 pr-4 font-medium">Order</th>
-              <th className="pb-3 pr-4 font-medium">Status</th>
-              <th className="pb-3 pr-4 font-medium">Confidence</th>
-              <th className="pb-3 pr-4 font-medium">Settlement</th>
-              <th className="pb-3 pr-4 font-medium">Bank</th>
-              <th className="pb-3 pr-4 font-medium">Refund</th>
-              <th className="pb-3 pr-4 font-medium">Timestamp</th>
-              <th className="pb-3 font-medium" aria-label="Action" />
+            <tr className="border-b border-[var(--color-border)] text-[12px] font-medium text-[var(--color-muted)]">
+              <th className="pb-3.5 pr-4 pt-1 font-medium">Order</th>
+              <th className="pb-3.5 pr-4 pt-1 font-medium">Status</th>
+              <th className="pb-3.5 pr-4 pt-1 font-medium">Confidence</th>
+              <th className="pb-3.5 pr-4 pt-1 font-medium">Settlement</th>
+              <th className="pb-3.5 pr-4 pt-1 font-medium">Bank</th>
+              <th className="pb-3.5 pr-4 pt-1 font-medium">Refund</th>
+              <th className="pb-3.5 pr-4 pt-1 font-medium">Timestamp</th>
+              <th className="pb-3.5 pt-1 font-medium" aria-label="Action" />
             </tr>
           </thead>
           <tbody>
@@ -169,7 +174,7 @@ export function ReconciliationPage() {
                 key={order.order_id}
                 role="button"
                 tabIndex={0}
-                className="group cursor-pointer border-b border-[var(--color-border)] transition-colors hover:bg-black/[0.02] focus-visible:bg-black/[0.02] focus-visible:outline-none"
+                className="group cursor-pointer border-b border-[var(--color-border)] transition-colors last:border-b-0 hover:bg-[rgba(37,99,235,0.02)] focus-visible:bg-[rgba(37,99,235,0.02)] focus-visible:outline-none"
                 onClick={() => setSelectedOrder(order)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
@@ -178,21 +183,33 @@ export function ReconciliationPage() {
                   }
                 }}
               >
-                <td className="py-4 pr-4 font-medium">{order.order_id}</td>
+                <td className="py-4 pr-4 font-mono text-xs font-medium text-[var(--color-ink)]">{order.order_id}</td>
                 <td className="py-4 pr-4">
                   <StatusBadge status={order.status} reconciled={order.reconciled} />
                 </td>
-                <td className="py-4 pr-4 tabular-nums">{order.confidence_score}</td>
+                <td className="py-4 pr-4 tabular-nums text-sm">
+                  <span
+                    className={cn(
+                      "inline-block h-1.5 w-1.5 rounded-full mr-1.5",
+                      order.confidence_score >= 80
+                        ? "bg-[var(--color-success)]"
+                        : order.confidence_score >= 50
+                          ? "bg-[var(--color-warning)]"
+                          : "bg-[var(--color-danger)]",
+                    )}
+                  />
+                  {order.confidence_score}
+                </td>
                 <td className="py-4 pr-4 font-mono text-xs text-[var(--color-muted)]">
                   {order.primary_settlement_id ?? "—"}
                 </td>
                 <td className="py-4 pr-4 font-mono text-xs text-[var(--color-muted)]">
                   {order.valid_bank_transaction_id ?? "—"}
                 </td>
-                <td className="py-4 pr-4 tabular-nums">
+                <td className="py-4 pr-4 tabular-nums text-sm">
                   {order.total_refund_paise > 0 ? formatPaise(order.total_refund_paise) : "—"}
                 </td>
-                <td className="py-4 pr-4 tabular-nums text-[var(--color-muted)]">
+                <td className="py-4 pr-4 tabular-nums text-sm text-[var(--color-muted)]">
                   {order.timestamp_comparison.difference_hours != null
                     ? `${order.timestamp_comparison.difference_hours}h`
                     : "—"}
@@ -205,9 +222,10 @@ export function ReconciliationPage() {
           </tbody>
         </table>
       </div>
+      </div>
 
       {pageItems.length === 0 ? (
-        <p className="py-10 text-center text-sm text-[var(--color-muted)]">
+        <p className="mt-4 py-10 text-center text-sm text-[var(--color-muted)]">
           No orders match the current filters.
         </p>
       ) : null}

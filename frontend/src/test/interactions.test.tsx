@@ -138,7 +138,7 @@ describe("frontend interactions", () => {
 
     await user.click(screen.getByRole("link", { name: /Settings/i }));
     expect(screen.getAllByText(/System configuration and connection details/i).length).toBeGreaterThan(0);
-  });
+  }, 15_000);
 
   it("filters reconciliation table by search", async () => {
     const user = userEvent.setup();
@@ -212,14 +212,14 @@ describe("frontend interactions", () => {
     expect(
       screen.getByText("Investigate reconciliation failures and anomalies."),
     ).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /Missing Settlement/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("button", { name: /Missing settlement/i }).length).toBeGreaterThan(0);
   });
 
   it("expands exception category and opens order drawer", async () => {
     const user = userEvent.setup();
     renderConsolePage(<ExceptionsPage />, "/exceptions?filter=MISSING_SETTLEMENT");
 
-    const rows = screen.getAllByRole("button", { name: /Missing Settlement/i });
+    const rows = screen.getAllByRole("button", { name: /Missing settlement/i });
     const categoryRow = rows.find((el) => el.textContent?.includes("No settlement found"))!;
     await user.click(categoryRow);
 

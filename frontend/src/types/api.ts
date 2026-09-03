@@ -85,6 +85,8 @@ export interface ReconciliationReportMetadata {
   /** Explicit bank-side provenance when not from the primary data source. */
   bank_source?: string;
   bank_source_note?: string;
+  /** Number of bank transaction rows imported (set by the import-bank endpoint). */
+  bank_rows_imported?: number;
 }
 
 export interface ReconciliationReport {
@@ -235,6 +237,78 @@ export interface RazorpaySyncResponse {
   mapping_warnings: string[];
   mapping_errors: string[];
   reconciliation: ReconciliationReport | null;
+}
+
+/** Structured audit check from GET /api/v1/reconciliation/{order_id}/audit. */
+export interface AuditCheck {
+  rule: string;
+  label: string;
+  passed: boolean;
+  outcome: string;
+  exception_type: string | null;
+  exception: OrderException | null;
+}
+
+export interface AuditTimestampCheck {
+  label: string;
+  passed: boolean;
+  difference_hours?: number | null;
+  tolerance_hours?: number | null;
+  outcome?: string;
+}
+
+export interface AuditReferences {
+  settlement_ids_considered: string[];
+  primary_settlement_id: string | null;
+  secondary_settlement_ids: string[];
+  bank_transaction_ids_considered: string[];
+  valid_bank_transaction_id: string | null;
+  refund_ids: string[];
+  normalized_references: Record<string, string>;
+}
+
+export interface AuditAmountSummary {
+  order_amount_paise: number | null;
+  settlement_gross_paise: number | null;
+  settlement_net_paise: number | null;
+  bank_amount_paise: number | null;
+  total_refund_paise: number;
+  settlement_gross_matches_order: boolean | null;
+  bank_matches_settlement_net: boolean | null;
+  settlement_reflects_refund: boolean | null;
+}
+
+/** Structured audit trail response. */
+export interface StructuredAuditResponse {
+  order_id: string;
+  status: string;
+  reconciled: boolean;
+  confidence_score: number;
+  order_amount_paise: number | null;
+  checks: AuditCheck[];
+  timestamp_check: AuditTimestampCheck | null;
+  amount_summary: AuditAmountSummary;
+  references: AuditReferences;
+  exceptions: OrderException[];
+  timeline: string[];
+}
+
+/** Grounded natural-language explanation from GET /reconciliation/{order_id}/audit/explain. */
+export interface AuditExplanationResponse {
+  order_id: string;
+  status: string;
+  reconciled: boolean;
+  confidence_score: number;
+  explanation: string;
+  provider: "gemini";
+  model: string | null;
+}
+
+/** Conversational reply from POST /api/v1/chat. */
+export interface ChatResponse {
+  message: string;
+  provider: "gemini";
+  model: string | null;
 }
 
 /** Scenario outcome from POST /api/v1/sources/razorpay/reconcile-demo. */

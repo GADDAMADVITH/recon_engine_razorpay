@@ -1,7 +1,10 @@
 import { lazy, Suspense, useState } from "react";
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
-import { Sidebar, Topbar } from "./components/layout/AppShell";
+import { ReconAIChat } from "./components/chat/ReconAIChat";
+import { ConsoleAtmosphere, Sidebar, Topbar } from "./components/layout/AppShell";
+import { ChatOrderProvider } from "./context/ChatOrderContext";
 import { ConsoleReportProvider } from "./context/ConsoleReportContext";
+import { BankImportPage } from "./pages/BankImportPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { EvaluationPage } from "./pages/EvaluationPage";
 import { ExceptionsPage } from "./pages/ExceptionsPage";
@@ -25,17 +28,21 @@ function ConsoleLayout() {
 
   return (
     <ConsoleReportProvider>
-      <div className="min-h-screen bg-[var(--color-bg)] lg:flex">
-        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <div className="flex min-h-screen min-w-0 flex-1 flex-col">
-          <Topbar onMenuClick={() => setSidebarOpen(true)} />
-          <main className="flex-1 px-4 py-8 lg:px-10 lg:py-10">
-            <PageWrapper>
-              <Outlet />
-            </PageWrapper>
-          </main>
+      <ChatOrderProvider>
+        <div className="min-h-screen bg-[var(--color-bg)] lg:flex">
+          <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+          <div className="relative flex min-h-screen min-w-0 flex-1 flex-col overflow-hidden">
+            <ConsoleAtmosphere />
+            <Topbar onMenuClick={() => setSidebarOpen(true)} />
+            <main className="relative z-10 flex-1 px-5 py-10 lg:px-12 lg:py-12">
+              <PageWrapper>
+                <Outlet />
+              </PageWrapper>
+            </main>
+            <ReconAIChat />
+          </div>
         </div>
-      </div>
+      </ChatOrderProvider>
     </ConsoleReportProvider>
   );
 }
@@ -65,6 +72,7 @@ export default function App() {
         <Route path="reconciliation" element={<ReconciliationPage />} />
         <Route path="exceptions" element={<ExceptionsPage />} />
         <Route path="evaluation" element={<EvaluationPage />} />
+        <Route path="bank-import" element={<BankImportPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
     </Routes>

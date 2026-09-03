@@ -1,5 +1,6 @@
 import { useEvaluation, useHealth, useReconciliationReport, useReconciliationSummary } from "../hooks/useApi";
 import { CONSOLE_PATHS } from "../utils/format";
+import { ReconAIChat } from "../components/chat/ReconAIChat";
 import { CtaAtmosphere, HeroAtmosphere, ProductAura } from "../components/landing/atmosphere";
 import { ExplainableTrail } from "../components/landing/ExplainableTrail";
 import { LandingExperience } from "../components/landing/LandingExperience";
@@ -328,6 +329,7 @@ export function LandingPage() {
         </section>
 
         <MarketingFooter />
+        <ReconAIChat variant="landing" />
       </div>
     </LandingExperience>
   );

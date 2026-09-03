@@ -1,0 +1,4 @@
+bank_transaction_id,settlement_ref,amount,transaction_date,description
+DEMO_BNK_0001,SET_0001,370605,2026-08-08T02:00:00,DEMO SYNTHETIC - Payout ORD_0001 correct amount
+DEMO_BNK_0002,SET_0002,61713,2026-08-15T20:24:00,DEMO SYNTHETIC - Payout ORD_0002 deliberate amount mismatch
+DEMO_BNK_0004,SET_0029,254473,2026-08-12T01:01:00,DEMO SYNTHETIC - Payout ORD_0033 refund-adjusted amount

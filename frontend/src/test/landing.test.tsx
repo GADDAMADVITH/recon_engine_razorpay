@@ -142,6 +142,14 @@ describe("marketing landing page", () => {
       screen.queryByRole("heading", { name: "Reconciliation Command Center" }),
     ).not.toBeInTheDocument();
   });
+
+  it("renders the Ask ReconEngine AI entry point", async () => {
+    renderAt("/");
+    expect(
+      await screen.findByRole("button", { name: /Ask ReconEngine AI/i }, { timeout: 8000 }),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("recon-ai-chat-button")).toBeInTheDocument();
+  });
 });
 
 describe("console routes remain intact", () => {

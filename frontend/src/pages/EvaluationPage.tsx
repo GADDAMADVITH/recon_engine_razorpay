@@ -28,7 +28,7 @@ export function EvaluationPage() {
         subtitle="Evaluation uses ground truth to measure engine correctness. Ground truth never participates in production reconciliation."
       />
 
-      <div className="mb-10 rounded-lg border border-[var(--color-border)] bg-white px-5 py-4">
+      <div className="mb-10 rounded-xl border border-[var(--color-border)] bg-white px-5 py-4 shadow-[0_1px_3px_rgba(11,27,43,0.04)]">
         <p className="text-sm leading-relaxed text-[var(--color-muted)]">
           This page measures reconciliation engine quality against labeled scenarios.
           It reflects research and validation metrics — not live production transaction data.

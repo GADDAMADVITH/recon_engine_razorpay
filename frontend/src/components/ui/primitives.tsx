@@ -1,5 +1,5 @@
 import { ArrowRight, Check, RefreshCw } from "lucide-react";
-import { cn, formatExceptionLabel, getExceptionSeverity } from "../../utils/format";
+import { cn, formatExceptionLabel, formatStatusLabel, getExceptionSeverity } from "../../utils/format";
 
 /* ── Layout ── */
 
@@ -15,11 +15,11 @@ export function PageHeader({
   return (
     <header className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h1 className="text-[2rem] font-semibold tracking-[-0.03em] text-[var(--color-ink)] sm:text-[2.25rem]">
+        <h1 className="text-[2rem] font-medium tracking-[-0.045em] text-[var(--color-ink)] sm:text-[2.35rem]">
           {title}
         </h1>
         {subtitle ? (
-          <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-[var(--color-muted)]">
+          <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-[var(--color-muted)] sm:text-[16px]">
             {subtitle}
           </p>
         ) : null}
@@ -41,11 +41,11 @@ export function SectionLabel({
   return (
     <div className="mb-5 flex items-end justify-between gap-4 border-b border-[var(--color-border)] pb-4">
       <div>
-        <h2 className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--color-muted)]">
+        <h2 className="text-[13px] font-medium tracking-tight text-[var(--color-ink)]">
           {title}
         </h2>
         {description ? (
-          <p className="mt-1 text-sm text-[var(--color-muted)]">{description}</p>
+          <p className="mt-1.5 text-sm text-[var(--color-muted)]">{description}</p>
         ) : null}
       </div>
       {action}
@@ -101,6 +101,41 @@ export function StatPill({
   );
 }
 
+/**
+ * An elevated metric card — used in stat summary rows on the Dashboard,
+ * Reconciliation, and Bank Import pages.
+ */
+export function MetricCard({
+  value,
+  label,
+  accent,
+}: {
+  value: string | number;
+  label: string;
+  accent?: "success" | "danger" | "warning" | "brand" | "default";
+}) {
+  const accentColors = {
+    success: "text-[var(--color-success)]",
+    danger: "text-[var(--color-danger)]",
+    warning: "text-[var(--color-warning)]",
+    brand: "text-[var(--color-accent-blue)]",
+    default: "text-[var(--color-ink)]",
+  };
+  return (
+    <div className="flex flex-col gap-2 rounded-2xl border border-[var(--color-border)] bg-white px-5 py-5 shadow-[0_1px_0_rgba(11,27,43,0.04),0_8px_24px_rgba(11,27,43,0.04)]">
+      <span
+        className={cn(
+          "text-[2.35rem] font-medium leading-none tabular-nums tracking-[-0.045em]",
+          accentColors[accent ?? "default"],
+        )}
+      >
+        {value}
+      </span>
+      <span className="text-[13px] font-medium text-[var(--color-muted)]">{label}</span>
+    </div>
+  );
+}
+
 /* ── Buttons ── */
 
 export function Button({
@@ -118,24 +153,24 @@ export function Button({
 }) {
   const variants = {
     primary:
-      "bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-hover)] active:scale-[0.98]",
+      "rounded-full bg-gradient-to-r from-[#2563EB] to-[#0891B2] text-white shadow-[0_8px_20px_rgba(37,99,235,0.28)] hover:shadow-[0_14px_32px_rgba(37,99,235,0.38)] hover:brightness-105 active:scale-[0.98]",
     secondary:
-      "border border-[var(--color-border)] bg-white text-[var(--color-ink)] hover:border-black/20 hover:bg-[var(--color-bg)] active:scale-[0.98]",
+      "rounded-full border border-[var(--color-border)] bg-white text-[var(--color-ink)] hover:border-[var(--color-accent)]/30 hover:bg-white active:scale-[0.98]",
     ghost:
-      "text-[var(--color-muted)] hover:text-[var(--color-ink)] hover:bg-black/[0.04] active:scale-[0.98]",
+      "rounded-lg text-[var(--color-muted)] hover:text-[var(--color-ink)] hover:bg-black/[0.03] active:scale-[0.98]",
     danger:
-      "border border-[var(--color-danger)]/20 bg-[var(--color-danger)]/5 text-[var(--color-danger)] hover:bg-[var(--color-danger)]/10",
+      "rounded-full border border-[var(--color-danger)]/20 bg-[var(--color-danger)]/5 text-[var(--color-danger)] hover:bg-[var(--color-danger)]/10",
   };
   const sizes = {
-    sm: "h-8 px-3 text-xs gap-1.5",
+    sm: "h-8 px-3.5 text-xs gap-1.5",
     md: "h-10 px-4 text-sm gap-2",
-    lg: "h-11 px-5 text-sm gap-2",
+    lg: "h-11 px-5 text-[15px] gap-2",
   };
   return (
     <button
       type={type}
       className={cn(
-        "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-150 disabled:pointer-events-none disabled:opacity-40",
+        "inline-flex items-center justify-center font-medium transition-all duration-150 disabled:pointer-events-none disabled:opacity-40",
         variants[variant],
         sizes[size],
         className,
@@ -165,6 +200,7 @@ export function PrimaryCTA({
     <Button
       variant="primary"
       size="lg"
+      className="rounded-full px-5 shadow-[0_8px_20px_rgba(37,99,235,0.28)] hover:shadow-[0_14px_32px_rgba(37,99,235,0.38)]"
       onClick={onClick}
       disabled={loading}
       aria-busy={loading}
@@ -227,16 +263,22 @@ export function StatusBadge({
   status: string;
   reconciled: boolean;
 }) {
+  // Derive a two-tone style based on reconciliation outcome
+  const isRefundAdjusted = status.includes("refund_adjustment");
+  const bgColor = reconciled
+    ? isRefundAdjusted
+      ? "bg-[var(--color-warning)]/10 text-[var(--color-warning)]"
+      : "bg-[var(--color-success)]/10 text-[var(--color-success)]"
+    : "bg-[var(--color-danger)]/10 text-[var(--color-danger)]";
+
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium",
-        reconciled
-          ? "bg-[var(--color-success)]/10 text-[var(--color-success)]"
-          : "bg-[var(--color-danger)]/10 text-[var(--color-danger)]",
+        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+        bgColor,
       )}
     >
-      {status.replace(/_/g, " ")}
+      {formatStatusLabel(status)}
     </span>
   );
 }
@@ -249,7 +291,7 @@ export function SeverityBadge({ severity }: { severity: "critical" | "warning" |
   };
   const labels = { critical: "Critical", warning: "Warning", info: "Info" };
   return (
-    <span className={cn("rounded-md px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide", styles[severity])}>
+    <span className={cn("rounded-full px-2.5 py-0.5 text-[11px] font-medium", styles[severity])}>
       {labels[severity]}
     </span>
   );
@@ -335,7 +377,7 @@ export function SettingRow({
 
 export function LoadingState({ label = "Loading reconciliation data..." }: { label?: string }) {
   return (
-    <div className="flex min-h-[320px] flex-col items-center justify-center">
+    <div className="flex min-h-[320px] flex-col items-center justify-center rounded-xl border border-[var(--color-border)] bg-white shadow-[0_1px_3px_rgba(11,27,43,0.04)]">
       <div
         className="mb-4 h-5 w-5 animate-[spin_0.8s_linear_infinite] rounded-full border-2 border-[var(--color-border)] border-t-[var(--color-accent)]"
         role="status"
@@ -354,9 +396,10 @@ export function ErrorState({
   onRetry?: () => void;
 }) {
   return (
-    <div className="flex min-h-[320px] flex-col items-center justify-center text-center">
-      <p className="text-base font-medium text-[var(--color-ink)]">Unable to load data</p>
-      <p className="mt-2 max-w-md text-sm text-[var(--color-muted)]">{message}</p>
+    <div className="flex min-h-[320px] flex-col items-center justify-center rounded-xl border border-[var(--color-danger)]/20 bg-white text-center shadow-[0_1px_3px_rgba(11,27,43,0.04)]">
+      <div className="mb-1 h-2 w-2 rounded-full bg-[var(--color-danger)]" aria-hidden />
+      <p className="mt-3 text-base font-semibold text-[var(--color-ink)]">Unable to load data</p>
+      <p className="mt-2 max-w-md px-6 text-sm text-[var(--color-muted)]">{message}</p>
       {onRetry ? (
         <Button variant="primary" className="mt-6" onClick={onRetry}>
           Retry connection
@@ -368,9 +411,9 @@ export function ErrorState({
 
 export function EmptyState({ title, description }: { title: string; description: string }) {
   return (
-    <div className="py-16 text-center">
-      <p className="text-base font-medium">{title}</p>
-      <p className="mt-2 text-sm text-[var(--color-muted)]">{description}</p>
+    <div className="rounded-xl border border-dashed border-[var(--color-border)] bg-white px-8 py-14 text-center">
+      <p className="text-[15px] font-semibold text-[var(--color-ink)]">{title}</p>
+      <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-[var(--color-muted)]">{description}</p>
     </div>
   );
 }

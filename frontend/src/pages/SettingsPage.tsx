@@ -28,7 +28,7 @@ export function SettingsPage() {
 
       <section className="mb-10">
         <SectionLabel title="API Connection" />
-        <dl className="rounded-lg border border-[var(--color-border)] bg-white px-5">
+        <dl className="rounded-xl border border-[var(--color-border)] bg-white px-5 shadow-[0_1px_3px_rgba(11,27,43,0.04)]">
           <SettingRow
             label="Endpoint"
             value={<span className="font-mono text-xs">{api.baseUrl}</span>}
@@ -48,7 +48,7 @@ export function SettingsPage() {
         {report.error || !report.data ? (
           <p className="text-sm text-[var(--color-muted)]">Engine configuration unavailable.</p>
         ) : (
-          <dl className="rounded-lg border border-[var(--color-border)] bg-white px-5">
+          <dl className="rounded-xl border border-[var(--color-border)] bg-white px-5 shadow-[0_1px_3px_rgba(11,27,43,0.04)]">
             <SettingRow label="Engine" value={report.data.metadata.engine} />
             <SettingRow label="Mode" value="Deterministic" status="ok" />
             <SettingRow
@@ -71,7 +71,7 @@ export function SettingsPage() {
 
       <section className="mb-10">
         <SectionLabel title="Evaluation" />
-        <dl className="rounded-lg border border-[var(--color-border)] bg-white px-5">
+        <dl className="rounded-xl border border-[var(--color-border)] bg-white px-5 shadow-[0_1px_3px_rgba(11,27,43,0.04)]">
           <SettingRow
             label="Ground truth boundary"
             value="Evaluation layer only"
@@ -91,7 +91,7 @@ export function SettingsPage() {
 
       <section>
         <SectionLabel title="Developer" />
-        <div className="rounded-lg border border-[var(--color-border)] bg-white px-5 py-4">
+        <div className="rounded-xl border border-[var(--color-border)] bg-white px-5 py-4 shadow-[0_1px_3px_rgba(11,27,43,0.04)]">
           <p className="mb-4 text-sm text-[var(--color-muted)]">
             ReconEngine frontend v1.0.0 · API documentation available at the backend OpenAPI endpoint.
           </p>

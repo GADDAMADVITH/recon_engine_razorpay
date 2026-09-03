@@ -4,6 +4,9 @@ ReconEngine is a deterministic financial reconciliation engine. This document
 describes the current synthetic data foundation and how production inputs differ
 from evaluation metadata.
 
+For the evaluator walkthrough, current HTTP routes, demo scenarios, and local
+run commands (API on port **8001**), see [README.md](README.md).
+
 ## Components (current milestone)
 
 | Component | Role | Consumes ground truth? |
@@ -26,7 +29,17 @@ rules remain in `recon_engine.py`.
 | `/health` | GET | API health check |
 | `/api/v1/reconciliation/report` | GET | Run reconciliation on production CSVs; return full `report.json` structure |
 | `/api/v1/reconciliation/summary` | GET | Concise summary: order counts, status counts, exception counts |
+| `/api/v1/reconciliation/{order_id}/audit` | GET | Structured audit for one order (production report) |
+| `/api/v1/reconciliation/{order_id}/audit/explain` | GET | Gemini explanation of that production-report audit |
+| `/api/v1/reconciliation/audit` | POST | Structured audit from a supplied `order_result` |
+| `/api/v1/reconciliation/audit/explain` | POST | Gemini explanation from a supplied `order_result` |
+| `/api/v1/reconciliation/import-bank` | POST | Upload bank CSV; reconcile against production orders/settlements |
 | `/api/v1/evaluation` | GET | Run reconciliation, then evaluate against `ground_truth.json` |
+| `/api/v1/sources/razorpay/sync` | POST | Live Razorpay fetch + map + reconcile when possible |
+| `/api/v1/sources/razorpay/reconcile-demo` | POST | Synthetic Razorpay-shaped demo (does not call live Razorpay) |
+| `/api/v1/sources/razorpay/verify-payment` | POST | Checkout signature verification (dev utility) |
+
+The full table with purpose notes is also in [README.md](README.md#10-api-endpoints).
 
 **Ground truth boundary:** `ground_truth.json` is used **only** by the
 evaluation endpoint (via `metrics.py`). Reconciliation endpoints read only the
@@ -35,8 +48,10 @@ four production CSV files.
 **Local development:**
 
 ```bash
-uvicorn api:app --reload
+./venv/bin/uvicorn api:app --reload --port 8001
 ```
+
+The frontend defaults to `http://127.0.0.1:8001` (`VITE_API_BASE_URL`).
 
 **Error handling:** Missing input files return HTTP 404; validation failures
 return HTTP 400; unexpected errors return HTTP 500 without Python tracebacks.
