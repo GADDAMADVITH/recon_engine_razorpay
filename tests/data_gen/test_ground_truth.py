@@ -42,5 +42,5 @@ def test_build_ground_truth_in_memory():
     refunds = generate_refunds(orders)
     bank = generate_bank_transactions(settlements, orders)
     gt = build_ground_truth(orders, settlements, refunds, bank)
-    assert len(gt["scenarios"]) == 50
+    assert len(gt["scenarios"]) == 100
     assert len(gt["scenario_counts"]) == 10

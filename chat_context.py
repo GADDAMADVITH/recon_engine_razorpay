@@ -26,7 +26,9 @@ PRODUCT_KNOWLEDGE = (
     "Bank Import lets evaluators upload a deterministic demo CSV and reconcile "
     "against production-shaped orders without waiting on live Razorpay settlements. "
     "To try the demo: Open ReconEngine → Bank Import → Load Demo CSV → "
-    "Run Reconciliation → open a scenario card → Pipeline / Audit Trail → Explain with AI."
+    "Run Reconciliation → open a scenario card → Pipeline / Audit Trail → Explain with AI. "
+    "The Finance Controller Agent proposes bounded advisory decisions that require human "
+    "approval before a simulated action is recorded. ReconEngine does not move money."
 )
 
 LANDING_PRODUCT_KNOWLEDGE = (
@@ -195,6 +197,9 @@ def build_chat_prompt(*, message: str, grounding: dict[str, Any]) -> str:
         "- For application-data questions, answer only from APPLICATION_CONTEXT.\n"
         f"{landing_extra}"
         "- Do not claim to have performed actions you did not perform.\n"
+        "- Do not approve Finance Controller actions, execute refunds/captures/payouts, "
+        "or move money. You are explanation/chat only.\n"
+        "- Do not invent or change Finance Controller decisions.\n"
         "- Do not expose secrets, credentials, API keys, or internal URLs.\n"
         "- Do not quote or reprint APPLICATION_CONTEXT JSON.\n"
         "- Write clear plain text (short paragraphs or bullets). No markdown fences.\n"

@@ -1,0 +1,127 @@
+{
+  "dataset": "held_out_finance_controller_v1",
+  "held_out": true,
+  "label_source": "Human-authored expected_decision labels following LABELING_GUIDE priority rules in finance_agent_eval.py. Labels were written into this dataset without calling decide_for_order / run_finance_controller.",
+  "measurement_note": "Measured on the held-out synthetic evaluation dataset. This is not a claim of production accuracy.",
+  "records_evaluated": 69,
+  "correct_decisions": 69,
+  "incorrect_decisions": 0,
+  "accuracy": 1.0,
+  "throughput": {
+    "records_processed": 69,
+    "elapsed_seconds": 0.002924,
+    "records_per_second": 23594.293
+  },
+  "per_decision": {
+    "ESCALATE_MISSING_BANK": {
+      "support": 10,
+      "correct": 10,
+      "true_positives": 10,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "ESCALATE_MISSING_SETTLEMENT": {
+      "support": 10,
+      "correct": 10,
+      "true_positives": 10,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "FLAG_FOR_REVIEW": {
+      "support": 24,
+      "correct": 24,
+      "true_positives": 24,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "NO_ACTION": {
+      "support": 15,
+      "correct": 15,
+      "true_positives": 15,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "VERIFY_REFUND": {
+      "support": 10,
+      "correct": 10,
+      "true_positives": 10,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    }
+  },
+  "confusion_matrix": {
+    "labels": [
+      "ESCALATE_MISSING_BANK",
+      "ESCALATE_MISSING_SETTLEMENT",
+      "FLAG_FOR_REVIEW",
+      "NO_ACTION",
+      "VERIFY_REFUND"
+    ],
+    "matrix": {
+      "ESCALATE_MISSING_BANK": {
+        "ESCALATE_MISSING_BANK": 10,
+        "ESCALATE_MISSING_SETTLEMENT": 0,
+        "FLAG_FOR_REVIEW": 0,
+        "NO_ACTION": 0,
+        "VERIFY_REFUND": 0
+      },
+      "ESCALATE_MISSING_SETTLEMENT": {
+        "ESCALATE_MISSING_BANK": 0,
+        "ESCALATE_MISSING_SETTLEMENT": 10,
+        "FLAG_FOR_REVIEW": 0,
+        "NO_ACTION": 0,
+        "VERIFY_REFUND": 0
+      },
+      "FLAG_FOR_REVIEW": {
+        "ESCALATE_MISSING_BANK": 0,
+        "ESCALATE_MISSING_SETTLEMENT": 0,
+        "FLAG_FOR_REVIEW": 24,
+        "NO_ACTION": 0,
+        "VERIFY_REFUND": 0
+      },
+      "NO_ACTION": {
+        "ESCALATE_MISSING_BANK": 0,
+        "ESCALATE_MISSING_SETTLEMENT": 0,
+        "FLAG_FOR_REVIEW": 0,
+        "NO_ACTION": 15,
+        "VERIFY_REFUND": 0
+      },
+      "VERIFY_REFUND": {
+        "ESCALATE_MISSING_BANK": 0,
+        "ESCALATE_MISSING_SETTLEMENT": 0,
+        "FLAG_FOR_REVIEW": 0,
+        "NO_ACTION": 0,
+        "VERIFY_REFUND": 10
+      }
+    },
+    "rows_are_expected": true,
+    "columns_are_predicted": true
+  },
+  "error_analysis": {
+    "false_positive_definition": "For a decision class C: the agent predicted C when the labeled expected decision was not C.",
+    "false_negative_definition": "For a decision class C: the labeled expected decision was C but the agent predicted a different decision.",
+    "unresolved_cases": 54,
+    "unknown_unsupported_predictions": 0,
+    "incorrect_count": 0
+  },
+  "errors": [],
+  "definitions": {
+    "false_positive": "For a decision class C: the agent predicted C when the labeled expected decision was not C.",
+    "false_negative": "For a decision class C: the labeled expected decision was C but the agent predicted a different decision."
+  }
+}

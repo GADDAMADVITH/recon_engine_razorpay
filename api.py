@@ -27,6 +27,22 @@ from ai_explainer import (
 )
 from audit import build_structured_audit
 from chat_context import build_chat_grounding
+from finance_agent import run_finance_controller
+from finance_agent_eval import evaluate_finance_controller, write_evaluation_result
+from finance_agent_run import (
+    find_run_id_for_order,
+    get_approval_queue,
+    get_lifecycle_metrics,
+    list_agent_run_history,
+    run_finance_controller_agent,
+)
+from finance_agent_plan import build_finance_controller_agent_plan
+from finance_actions import (
+    FinanceActionError,
+    approve_and_record_action,
+    reject_action,
+    reset_action_store,
+)
 from integrations.data_sources import load_csv_dataset
 from integrations.razorpay.client import (
     RazorpayAPIError,
@@ -319,6 +335,40 @@ class ChatResponse(BaseModel):
     model: str | None = None
 
 
+class FinanceControllerRunRequest(BaseModel):
+    """Optional payload for the finance controller.
+
+    When omitted, the controller runs on the current production reconciliation
+    report. When ``order_results`` is provided, it must be engine-computed
+    order_result dicts (e.g. from bank-import) — the agent never invents facts.
+    """
+
+    order_results: list[dict[str, Any]] | None = None
+
+
+class FinanceControllerApproveRequest(BaseModel):
+    """Human approval for a simulated, record-only Finance Controller action.
+
+    ``agent_decision`` is verified against the authoritative agent — never trusted.
+    Optional ``order_result`` supplies the same engine facts shown in the drawer
+    (e.g. bank-import). When omitted, the production report is used.
+    """
+
+    order_id: str = Field(..., min_length=1, max_length=64)
+    agent_decision: str = Field(..., min_length=1, max_length=64)
+    order_result: dict[str, Any] | None = None
+    run_id: str | None = Field(default=None, max_length=64)
+
+
+class FinanceControllerRejectRequest(BaseModel):
+    """Human rejection for a simulated Finance Controller action (no money movement)."""
+
+    order_id: str = Field(..., min_length=1, max_length=64)
+    agent_decision: str = Field(..., min_length=1, max_length=64)
+    order_result: dict[str, Any] | None = None
+    run_id: str | None = Field(default=None, max_length=64)
+
+
 class RazorpayPaymentVerificationRequest(BaseModel):
     razorpay_order_id: str = Field(..., min_length=1)
     razorpay_payment_id: str = Field(..., min_length=1)
@@ -396,6 +446,16 @@ async def handle_value_error(_request: Request, exc: ValueError) -> JSONResponse
     return JSONResponse(
         status_code=400,
         content=ErrorResponse(detail=str(exc)).model_dump(),
+    )
+
+
+@app.exception_handler(FinanceActionError)
+async def handle_finance_action_error(
+    _request: Request, exc: FinanceActionError
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=ErrorResponse(detail=exc.detail).model_dump(),
     )
 
 
@@ -607,6 +667,322 @@ def post_chat(body: ChatRequest) -> ChatResponse:
         provider="gemini",
         model=result.model,
     )
+
+
+@app.post(
+    f"/api/{API_VERSION}/finance-controller/run",
+    tags=["finance-controller"],
+    responses={
+        400: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+)
+def post_finance_controller_run(
+    body: FinanceControllerRunRequest | None = None,
+) -> dict[str, Any]:
+    """Run the bounded Finance Controller Agent on reconciliation results.
+
+    Empty body → current production reconciliation report (100+ orders).
+    Optional ``order_results`` → engine-computed results (e.g. bank-import batch).
+
+    Read-only: does not mutate reconciliation outcomes, datasets, or Razorpay state.
+    """
+    payload = body or FinanceControllerRunRequest()
+    if payload.order_results is not None:
+        batch = run_finance_controller(payload.order_results)
+        data_source = "provided_order_results"
+    else:
+        batch = run_finance_controller(run_reconciliation_report())
+        data_source = "production_reconciliation_report"
+
+    payload_out = batch.to_dict()
+    # Make ORIGINAL RESULT vs AGENT DECISION explicit in the API envelope.
+    enriched: list[dict[str, Any]] = []
+    for decision in payload_out["decisions"]:
+        enriched.append(
+            {
+                **decision,
+                "original_result": {
+                    "order_id": decision["order_id"],
+                    "status": decision["original_status"],
+                    "reconciled": decision["original_reconciled"],
+                    "confidence_score": decision["confidence_score"],
+                    "exception_types": list(decision["exception_types"]),
+                },
+                "agent_decision": {
+                    "decision": decision["decision"],
+                    "action": decision["action"],
+                    "reason": decision["reason"],
+                    "requires_approval": decision["requires_approval"],
+                    "evidence": decision["evidence"],
+                    "provider": decision.get("provider"),
+                    "agent": decision.get("agent"),
+                    "agent_version": decision.get("agent_version"),
+                },
+            }
+        )
+    payload_out["decisions"] = enriched
+    payload_out["data_source"] = data_source
+    return payload_out
+
+
+@app.post(
+    f"/api/{API_VERSION}/finance-controller/run-agent",
+    tags=["finance-controller"],
+    responses={
+        400: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+)
+def post_finance_controller_run_agent(
+    body: FinanceControllerRunRequest | None = None,
+) -> dict[str, Any]:
+    """Run the Finance Controller as an agent workflow with decision traces.
+
+    Orchestrates existing ``finance_agent.py`` policy — does not change rules.
+    Empty body → production reconciliation report.
+    Optional ``order_results`` → provided engine-computed results.
+    """
+    payload = body or FinanceControllerRunRequest()
+    if payload.order_results is not None:
+        return run_finance_controller_agent(
+            payload.order_results,
+            data_source="provided_order_results",
+        )
+    return run_finance_controller_agent(
+        run_reconciliation_report(),
+        data_source="production_reconciliation_report",
+    )
+
+
+@app.post(
+    f"/api/{API_VERSION}/finance-controller/agent-plan",
+    tags=["finance-controller"],
+    responses={
+        400: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+)
+def post_finance_controller_agent_plan(
+    body: FinanceControllerRunRequest | None = None,
+) -> dict[str, Any]:
+    """Batch-level agent orchestration: analysis, priority queue, and work plan.
+
+    Reuses deterministic ``finance_agent.py`` classification — does not call Gemini
+    for decisions or priority. Never moves money or mutates reconciliation facts.
+    Empty body → production reconciliation report (100+ orders).
+    """
+    payload = body or FinanceControllerRunRequest()
+    if payload.order_results is not None:
+        return build_finance_controller_agent_plan(
+            payload.order_results,
+            data_source="provided_order_results",
+        )
+    return build_finance_controller_agent_plan(
+        run_reconciliation_report(),
+        data_source="production_reconciliation_report",
+    )
+
+
+@app.get(
+    f"/api/{API_VERSION}/finance-controller/evaluation",
+    tags=["finance-controller"],
+    responses={
+        404: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+)
+def get_finance_controller_evaluation() -> dict[str, Any]:
+    """Evaluate Finance Controller decisions on the held-out labeled dataset.
+
+    Uses ``data/finance_controller_eval_v1.json`` (not demo/production data).
+    Observes the existing agent — does not change policy or reconciliation.
+    """
+    result = evaluate_finance_controller()
+    write_evaluation_result(result)
+    return result
+
+
+@app.post(
+    f"/api/{API_VERSION}/finance-controller/actions/approve",
+    tags=["finance-controller"],
+    responses={
+        400: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+        409: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+)
+def post_finance_controller_approve(
+    body: FinanceControllerApproveRequest,
+) -> dict[str, Any]:
+    """Human-gated approval of a simulated Finance Controller action.
+
+    Recomputes the agent decision from engine evidence. Never trusts the
+    client-provided decision. Never moves money or mutates reconciliation facts.
+    Idempotent for the same order + mapped action type.
+    """
+    production_lookup: dict[str, Any] | None = None
+    if body.order_result is None:
+        report = run_reconciliation_report()
+        production_lookup = {
+            str(order["order_id"]): order for order in report.get("order_results", [])
+        }
+
+    run_id = body.run_id or find_run_id_for_order(body.order_id)
+    return approve_and_record_action(
+        order_id=body.order_id,
+        claimed_agent_decision=body.agent_decision,
+        order_result=body.order_result,
+        production_lookup=production_lookup,
+        run_id=run_id,
+    )
+
+
+@app.post(
+    f"/api/{API_VERSION}/finance-controller/actions/reject",
+    tags=["finance-controller"],
+    responses={
+        400: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+        409: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+)
+def post_finance_controller_reject(
+    body: FinanceControllerRejectRequest,
+) -> dict[str, Any]:
+    """Human rejection of a proposed simulated Finance Controller action.
+
+    PENDING → REJECTED. Never moves money. Never mutates reconciliation facts.
+    Idempotent when already rejected. Invalid after RECORDED/APPROVED.
+    """
+    production_lookup: dict[str, Any] | None = None
+    if body.order_result is None:
+        report = run_reconciliation_report()
+        production_lookup = {
+            str(order["order_id"]): order for order in report.get("order_results", [])
+        }
+
+    run_id = body.run_id or find_run_id_for_order(body.order_id)
+    return reject_action(
+        order_id=body.order_id,
+        claimed_agent_decision=body.agent_decision,
+        order_result=body.order_result,
+        production_lookup=production_lookup,
+        run_id=run_id,
+    )
+
+
+@app.get(
+    f"/api/{API_VERSION}/finance-controller/approval-queue",
+    tags=["finance-controller"],
+    responses={
+        500: {"model": ErrorResponse},
+    },
+)
+def get_finance_controller_approval_queue(run_id: str | None = None) -> dict[str, Any]:
+    """Pending/approval-gated decisions from the latest (or specified) agent run."""
+    return get_approval_queue(run_id=run_id)
+
+
+@app.get(
+    f"/api/{API_VERSION}/finance-controller/runs",
+    tags=["finance-controller"],
+    responses={
+        500: {"model": ErrorResponse},
+    },
+)
+def get_finance_controller_runs(limit: int = 20) -> dict[str, Any]:
+    """Agent run history with live action lifecycle counts."""
+    capped = max(1, min(limit, 50))
+    history = list_agent_run_history(limit=capped)
+    return {"runs": history, "count": len(history)}
+
+
+@app.get(
+    f"/api/{API_VERSION}/finance-controller/lifecycle",
+    tags=["finance-controller"],
+    responses={
+        500: {"model": ErrorResponse},
+    },
+)
+def get_finance_controller_lifecycle(run_id: str | None = None) -> dict[str, Any]:
+    """Batch-level human-in-the-loop lifecycle metrics for a run."""
+    return get_lifecycle_metrics(run_id=run_id)
+
+
+@app.get(
+    f"/api/{API_VERSION}/finance-controller/demo-status",
+    tags=["finance-controller"],
+    responses={
+        500: {"model": ErrorResponse},
+    },
+)
+def get_finance_controller_demo_status() -> dict[str, Any]:
+    """Compact demo readiness checks for Track 04 evaluation.
+
+    Does not expose secrets. Does not mutate datasets, policy, or reconciliation.
+    """
+    report = run_reconciliation_report()
+    orders = list(report.get("order_results") or [])
+    eval_result = evaluate_finance_controller()
+    checks = {
+        "api_reachable": True,
+        "reconciliation_data_available": len(orders) > 0,
+        "agent_endpoint_available": True,
+        "evaluation_endpoint_available": True,
+    }
+    ready = all(checks.values()) and len(orders) >= 50 and int(eval_result.get("records_evaluated") or 0) >= 50
+    return {
+        "ready": ready,
+        "checks": checks,
+        "operational_batch": {
+            "label": "Operational batch",
+            "records": len(orders),
+        },
+        "held_out_evaluation": {
+            "label": "Held-out evaluation",
+            "records_evaluated": int(eval_result.get("records_evaluated") or 0),
+            "accuracy": eval_result.get("accuracy"),
+            "measurement_note": eval_result.get("measurement_note"),
+        },
+        "money_moved": False,
+        "simulated_actions_only": True,
+        "human_approval_required": True,
+        "gemini_in_decision_path": False,
+        "secrets_exposed": False,
+    }
+
+
+@app.post(
+    f"/api/{API_VERSION}/finance-controller/demo-reset",
+    tags=["finance-controller"],
+    responses={
+        500: {"model": ErrorResponse},
+    },
+)
+def post_finance_controller_demo_reset() -> dict[str, Any]:
+    """Clear local/demo simulated action state only.
+
+    Does not alter reconciliation CSVs, held-out evaluation labels, agent policy,
+    amounts, confidence, or reconciliation status. Decisions remain deterministic.
+    """
+    reset_action_store()
+    return {
+        "reset": True,
+        "scope": "local_demo_action_store",
+        "datasets_untouched": True,
+        "evaluation_untouched": True,
+        "policy_untouched": True,
+        "reconciliation_untouched": True,
+        "money_moved": False,
+        "secrets_exposed": False,
+        "note": (
+            "Cleared simulated finance action records and their audit events only. "
+            "Re-run approve/reject for a fresh demo loop."
+        ),
+    }
 
 
 @app.get(

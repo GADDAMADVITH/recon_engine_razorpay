@@ -15,10 +15,10 @@ from faker import Faker
 # Configuration
 # ---------------------------------------------------------
 
-NUM_ORDERS = 50
-NUM_SETTLEMENTS = 50
-NUM_REFUNDS = 10
-NUM_BANK_TRANSACTIONS = 50
+NUM_ORDERS = 100
+NUM_SETTLEMENTS = 100
+NUM_REFUNDS = 20
+NUM_BANK_TRANSACTIONS = 100
 
 RANDOM_SEED = 42
 
@@ -120,6 +120,7 @@ REQUIRED_GROUND_TRUTH_ORDER_FIELDS: tuple[str, ...] = (
 )
 
 # Deterministic scenario assignment by order index (1-based).
+# Indices 1–50 preserve the original operational batch layout.
 SCENARIO_BY_ORDER_INDEX: dict[int, str] = {
     **{i: "exact_match" for i in range(1, 13)},
     **{i: "timestamp_within_tolerance" for i in range(13, 18)},
@@ -132,10 +133,22 @@ SCENARIO_BY_ORDER_INDEX: dict[int, str] = {
     **{i: "exact_match" for i in range(43, 46)},
     **{i: "duplicate_settlement" for i in range(46, 50)},
     50: "exact_match",
+    # Indices 51–100 mirror the same scenario mix for a 100-order operational batch.
+    **{i: "exact_match" for i in range(51, 63)},
+    **{i: "timestamp_within_tolerance" for i in range(63, 68)},
+    68: "timestamp_outside_tolerance",
+    **{i: "settlement_amount_mismatch" for i in range(69, 74)},
+    **{i: "missing_settlement" for i in range(74, 78)},
+    **{i: "missing_bank_transaction" for i in range(78, 83)},
+    **{i: "refund_adjusted" for i in range(83, 88)},
+    **{i: "reference_variation" for i in range(88, 93)},
+    **{i: "exact_match" for i in range(93, 96)},
+    **{i: "duplicate_settlement" for i in range(96, 100)},
+    100: "exact_match",
 }
 
 # Override exact_match defaults for orders with unadjusted refunds.
-for _idx in (5, 8, 10, 43, 44):
+for _idx in (5, 8, 10, 43, 44, 55, 58, 60, 93, 94):
     SCENARIO_BY_ORDER_INDEX[_idx] = "refund_unadjusted_mismatch"
 
 # Orders receiving refunds (index -> refund fraction of order amount).
@@ -150,15 +163,25 @@ REFUND_BY_ORDER_INDEX: dict[int, float] = {
     10: 0.05,
     43: 0.12,
     44: 0.08,
+    83: 0.25,
+    84: 0.50,
+    85: 0.75,
+    86: 0.30,
+    87: 0.15,
+    55: 0.10,
+    58: 0.20,
+    60: 0.05,
+    93: 0.12,
+    94: 0.08,
 }
 
-# Deterministic erroneous duplicate bank transactions (bank_index, source_settlement_id).
-DUP_BANK_ASSIGNMENTS: list[tuple[int, str]] = [
-    (46, "SET_0046"),  # related to ORD_0048 chain; not a valid primary link
-    (47, "SET_0047"),  # related to ORD_0048 secondary settlement
-    (48, "SET_0048"),  # related to ORD_0049 chain
-    (49, "SET_0049"),  # related to ORD_0049 secondary settlement
-    (50, "SET_0050"),  # erroneous duplicate for ORD_0050; not a valid link
+# Erroneous duplicate bank rows for the original 50-order block (fixed BNK ids).
+DUP_BANK_ASSIGNMENTS_BLOCK_1: list[tuple[int, str]] = [
+    (46, "SET_0046"),
+    (47, "SET_0047"),
+    (48, "SET_0048"),
+    (49, "SET_0049"),
+    (50, "SET_0050"),
 ]
 
 fake = Faker()
@@ -416,86 +439,125 @@ def generate_bank_transactions(
     settlements_df: pd.DataFrame,
     orders_df: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Generate bank transactions referencing settlements."""
+    """Generate bank transactions referencing settlements.
+
+    Phase 1 preserves BNK_0001–BNK_0050 layout for orders 1–50.
+    Phase 2 appends BNK_0051+ for orders 51–NUM_ORDERS.
+    """
     orders_by_id = orders_df.set_index("order_id")
     settlements_by_id = settlements_df.set_index("settlement_id")
     bank_rows: list[dict[str, Any]] = []
-    bank_index = 1
 
     order_index_by_id = {
         order_id_for_index(i): i for i in range(1, NUM_ORDERS + 1)
     }
 
-    for _, settlement in settlements_df.iterrows():
-        order_index = order_index_by_id[settlement["order_id"]]
-        scenario = SCENARIO_BY_ORDER_INDEX[order_index]
+    def _append_settlement_banks(order_indices: set[int], bank_index_start: int) -> int:
+        bank_index = bank_index_start
+        for _, settlement in settlements_df.iterrows():
+            order_index = order_index_by_id[settlement["order_id"]]
+            if order_index not in order_indices:
+                continue
+            scenario = SCENARIO_BY_ORDER_INDEX[order_index]
 
-        if scenario == "missing_bank_transaction":
-            continue
-
-        if scenario == "duplicate_settlement":
-            duplicate_ids = settlements_df[
-                settlements_df["order_id"] == settlement["order_id"]
-            ]["settlement_id"].tolist()
-            if settlement["settlement_id"] != duplicate_ids[0]:
+            if scenario == "missing_bank_transaction":
                 continue
 
-        settlement_id = settlement["settlement_id"]
-        settled_at = parse_iso_datetime(settlement["settled_at"])
-        amount = int(settlement["net_amount"])
+            if scenario == "duplicate_settlement":
+                duplicate_ids = settlements_df[
+                    settlements_df["order_id"] == settlement["order_id"]
+                ]["settlement_id"].tolist()
+                if settlement["settlement_id"] != duplicate_ids[0]:
+                    continue
 
-        if scenario == "settlement_amount_mismatch":
-            amount += SETTLEMENT_AMOUNT_MISMATCH_BANK_OFFSET_PAISE
+            settlement_id = settlement["settlement_id"]
+            settled_at = parse_iso_datetime(settlement["settled_at"])
+            amount = int(settlement["net_amount"])
 
-        if scenario == "reference_variation":
-            settlement_ref = alternate_settlement_ref(settlement_id)
-        else:
-            settlement_ref = settlement_id
+            if scenario == "settlement_amount_mismatch":
+                amount += SETTLEMENT_AMOUNT_MISMATCH_BANK_OFFSET_PAISE
 
-        transaction_date = settled_at + timedelta(
-            hours=bank_offset_hours(bank_index, scenario)
+            if scenario == "reference_variation":
+                settlement_ref = alternate_settlement_ref(settlement_id)
+            else:
+                settlement_ref = settlement_id
+
+            transaction_date = settled_at + timedelta(
+                hours=bank_offset_hours(bank_index, scenario)
+            )
+
+            bank_rows.append(
+                {
+                    "bank_transaction_id": bank_transaction_id_for_index(bank_index),
+                    "settlement_ref": settlement_ref,
+                    "amount": amount,
+                    "transaction_date": transaction_date.isoformat(),
+                    "description": f"Payout {settlement['order_id']}",
+                }
+            )
+            bank_index += 1
+        return bank_index
+
+    def _append_orphan_banks(order_indices: range | list[int], bank_index_start: int) -> int:
+        bank_index = bank_index_start
+        for order_index in order_indices:
+            if SCENARIO_BY_ORDER_INDEX.get(order_index) != "missing_settlement":
+                continue
+            order_id = order_id_for_index(order_index)
+            order_row = orders_by_id.loc[order_id]
+            order_created = parse_iso_datetime(order_row["created_at"])
+            _, _, net_amount = compute_settlement_amounts(int(order_row["amount"]))
+
+            bank_rows.append(
+                {
+                    "bank_transaction_id": bank_transaction_id_for_index(bank_index),
+                    "settlement_ref": f"ORPHAN-{order_id}",
+                    "amount": net_amount,
+                    "transaction_date": (order_created + timedelta(days=5)).isoformat(),
+                    "description": f"Unmatched payout {order_id}",
+                }
+            )
+            bank_index += 1
+        return bank_index
+
+    def _append_dup_banks(assignments: list[tuple[int, str]]) -> None:
+        for dup_bank_index, source_settlement_id in assignments:
+            source_settlement = settlements_by_id.loc[source_settlement_id]
+            settled_at = parse_iso_datetime(source_settlement["settled_at"])
+            bank_rows.append(
+                {
+                    "bank_transaction_id": bank_transaction_id_for_index(dup_bank_index),
+                    "settlement_ref": f"DUP-{source_settlement_id}",
+                    "amount": int(source_settlement["net_amount"]) + 100,
+                    "transaction_date": (settled_at + timedelta(days=2)).isoformat(),
+                    "description": f"Duplicate payout {source_settlement['order_id']}",
+                }
+            )
+
+    # Phase 1 — original 50-order bank layout (BNK_0001–BNK_0050).
+    bank_index = _append_settlement_banks(set(range(1, 51)), 1)
+    bank_index = _append_orphan_banks(range(24, 28), bank_index)
+    _append_dup_banks(DUP_BANK_ASSIGNMENTS_BLOCK_1)
+
+    # Phase 2 — orders 51–100 continue from BNK_0051.
+    if NUM_ORDERS > 50:
+        bank_index = _append_settlement_banks(set(range(51, NUM_ORDERS + 1)), 51)
+        bank_index = _append_orphan_banks(
+            [i for i in range(51, NUM_ORDERS + 1) if SCENARIO_BY_ORDER_INDEX[i] == "missing_settlement"],
+            bank_index,
         )
-
-        bank_rows.append(
-            {
-                "bank_transaction_id": bank_transaction_id_for_index(bank_index),
-                "settlement_ref": settlement_ref,
-                "amount": amount,
-                "transaction_date": transaction_date.isoformat(),
-                "description": f"Payout {settlement['order_id']}",
-            }
-        )
-        bank_index += 1
-
-    for order_index in range(24, 28):
-        order_id = order_id_for_index(order_index)
-        order_row = orders_by_id.loc[order_id]
-        order_created = parse_iso_datetime(order_row["created_at"])
-        _, _, net_amount = compute_settlement_amounts(int(order_row["amount"]))
-
-        bank_rows.append(
-            {
-                "bank_transaction_id": bank_transaction_id_for_index(bank_index),
-                "settlement_ref": f"ORPHAN-{order_id}",
-                "amount": net_amount,
-                "transaction_date": (order_created + timedelta(days=5)).isoformat(),
-                "description": f"Unmatched payout {order_id}",
-            }
-        )
-        bank_index += 1
-
-    for dup_bank_index, source_settlement_id in DUP_BANK_ASSIGNMENTS:
-        source_settlement = settlements_by_id.loc[source_settlement_id]
-        settled_at = parse_iso_datetime(source_settlement["settled_at"])
-        bank_rows.append(
-            {
-                "bank_transaction_id": bank_transaction_id_for_index(dup_bank_index),
-                "settlement_ref": f"DUP-{source_settlement_id}",
-                "amount": int(source_settlement["net_amount"]) + 100,
-                "transaction_date": (settled_at + timedelta(days=2)).isoformat(),
-                "description": f"Duplicate payout {source_settlement['order_id']}",
-            }
-        )
+        # Duplicate bank rows for second-block duplicate_settlement orders (+ ORD_0100 mirror).
+        dup_assignments_block_2: list[tuple[int, str]] = []
+        for order_index in list(range(96, 100)) + ([100] if NUM_ORDERS >= 100 else []):
+            order_settlements = settlements_df[
+                settlements_df["order_id"] == order_id_for_index(order_index)
+            ]
+            if order_settlements.empty:
+                continue
+            primary_sid = str(order_settlements.iloc[0]["settlement_id"])
+            dup_assignments_block_2.append((bank_index, primary_sid))
+            bank_index += 1
+        _append_dup_banks(dup_assignments_block_2)
 
     bank_rows.sort(key=lambda row: row["bank_transaction_id"])
     return pd.DataFrame(bank_rows[:NUM_BANK_TRANSACTIONS])
@@ -646,9 +708,13 @@ def build_ground_truth(
     )
 
     duplicate_settlement_records: list[dict[str, Any]] = []
-    for order_index in range(46, 50):
+    for order_index in range(1, NUM_ORDERS + 1):
+        if SCENARIO_BY_ORDER_INDEX[order_index] != "duplicate_settlement":
+            continue
         order_id = order_id_for_index(order_index)
         order_settlements = settlements_df[settlements_df["order_id"] == order_id]
+        if len(order_settlements) < 2:
+            continue
         primary_sid = str(order_settlements.iloc[0]["settlement_id"])
         secondary_sid = str(order_settlements.iloc[1]["settlement_id"])
         primary_bank = valid_bank_transactions_for_settlements(

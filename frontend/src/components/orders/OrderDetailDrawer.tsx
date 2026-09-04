@@ -1,11 +1,14 @@
 import { ArrowDown, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import type { OrderResult } from "../../types/api";
+import { api, ApiClientError } from "../../api/client";
+import type { FinanceAgentDecisionTrace, FinanceControllerDecision, OrderResult } from "../../types/api";
+import { decisionFromTrace } from "../../utils/financeAgent";
 import { useChatOrder } from "../../context/ChatOrderContext";
 import { cn, formatExceptionLabel, formatPaise, formatStatusLabel } from "../../utils/format";
 import { StatusBadge } from "../ui/primitives";
 import { AuditTrailPanel } from "../audit/AuditTrailPanel";
+import { AgentDecisionSection } from "../finance/AgentDecisionSection";
 
 function PipelineStage({
   title,
@@ -66,13 +69,44 @@ export function OrderDetailDrawer({
   order,
   onClose,
   scenarioLabel,
+  agentDecision: agentDecisionProp,
+  agentDecisionTrace: agentDecisionTraceProp,
 }: {
   order: OrderResult | null;
   onClose: () => void;
   scenarioLabel?: string;
+  /** Prefer when parent already ran FC on the same order_results (e.g. bank import). */
+  agentDecision?: FinanceControllerDecision | null;
+  /** Optional decision trace from run-agent (shown in drawer without extra fetch). */
+  agentDecisionTrace?: FinanceAgentDecisionTrace | null;
 }) {
   const [activeTab, setActiveTab] = useState<"pipeline" | "audit">("pipeline");
+  const [fetchedDecision, setFetchedDecision] = useState<FinanceControllerDecision | null>(null);
+  const [fetchedTrace, setFetchedTrace] = useState<FinanceAgentDecisionTrace | null>(null);
+  const [decisionLoading, setDecisionLoading] = useState(false);
+  const [decisionError, setDecisionError] = useState<string | null>(null);
   const { setActiveOrder, clearActiveOrder } = useChatOrder();
+
+  const loadDecision = useCallback(async (orderResult: OrderResult) => {
+    setDecisionLoading(true);
+    setDecisionError(null);
+    try {
+      const batch = await api.runFinanceControllerAgent({ order_results: [orderResult] });
+      const trace = batch.decisions[0] ?? null;
+      setFetchedTrace(trace);
+      setFetchedDecision(trace ? decisionFromTrace(trace) : null);
+    } catch (err) {
+      setFetchedDecision(null);
+      setFetchedTrace(null);
+      setDecisionError(
+        err instanceof ApiClientError
+          ? err.message
+          : "Unable to load Finance Controller decision.",
+      );
+    } finally {
+      setDecisionLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!order) {
@@ -93,7 +127,28 @@ export function OrderDetailDrawer({
     };
   }, [order, onClose, setActiveOrder, clearActiveOrder]);
 
+  useEffect(() => {
+    if (!order) {
+      setFetchedDecision(null);
+      setFetchedTrace(null);
+      setDecisionError(null);
+      setDecisionLoading(false);
+      return;
+    }
+    if (agentDecisionProp != null) {
+      setFetchedDecision(null);
+      setFetchedTrace(null);
+      setDecisionError(null);
+      setDecisionLoading(false);
+      return;
+    }
+    void loadDecision(order);
+  }, [order, agentDecisionProp, loadDecision]);
+
   if (!order) return null;
+
+  const agentDecision = agentDecisionProp ?? fetchedDecision;
+  const decisionTrace = agentDecisionTraceProp ?? fetchedTrace;
 
   const settlementStatus = order.primary_settlement_id
     ? order.amount_comparison.settlement_gross_matches_order === false
@@ -153,6 +208,20 @@ export function OrderDetailDrawer({
               >
                 Confidence {order.confidence_score}%
               </span>
+              {agentDecision ? (
+                <span
+                  className={cn(
+                    "rounded-md px-2 py-0.5 font-mono text-xs font-semibold",
+                    agentDecision.requires_approval
+                      ? "bg-[var(--color-warning)]/12 text-[var(--color-warning)]"
+                      : "bg-[var(--color-success)]/10 text-[var(--color-success)]",
+                  )}
+                  data-testid="drawer-agent-decision-badge"
+                >
+                  {agentDecision.decision}
+                  {agentDecision.requires_approval ? " · Requires approval" : ""}
+                </span>
+              ) : null}
             </div>
           </div>
           <button
@@ -251,6 +320,15 @@ export function OrderDetailDrawer({
               isLast
             />
           </section>
+
+          <AgentDecisionSection
+            order={order}
+            decision={agentDecision}
+            decisionTrace={decisionTrace}
+            loading={agentDecisionProp == null ? decisionLoading : false}
+            error={agentDecisionProp == null ? decisionError : null}
+            onRetry={agentDecisionProp == null ? () => void loadDecision(order) : undefined}
+          />
 
           <div className="mb-8 grid gap-6 sm:grid-cols-2">
             <section>

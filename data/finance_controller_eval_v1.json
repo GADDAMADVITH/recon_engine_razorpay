@@ -1,0 +1,3863 @@
+{
+  "dataset_id": "held_out_finance_controller_v1",
+  "held_out": true,
+  "purpose": "Finance Controller decision evaluation only \u2014 not demo data.",
+  "demo_data_note": "Demonstration continues to use production CSVs + data/demo_bank.csv. This file is held-out evaluation data and must not replace the demo path.",
+  "label_source": "Human-authored expected_decision labels following LABELING_GUIDE priority rules in finance_agent_eval.py. Labels were written into this dataset without calling decide_for_order / run_finance_controller.",
+  "labeling_guide": {
+    "version": "1.0",
+    "summary": "Expected Finance Controller decisions for held-out synthetic order_results. Labels follow this priority rubric from Track 04 agent requirements \u2014 they were NOT produced by calling finance_agent.py.",
+    "priority": [
+      {
+        "when": "MISSING_SETTLEMENT in exceptions",
+        "expected": "ESCALATE_MISSING_SETTLEMENT"
+      },
+      {
+        "when": "MISSING_BANK_TRANSACTION in exceptions",
+        "expected": "ESCALATE_MISSING_BANK"
+      },
+      {
+        "when": "BANK_AMOUNT_MISMATCH or SETTLEMENT_AMOUNT_MISMATCH",
+        "expected": "FLAG_FOR_REVIEW"
+      },
+      {
+        "when": "REFUND_NOT_REFLECTED",
+        "expected": "FLAG_FOR_REVIEW"
+      },
+      {
+        "when": "DUPLICATE_SETTLEMENT / DUPLICATE_BANK_TRANSACTION / ORPHAN_BANK_TRANSACTION / TIMESTAMP_OUTSIDE_TOLERANCE",
+        "expected": "FLAG_FOR_REVIEW"
+      },
+      {
+        "when": "REFUND_ADJUSTED (and no higher-priority blocking exception)",
+        "expected": "VERIFY_REFUND"
+      },
+      {
+        "when": "reconciled=true and exceptions \u2286 {TIMESTAMP_WITHIN_TOLERANCE, REFERENCE_VARIATION, REFUND_ADJUSTED} with no REFUND_ADJUSTED already handled above, or empty exceptions",
+        "expected": "NO_ACTION",
+        "note": "REFUND_ADJUSTED alone is VERIFY_REFUND (higher priority). Informational-only reconciled orders are NO_ACTION."
+      },
+      {
+        "when": "Ambiguous, unreconciled without mapped exception, or unknown type",
+        "expected": "FLAG_FOR_REVIEW"
+      }
+    ],
+    "definitions": {
+      "false_positive": "For a decision class C: the agent predicted C when the labeled expected decision was not C.",
+      "false_negative": "For a decision class C: the labeled expected decision was C but the agent predicted a different decision."
+    }
+  },
+  "record_count": 69,
+  "expected_decision_counts": {
+    "ESCALATE_MISSING_BANK": 10,
+    "ESCALATE_MISSING_SETTLEMENT": 10,
+    "FLAG_FOR_REVIEW": 24,
+    "NO_ACTION": 15,
+    "VERIFY_REFUND": 10
+  },
+  "records": [
+    {
+      "record_id": "FCEVAL_0001",
+      "scenario_type": "reconciled_clean",
+      "expected_decision": "NO_ACTION",
+      "label_rationale": "Reconciled with empty exceptions \u2192 NO_ACTION per labeling guide.",
+      "order_result": {
+        "order_id": "FCEVAL_0001",
+        "status": "reconciled",
+        "reconciled": true,
+        "confidence_score": 90,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0001"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0002",
+      "scenario_type": "reconciled_clean",
+      "expected_decision": "NO_ACTION",
+      "label_rationale": "Reconciled with empty exceptions \u2192 NO_ACTION per labeling guide.",
+      "order_result": {
+        "order_id": "FCEVAL_0002",
+        "status": "reconciled",
+        "reconciled": true,
+        "confidence_score": 91,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0002"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0003",
+      "scenario_type": "reconciled_clean",
+      "expected_decision": "NO_ACTION",
+      "label_rationale": "Reconciled with empty exceptions \u2192 NO_ACTION per labeling guide.",
+      "order_result": {
+        "order_id": "FCEVAL_0003",
+        "status": "reconciled",
+        "reconciled": true,
+        "confidence_score": 92,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0003"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0004",
+      "scenario_type": "reconciled_clean",
+      "expected_decision": "NO_ACTION",
+      "label_rationale": "Reconciled with empty exceptions \u2192 NO_ACTION per labeling guide.",
+      "order_result": {
+        "order_id": "FCEVAL_0004",
+        "status": "reconciled",
+        "reconciled": true,
+        "confidence_score": 93,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0004"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0005",
+      "scenario_type": "reconciled_clean",
+      "expected_decision": "NO_ACTION",
+      "label_rationale": "Reconciled with empty exceptions \u2192 NO_ACTION per labeling guide.",
+      "order_result": {
+        "order_id": "FCEVAL_0005",
+        "status": "reconciled",
+        "reconciled": true,
+        "confidence_score": 94,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0005"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0006",
+      "scenario_type": "reconciled_clean",
+      "expected_decision": "NO_ACTION",
+      "label_rationale": "Reconciled with empty exceptions \u2192 NO_ACTION per labeling guide.",
+      "order_result": {
+        "order_id": "FCEVAL_0006",
+        "status": "reconciled",
+        "reconciled": true,
+        "confidence_score": 95,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0006"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0007",
+      "scenario_type": "reconciled_clean",
+      "expected_decision": "NO_ACTION",
+      "label_rationale": "Reconciled with empty exceptions \u2192 NO_ACTION per labeling guide.",
+      "order_result": {
+        "order_id": "FCEVAL_0007",
+        "status": "reconciled",
+        "reconciled": true,
+        "confidence_score": 96,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0007"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0008",
+      "scenario_type": "reconciled_clean",
+      "expected_decision": "NO_ACTION",
+      "label_rationale": "Reconciled with empty exceptions \u2192 NO_ACTION per labeling guide.",
+      "order_result": {
+        "order_id": "FCEVAL_0008",
+        "status": "reconciled",
+        "reconciled": true,
+        "confidence_score": 97,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0008"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0009",
+      "scenario_type": "reconciled_timestamp_info",
+      "expected_decision": "NO_ACTION",
+      "label_rationale": "Reconciled with only TIMESTAMP_WITHIN_TOLERANCE (informational).",
+      "order_result": {
+        "order_id": "FCEVAL_0009",
+        "status": "reconciled_within_timestamp_tolerance",
+        "reconciled": true,
+        "confidence_score": 85,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "TIMESTAMP_WITHIN_TOLERANCE",
+            "message": "Within tolerance"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0009"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0010",
+      "scenario_type": "reconciled_timestamp_info",
+      "expected_decision": "NO_ACTION",
+      "label_rationale": "Reconciled with only TIMESTAMP_WITHIN_TOLERANCE (informational).",
+      "order_result": {
+        "order_id": "FCEVAL_0010",
+        "status": "reconciled_within_timestamp_tolerance",
+        "reconciled": true,
+        "confidence_score": 86,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "TIMESTAMP_WITHIN_TOLERANCE",
+            "message": "Within tolerance"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0010"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0011",
+      "scenario_type": "reconciled_timestamp_info",
+      "expected_decision": "NO_ACTION",
+      "label_rationale": "Reconciled with only TIMESTAMP_WITHIN_TOLERANCE (informational).",
+      "order_result": {
+        "order_id": "FCEVAL_0011",
+        "status": "reconciled_within_timestamp_tolerance",
+        "reconciled": true,
+        "confidence_score": 87,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "TIMESTAMP_WITHIN_TOLERANCE",
+            "message": "Within tolerance"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0011"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0012",
+      "scenario_type": "reconciled_timestamp_info",
+      "expected_decision": "NO_ACTION",
+      "label_rationale": "Reconciled with only TIMESTAMP_WITHIN_TOLERANCE (informational).",
+      "order_result": {
+        "order_id": "FCEVAL_0012",
+        "status": "reconciled_within_timestamp_tolerance",
+        "reconciled": true,
+        "confidence_score": 88,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "TIMESTAMP_WITHIN_TOLERANCE",
+            "message": "Within tolerance"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0012"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0013",
+      "scenario_type": "reconciled_reference_variation",
+      "expected_decision": "NO_ACTION",
+      "label_rationale": "Reconciled with only REFERENCE_VARIATION (informational).",
+      "order_result": {
+        "order_id": "FCEVAL_0013",
+        "status": "reconciled",
+        "reconciled": true,
+        "confidence_score": 88,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "REFERENCE_VARIATION",
+            "message": "Normalized reference"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0013"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0014",
+      "scenario_type": "reconciled_reference_variation",
+      "expected_decision": "NO_ACTION",
+      "label_rationale": "Reconciled with only REFERENCE_VARIATION (informational).",
+      "order_result": {
+        "order_id": "FCEVAL_0014",
+        "status": "reconciled",
+        "reconciled": true,
+        "confidence_score": 88,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "REFERENCE_VARIATION",
+            "message": "Normalized reference"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0014"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0015",
+      "scenario_type": "reconciled_reference_variation",
+      "expected_decision": "NO_ACTION",
+      "label_rationale": "Reconciled with only REFERENCE_VARIATION (informational).",
+      "order_result": {
+        "order_id": "FCEVAL_0015",
+        "status": "reconciled",
+        "reconciled": true,
+        "confidence_score": 88,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "REFERENCE_VARIATION",
+            "message": "Normalized reference"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0015"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0016",
+      "scenario_type": "missing_settlement",
+      "expected_decision": "ESCALATE_MISSING_SETTLEMENT",
+      "label_rationale": "MISSING_SETTLEMENT is highest-priority escalate rule.",
+      "order_result": {
+        "order_id": "FCEVAL_0016",
+        "status": "unreconciled_missing_settlement",
+        "reconciled": false,
+        "confidence_score": 20,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [],
+        "primary_settlement_id": null,
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": null,
+          "settlement_net_paise": null,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": false,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_SETTLEMENT",
+            "message": "No settlement found"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0016"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0017",
+      "scenario_type": "missing_settlement",
+      "expected_decision": "ESCALATE_MISSING_SETTLEMENT",
+      "label_rationale": "MISSING_SETTLEMENT is highest-priority escalate rule.",
+      "order_result": {
+        "order_id": "FCEVAL_0017",
+        "status": "unreconciled_missing_settlement",
+        "reconciled": false,
+        "confidence_score": 21,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [],
+        "primary_settlement_id": null,
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": null,
+          "settlement_net_paise": null,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": false,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_SETTLEMENT",
+            "message": "No settlement found"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0017"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0018",
+      "scenario_type": "missing_settlement",
+      "expected_decision": "ESCALATE_MISSING_SETTLEMENT",
+      "label_rationale": "MISSING_SETTLEMENT is highest-priority escalate rule.",
+      "order_result": {
+        "order_id": "FCEVAL_0018",
+        "status": "unreconciled_missing_settlement",
+        "reconciled": false,
+        "confidence_score": 22,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [],
+        "primary_settlement_id": null,
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": null,
+          "settlement_net_paise": null,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": false,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_SETTLEMENT",
+            "message": "No settlement found"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0018"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0019",
+      "scenario_type": "missing_settlement",
+      "expected_decision": "ESCALATE_MISSING_SETTLEMENT",
+      "label_rationale": "MISSING_SETTLEMENT is highest-priority escalate rule.",
+      "order_result": {
+        "order_id": "FCEVAL_0019",
+        "status": "unreconciled_missing_settlement",
+        "reconciled": false,
+        "confidence_score": 23,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [],
+        "primary_settlement_id": null,
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": null,
+          "settlement_net_paise": null,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": false,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_SETTLEMENT",
+            "message": "No settlement found"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0019"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0020",
+      "scenario_type": "missing_settlement",
+      "expected_decision": "ESCALATE_MISSING_SETTLEMENT",
+      "label_rationale": "MISSING_SETTLEMENT is highest-priority escalate rule.",
+      "order_result": {
+        "order_id": "FCEVAL_0020",
+        "status": "unreconciled_missing_settlement",
+        "reconciled": false,
+        "confidence_score": 24,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [],
+        "primary_settlement_id": null,
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": null,
+          "settlement_net_paise": null,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": false,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_SETTLEMENT",
+            "message": "No settlement found"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0020"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0021",
+      "scenario_type": "missing_settlement",
+      "expected_decision": "ESCALATE_MISSING_SETTLEMENT",
+      "label_rationale": "MISSING_SETTLEMENT is highest-priority escalate rule.",
+      "order_result": {
+        "order_id": "FCEVAL_0021",
+        "status": "unreconciled_missing_settlement",
+        "reconciled": false,
+        "confidence_score": 25,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [],
+        "primary_settlement_id": null,
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": null,
+          "settlement_net_paise": null,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": false,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_SETTLEMENT",
+            "message": "No settlement found"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0021"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0022",
+      "scenario_type": "missing_settlement",
+      "expected_decision": "ESCALATE_MISSING_SETTLEMENT",
+      "label_rationale": "MISSING_SETTLEMENT is highest-priority escalate rule.",
+      "order_result": {
+        "order_id": "FCEVAL_0022",
+        "status": "unreconciled_missing_settlement",
+        "reconciled": false,
+        "confidence_score": 26,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [],
+        "primary_settlement_id": null,
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": null,
+          "settlement_net_paise": null,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": false,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_SETTLEMENT",
+            "message": "No settlement found"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0022"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0023",
+      "scenario_type": "missing_settlement",
+      "expected_decision": "ESCALATE_MISSING_SETTLEMENT",
+      "label_rationale": "MISSING_SETTLEMENT is highest-priority escalate rule.",
+      "order_result": {
+        "order_id": "FCEVAL_0023",
+        "status": "unreconciled_missing_settlement",
+        "reconciled": false,
+        "confidence_score": 27,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [],
+        "primary_settlement_id": null,
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": null,
+          "settlement_net_paise": null,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": false,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_SETTLEMENT",
+            "message": "No settlement found"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0023"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0024",
+      "scenario_type": "missing_settlement_plus_mismatch",
+      "expected_decision": "ESCALATE_MISSING_SETTLEMENT",
+      "label_rationale": "MISSING_SETTLEMENT outranks SETTLEMENT_AMOUNT_MISMATCH.",
+      "order_result": {
+        "order_id": "FCEVAL_0024",
+        "status": "unreconciled_missing_settlement",
+        "reconciled": false,
+        "confidence_score": 15,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [],
+        "primary_settlement_id": null,
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": null,
+          "settlement_net_paise": null,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": false,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_SETTLEMENT",
+            "message": "No settlement"
+          },
+          {
+            "type": "SETTLEMENT_AMOUNT_MISMATCH",
+            "message": "Also mismatched"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0024"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0025",
+      "scenario_type": "missing_settlement_plus_unknown",
+      "expected_decision": "ESCALATE_MISSING_SETTLEMENT",
+      "label_rationale": "MISSING_SETTLEMENT outranks unknown exception type.",
+      "order_result": {
+        "order_id": "FCEVAL_0025",
+        "status": "unreconciled_missing_settlement",
+        "reconciled": false,
+        "confidence_score": 18,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [],
+        "primary_settlement_id": null,
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": null,
+          "settlement_net_paise": null,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": false,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_SETTLEMENT",
+            "message": "No settlement"
+          },
+          {
+            "type": "UNKNOWN_PROCESSOR_CODE",
+            "message": "Unrecognized code"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0025"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0026",
+      "scenario_type": "missing_bank",
+      "expected_decision": "ESCALATE_MISSING_BANK",
+      "label_rationale": "MISSING_BANK_TRANSACTION \u2192 escalate bank follow-up.",
+      "order_result": {
+        "order_id": "FCEVAL_0026",
+        "status": "unreconciled_missing_bank",
+        "reconciled": false,
+        "confidence_score": 30,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_BANK_TRANSACTION",
+            "message": "No bank transaction"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0026"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0027",
+      "scenario_type": "missing_bank",
+      "expected_decision": "ESCALATE_MISSING_BANK",
+      "label_rationale": "MISSING_BANK_TRANSACTION \u2192 escalate bank follow-up.",
+      "order_result": {
+        "order_id": "FCEVAL_0027",
+        "status": "unreconciled_missing_bank",
+        "reconciled": false,
+        "confidence_score": 31,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_BANK_TRANSACTION",
+            "message": "No bank transaction"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0027"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0028",
+      "scenario_type": "missing_bank",
+      "expected_decision": "ESCALATE_MISSING_BANK",
+      "label_rationale": "MISSING_BANK_TRANSACTION \u2192 escalate bank follow-up.",
+      "order_result": {
+        "order_id": "FCEVAL_0028",
+        "status": "unreconciled_missing_bank",
+        "reconciled": false,
+        "confidence_score": 32,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_BANK_TRANSACTION",
+            "message": "No bank transaction"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0028"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0029",
+      "scenario_type": "missing_bank",
+      "expected_decision": "ESCALATE_MISSING_BANK",
+      "label_rationale": "MISSING_BANK_TRANSACTION \u2192 escalate bank follow-up.",
+      "order_result": {
+        "order_id": "FCEVAL_0029",
+        "status": "unreconciled_missing_bank",
+        "reconciled": false,
+        "confidence_score": 33,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_BANK_TRANSACTION",
+            "message": "No bank transaction"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0029"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0030",
+      "scenario_type": "missing_bank",
+      "expected_decision": "ESCALATE_MISSING_BANK",
+      "label_rationale": "MISSING_BANK_TRANSACTION \u2192 escalate bank follow-up.",
+      "order_result": {
+        "order_id": "FCEVAL_0030",
+        "status": "unreconciled_missing_bank",
+        "reconciled": false,
+        "confidence_score": 34,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_BANK_TRANSACTION",
+            "message": "No bank transaction"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0030"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0031",
+      "scenario_type": "missing_bank",
+      "expected_decision": "ESCALATE_MISSING_BANK",
+      "label_rationale": "MISSING_BANK_TRANSACTION \u2192 escalate bank follow-up.",
+      "order_result": {
+        "order_id": "FCEVAL_0031",
+        "status": "unreconciled_missing_bank",
+        "reconciled": false,
+        "confidence_score": 35,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_BANK_TRANSACTION",
+            "message": "No bank transaction"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0031"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0032",
+      "scenario_type": "missing_bank",
+      "expected_decision": "ESCALATE_MISSING_BANK",
+      "label_rationale": "MISSING_BANK_TRANSACTION \u2192 escalate bank follow-up.",
+      "order_result": {
+        "order_id": "FCEVAL_0032",
+        "status": "unreconciled_missing_bank",
+        "reconciled": false,
+        "confidence_score": 36,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_BANK_TRANSACTION",
+            "message": "No bank transaction"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0032"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0033",
+      "scenario_type": "missing_bank",
+      "expected_decision": "ESCALATE_MISSING_BANK",
+      "label_rationale": "MISSING_BANK_TRANSACTION \u2192 escalate bank follow-up.",
+      "order_result": {
+        "order_id": "FCEVAL_0033",
+        "status": "unreconciled_missing_bank",
+        "reconciled": false,
+        "confidence_score": 37,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_BANK_TRANSACTION",
+            "message": "No bank transaction"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0033"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0034",
+      "scenario_type": "missing_bank_plus_timestamp",
+      "expected_decision": "ESCALATE_MISSING_BANK",
+      "label_rationale": "MISSING_BANK_TRANSACTION outranks TIMESTAMP_OUTSIDE_TOLERANCE.",
+      "order_result": {
+        "order_id": "FCEVAL_0034",
+        "status": "unreconciled_missing_bank",
+        "reconciled": false,
+        "confidence_score": 28,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_BANK_TRANSACTION",
+            "message": "No bank"
+          },
+          {
+            "type": "TIMESTAMP_OUTSIDE_TOLERANCE",
+            "message": "Outside tolerance"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0034"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0035",
+      "scenario_type": "missing_bank_plus_refund_adjusted",
+      "expected_decision": "ESCALATE_MISSING_BANK",
+      "label_rationale": "MISSING_BANK_TRANSACTION outranks REFUND_ADJUSTED.",
+      "order_result": {
+        "order_id": "FCEVAL_0035",
+        "status": "unreconciled_missing_bank",
+        "reconciled": false,
+        "confidence_score": 25,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [
+          "RFN_EVAL_1"
+        ],
+        "total_refund_paise": 5000,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 95000,
+          "total_refund_paise": 5000,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": true,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "MISSING_BANK_TRANSACTION",
+            "message": "No bank"
+          },
+          {
+            "type": "REFUND_ADJUSTED",
+            "message": "Refund noted"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0035"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0036",
+      "scenario_type": "refund_adjusted",
+      "expected_decision": "VERIFY_REFUND",
+      "label_rationale": "REFUND_ADJUSTED without higher-priority blockers \u2192 VERIFY_REFUND.",
+      "order_result": {
+        "order_id": "FCEVAL_0036",
+        "status": "reconciled_with_refund_adjustment",
+        "reconciled": true,
+        "confidence_score": 80,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [
+          "RFN_EVAL_1"
+        ],
+        "total_refund_paise": 10000,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 90000,
+          "total_refund_paise": 10000,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": true,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK",
+          "RULE_3_REFUND_ADJUSTMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "REFUND_ADJUSTED",
+            "message": "Refund reflected"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0036"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0037",
+      "scenario_type": "refund_adjusted",
+      "expected_decision": "VERIFY_REFUND",
+      "label_rationale": "REFUND_ADJUSTED without higher-priority blockers \u2192 VERIFY_REFUND.",
+      "order_result": {
+        "order_id": "FCEVAL_0037",
+        "status": "reconciled_with_refund_adjustment",
+        "reconciled": true,
+        "confidence_score": 81,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [
+          "RFN_EVAL_1"
+        ],
+        "total_refund_paise": 10000,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 90000,
+          "total_refund_paise": 10000,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": true,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK",
+          "RULE_3_REFUND_ADJUSTMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "REFUND_ADJUSTED",
+            "message": "Refund reflected"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0037"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0038",
+      "scenario_type": "refund_adjusted",
+      "expected_decision": "VERIFY_REFUND",
+      "label_rationale": "REFUND_ADJUSTED without higher-priority blockers \u2192 VERIFY_REFUND.",
+      "order_result": {
+        "order_id": "FCEVAL_0038",
+        "status": "reconciled_with_refund_adjustment",
+        "reconciled": true,
+        "confidence_score": 82,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [
+          "RFN_EVAL_1"
+        ],
+        "total_refund_paise": 10000,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 90000,
+          "total_refund_paise": 10000,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": true,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK",
+          "RULE_3_REFUND_ADJUSTMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "REFUND_ADJUSTED",
+            "message": "Refund reflected"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0038"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0039",
+      "scenario_type": "refund_adjusted",
+      "expected_decision": "VERIFY_REFUND",
+      "label_rationale": "REFUND_ADJUSTED without higher-priority blockers \u2192 VERIFY_REFUND.",
+      "order_result": {
+        "order_id": "FCEVAL_0039",
+        "status": "reconciled_with_refund_adjustment",
+        "reconciled": true,
+        "confidence_score": 83,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [
+          "RFN_EVAL_1"
+        ],
+        "total_refund_paise": 10000,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 90000,
+          "total_refund_paise": 10000,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": true,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK",
+          "RULE_3_REFUND_ADJUSTMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "REFUND_ADJUSTED",
+            "message": "Refund reflected"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0039"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0040",
+      "scenario_type": "refund_adjusted",
+      "expected_decision": "VERIFY_REFUND",
+      "label_rationale": "REFUND_ADJUSTED without higher-priority blockers \u2192 VERIFY_REFUND.",
+      "order_result": {
+        "order_id": "FCEVAL_0040",
+        "status": "reconciled_with_refund_adjustment",
+        "reconciled": true,
+        "confidence_score": 84,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [
+          "RFN_EVAL_1"
+        ],
+        "total_refund_paise": 10000,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 90000,
+          "total_refund_paise": 10000,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": true,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK",
+          "RULE_3_REFUND_ADJUSTMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "REFUND_ADJUSTED",
+            "message": "Refund reflected"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0040"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0041",
+      "scenario_type": "refund_adjusted",
+      "expected_decision": "VERIFY_REFUND",
+      "label_rationale": "REFUND_ADJUSTED without higher-priority blockers \u2192 VERIFY_REFUND.",
+      "order_result": {
+        "order_id": "FCEVAL_0041",
+        "status": "reconciled_with_refund_adjustment",
+        "reconciled": true,
+        "confidence_score": 85,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [
+          "RFN_EVAL_1"
+        ],
+        "total_refund_paise": 10000,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 90000,
+          "total_refund_paise": 10000,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": true,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK",
+          "RULE_3_REFUND_ADJUSTMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "REFUND_ADJUSTED",
+            "message": "Refund reflected"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0041"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0042",
+      "scenario_type": "refund_adjusted",
+      "expected_decision": "VERIFY_REFUND",
+      "label_rationale": "REFUND_ADJUSTED without higher-priority blockers \u2192 VERIFY_REFUND.",
+      "order_result": {
+        "order_id": "FCEVAL_0042",
+        "status": "reconciled_with_refund_adjustment",
+        "reconciled": true,
+        "confidence_score": 86,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [
+          "RFN_EVAL_1"
+        ],
+        "total_refund_paise": 10000,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 90000,
+          "total_refund_paise": 10000,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": true,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK",
+          "RULE_3_REFUND_ADJUSTMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "REFUND_ADJUSTED",
+            "message": "Refund reflected"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0042"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0043",
+      "scenario_type": "refund_adjusted",
+      "expected_decision": "VERIFY_REFUND",
+      "label_rationale": "REFUND_ADJUSTED without higher-priority blockers \u2192 VERIFY_REFUND.",
+      "order_result": {
+        "order_id": "FCEVAL_0043",
+        "status": "reconciled_with_refund_adjustment",
+        "reconciled": true,
+        "confidence_score": 87,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [
+          "RFN_EVAL_1"
+        ],
+        "total_refund_paise": 10000,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 90000,
+          "total_refund_paise": 10000,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": true,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK",
+          "RULE_3_REFUND_ADJUSTMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "REFUND_ADJUSTED",
+            "message": "Refund reflected"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0043"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0044",
+      "scenario_type": "refund_adjusted_plus_info",
+      "expected_decision": "VERIFY_REFUND",
+      "label_rationale": "REFUND_ADJUSTED + informational timestamp still VERIFY_REFUND.",
+      "order_result": {
+        "order_id": "FCEVAL_0044",
+        "status": "reconciled_with_refund_adjustment",
+        "reconciled": true,
+        "confidence_score": 82,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [
+          "RFN_EVAL_1"
+        ],
+        "total_refund_paise": 8000,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 92000,
+          "total_refund_paise": 8000,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": true,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "REFUND_ADJUSTED",
+            "message": "Refund reflected"
+          },
+          {
+            "type": "TIMESTAMP_WITHIN_TOLERANCE",
+            "message": "Within tolerance"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0044"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0045",
+      "scenario_type": "refund_adjusted_unreconciled_edge",
+      "expected_decision": "VERIFY_REFUND",
+      "label_rationale": "REFUND_ADJUSTED present without higher-priority exceptions \u2192 VERIFY_REFUND even if reconciled=false (labeling guide priority).",
+      "order_result": {
+        "order_id": "FCEVAL_0045",
+        "status": "unreconciled_settlement_amount",
+        "reconciled": false,
+        "confidence_score": 55,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [
+          "RFN_EVAL_1"
+        ],
+        "total_refund_paise": 3000,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 97000,
+          "total_refund_paise": 3000,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": true,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "REFUND_ADJUSTED",
+            "message": "Refund adjusted only"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0045"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0046",
+      "scenario_type": "bank_amount_mismatch",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "BANK_AMOUNT_MISMATCH \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0046",
+        "status": "unreconciled_bank_amount",
+        "reconciled": false,
+        "confidence_score": 40,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "BANK_AMOUNT_MISMATCH",
+            "message": "Bank amount differs"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0046"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0047",
+      "scenario_type": "bank_amount_mismatch",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "BANK_AMOUNT_MISMATCH \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0047",
+        "status": "unreconciled_bank_amount",
+        "reconciled": false,
+        "confidence_score": 41,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "BANK_AMOUNT_MISMATCH",
+            "message": "Bank amount differs"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0047"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0048",
+      "scenario_type": "bank_amount_mismatch",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "BANK_AMOUNT_MISMATCH \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0048",
+        "status": "unreconciled_bank_amount",
+        "reconciled": false,
+        "confidence_score": 42,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "BANK_AMOUNT_MISMATCH",
+            "message": "Bank amount differs"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0048"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0049",
+      "scenario_type": "bank_amount_mismatch",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "BANK_AMOUNT_MISMATCH \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0049",
+        "status": "unreconciled_bank_amount",
+        "reconciled": false,
+        "confidence_score": 43,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "BANK_AMOUNT_MISMATCH",
+            "message": "Bank amount differs"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0049"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0050",
+      "scenario_type": "settlement_amount_mismatch",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "SETTLEMENT_AMOUNT_MISMATCH \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0050",
+        "status": "unreconciled_settlement_amount",
+        "reconciled": false,
+        "confidence_score": 45,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "SETTLEMENT_AMOUNT_MISMATCH",
+            "message": "Settlement gross differs"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0050"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0051",
+      "scenario_type": "settlement_amount_mismatch",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "SETTLEMENT_AMOUNT_MISMATCH \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0051",
+        "status": "unreconciled_settlement_amount",
+        "reconciled": false,
+        "confidence_score": 46,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "SETTLEMENT_AMOUNT_MISMATCH",
+            "message": "Settlement gross differs"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0051"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0052",
+      "scenario_type": "settlement_amount_mismatch",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "SETTLEMENT_AMOUNT_MISMATCH \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0052",
+        "status": "unreconciled_settlement_amount",
+        "reconciled": false,
+        "confidence_score": 47,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "SETTLEMENT_AMOUNT_MISMATCH",
+            "message": "Settlement gross differs"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0052"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0053",
+      "scenario_type": "settlement_amount_mismatch",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "SETTLEMENT_AMOUNT_MISMATCH \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0053",
+        "status": "unreconciled_settlement_amount",
+        "reconciled": false,
+        "confidence_score": 48,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [],
+        "valid_bank_transaction_id": null,
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": null,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": false
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "SETTLEMENT_AMOUNT_MISMATCH",
+            "message": "Settlement gross differs"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0053"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0054",
+      "scenario_type": "refund_not_reflected",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "REFUND_NOT_REFLECTED \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0054",
+        "status": "unreconciled_refund_not_reflected",
+        "reconciled": false,
+        "confidence_score": 50,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [
+          "RFN_EVAL_1"
+        ],
+        "total_refund_paise": 7000,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 93000,
+          "total_refund_paise": 7000,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": true,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK",
+          "RULE_3_REFUND_ADJUSTMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "REFUND_NOT_REFLECTED",
+            "message": "Refund missing from settlement"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0054"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0055",
+      "scenario_type": "refund_not_reflected",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "REFUND_NOT_REFLECTED \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0055",
+        "status": "unreconciled_refund_not_reflected",
+        "reconciled": false,
+        "confidence_score": 50,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [
+          "RFN_EVAL_1"
+        ],
+        "total_refund_paise": 7000,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 93000,
+          "total_refund_paise": 7000,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": true,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK",
+          "RULE_3_REFUND_ADJUSTMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "REFUND_NOT_REFLECTED",
+            "message": "Refund missing from settlement"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0055"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0056",
+      "scenario_type": "refund_not_reflected",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "REFUND_NOT_REFLECTED \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0056",
+        "status": "unreconciled_refund_not_reflected",
+        "reconciled": false,
+        "confidence_score": 50,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [
+          "RFN_EVAL_1"
+        ],
+        "total_refund_paise": 7000,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 93000,
+          "total_refund_paise": 7000,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": true,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK",
+          "RULE_3_REFUND_ADJUSTMENT"
+        ],
+        "exceptions": [
+          {
+            "type": "REFUND_NOT_REFLECTED",
+            "message": "Refund missing from settlement"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0056"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0057",
+      "scenario_type": "duplicate_settlement",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "DUPLICATE_SETTLEMENT \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0057",
+        "status": "unreconciled_duplicate_settlement",
+        "reconciled": false,
+        "confidence_score": 35,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "DUPLICATE_SETTLEMENT",
+            "message": "Multiple settlements"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0057"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0058",
+      "scenario_type": "duplicate_bank",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "DUPLICATE_BANK_TRANSACTION \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0058",
+        "status": "unreconciled_duplicate_bank",
+        "reconciled": false,
+        "confidence_score": 35,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "DUPLICATE_BANK_TRANSACTION",
+            "message": "Duplicate bank rows"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0058"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0059",
+      "scenario_type": "orphan_bank",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "ORPHAN_BANK_TRANSACTION \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0059",
+        "status": "unreconciled_orphan_bank",
+        "reconciled": false,
+        "confidence_score": 30,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "ORPHAN_BANK_TRANSACTION",
+            "message": "Orphan bank credit"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0059"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0060",
+      "scenario_type": "timestamp_outside_tolerance",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "TIMESTAMP_OUTSIDE_TOLERANCE \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0060",
+        "status": "unreconciled_timestamp",
+        "reconciled": false,
+        "confidence_score": 42,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "TIMESTAMP_OUTSIDE_TOLERANCE",
+            "message": "Beyond 24h tolerance"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0060"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0061",
+      "scenario_type": "timestamp_outside_tolerance",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "TIMESTAMP_OUTSIDE_TOLERANCE \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0061",
+        "status": "unreconciled_timestamp",
+        "reconciled": false,
+        "confidence_score": 42,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "TIMESTAMP_OUTSIDE_TOLERANCE",
+            "message": "Beyond 24h tolerance"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0061"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0062",
+      "scenario_type": "timestamp_outside_tolerance",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "TIMESTAMP_OUTSIDE_TOLERANCE \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0062",
+        "status": "unreconciled_timestamp",
+        "reconciled": false,
+        "confidence_score": 42,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "TIMESTAMP_OUTSIDE_TOLERANCE",
+            "message": "Beyond 24h tolerance"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0062"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0063",
+      "scenario_type": "unknown_exception",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "Unknown exception type \u2192 fail-safe FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0063",
+        "status": "unreconciled_unknown",
+        "reconciled": false,
+        "confidence_score": 33,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "UNKNOWN_EXCEPTION_TYPE_0",
+            "message": "Unsupported exception vocabulary entry"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0063"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0064",
+      "scenario_type": "unknown_exception",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "Unknown exception type \u2192 fail-safe FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0064",
+        "status": "unreconciled_unknown",
+        "reconciled": false,
+        "confidence_score": 34,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "UNKNOWN_EXCEPTION_TYPE_1",
+            "message": "Unsupported exception vocabulary entry"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0064"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0065",
+      "scenario_type": "unknown_exception",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "Unknown exception type \u2192 fail-safe FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0065",
+        "status": "unreconciled_unknown",
+        "reconciled": false,
+        "confidence_score": 35,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "UNKNOWN_EXCEPTION_TYPE_2",
+            "message": "Unsupported exception vocabulary entry"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0065"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0066",
+      "scenario_type": "unreconciled_no_exceptions",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "Unreconciled with empty exceptions \u2192 ambiguous FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0066",
+        "status": "unreconciled",
+        "reconciled": false,
+        "confidence_score": 40,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0066"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0067",
+      "scenario_type": "unreconciled_no_exceptions",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "Unreconciled with empty exceptions \u2192 ambiguous FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0067",
+        "status": "unreconciled",
+        "reconciled": false,
+        "confidence_score": 40,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0067"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0068",
+      "scenario_type": "reconciled_with_unknown_exception",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "Reconciled but unknown exception is not informational \u2192 FLAG_FOR_REVIEW.",
+      "order_result": {
+        "order_id": "FCEVAL_0068",
+        "status": "reconciled",
+        "reconciled": true,
+        "confidence_score": 70,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [],
+        "total_refund_paise": 0,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 100000,
+          "total_refund_paise": 0,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": null,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "PROCESSOR_TIMEOUT_SIGNAL",
+            "message": "Timeout signal from processor"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0068"
+        ]
+      }
+    },
+    {
+      "record_id": "FCEVAL_0069",
+      "scenario_type": "combined_mismatch_and_refund_not_reflected",
+      "expected_decision": "FLAG_FOR_REVIEW",
+      "label_rationale": "BANK_AMOUNT_MISMATCH present (priority over REFUND_NOT_REFLECTED alone).",
+      "order_result": {
+        "order_id": "FCEVAL_0069",
+        "status": "unreconciled_bank_amount",
+        "reconciled": false,
+        "confidence_score": 38,
+        "order_amount_paise": 100000,
+        "settlement_ids_considered": [
+          "SET_EVAL_1"
+        ],
+        "primary_settlement_id": "SET_EVAL_1",
+        "secondary_settlement_ids": [],
+        "refund_ids": [
+          "RFN_EVAL_1"
+        ],
+        "total_refund_paise": 2000,
+        "bank_transaction_ids_considered": [
+          "BNK_EVAL_1"
+        ],
+        "valid_bank_transaction_id": "BNK_EVAL_1",
+        "normalized_references": {},
+        "amount_comparison": {
+          "order_amount_paise": 100000,
+          "settlement_gross_paise": 100000,
+          "settlement_net_paise": 95000,
+          "bank_amount_paise": 95000,
+          "expected_post_refund_gross_paise": 98000,
+          "total_refund_paise": 2000,
+          "settlement_gross_matches_order": true,
+          "settlement_reflects_refund": true,
+          "bank_matches_settlement_net": true
+        },
+        "timestamp_comparison": {
+          "settlement_settled_at": "2026-01-01T10:00:00",
+          "bank_transaction_date": "2026-01-01T11:00:00",
+          "difference_hours": 1.0,
+          "tolerance_hours": 24,
+          "within_tolerance": true
+        },
+        "rules_triggered": [
+          "RULE_1_ORDER_TO_SETTLEMENT",
+          "RULE_2_SETTLEMENT_TO_BANK"
+        ],
+        "exceptions": [
+          {
+            "type": "BANK_AMOUNT_MISMATCH",
+            "message": "Bank differs"
+          },
+          {
+            "type": "REFUND_NOT_REFLECTED",
+            "message": "Refund also missing"
+          }
+        ],
+        "audit_trail": [
+          "Held-out eval fixture FCEVAL_0069"
+        ]
+      }
+    }
+  ]
+}

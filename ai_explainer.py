@@ -122,6 +122,7 @@ def _build_grounded_prompt(audit: dict[str, Any]) -> str:
         "- The AUDIT_JSON below is the only source of truth.\n"
         "- Do not invent transactions, amounts, IDs, timestamps, or exceptions.\n"
         "- Do not change status, reconciled, or confidence_score.\n"
+        "- Do not approve actions, execute refunds/captures/payouts, or move money.\n"
         "- Do not quote, echo, or reprint AUDIT_JSON.\n"
         "- Do not return markdown code fences or JSON.\n"
         "- Write plain text only in this exact shape:\n"

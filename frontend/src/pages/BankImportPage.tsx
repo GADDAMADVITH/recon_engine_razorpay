@@ -2,6 +2,8 @@ import { ChevronRight, Upload } from "lucide-react";
 import { cn } from "../utils/format";
 import { useCallback, useRef, useState } from "react";
 import { api, ApiClientError } from "../api/client";
+import { AgentDecisionChip } from "../components/finance/AgentDecisionSection";
+import { FinanceControllerPanel } from "../components/finance/FinanceControllerPanel";
 import { OrderDetailDrawer } from "../components/orders/OrderDetailDrawer";
 import {
   Button,
@@ -13,7 +15,13 @@ import {
   SectionLabel,
   StatusBadge,
 } from "../components/ui/primitives";
-import type { OrderResult, ReconciliationReport } from "../types/api";
+import type {
+  FinanceAgentRunResponse,
+  FinanceControllerDecision,
+  OrderResult,
+  ReconciliationReport,
+} from "../types/api";
+import { decisionFromTrace } from "../utils/financeAgent";
 
 const DEMO_CSV_ROWS = `bank_transaction_id,settlement_ref,amount,transaction_date,description
 DEMO_BNK_0001,SET_0001,370605,2026-08-08T02:00:00,DEMO SYNTHETIC - Payout ORD_0001 correct amount
@@ -27,30 +35,35 @@ const DEMO_SCENARIOS = [
     label: "Reconciled",
     description: "Order, settlement, and bank amounts match.",
     tone: "ok" as const,
+    primaryFailure: false,
   },
   {
     id: "ORD_0002",
     label: "Bank Amount Mismatch",
-    description: "Bank payout does not match settlement net.",
+    description: "Primary failure demo — bank payout does not match settlement net.",
     tone: "error" as const,
+    primaryFailure: true,
   },
   {
     id: "ORD_0003",
     label: "Missing Bank",
     description: "Settlement exists, but no bank row was imported.",
     tone: "warning" as const,
+    primaryFailure: false,
   },
   {
     id: "ORD_0033",
     label: "Refund Adjusted",
     description: "Refund is correctly reflected in settlement.",
     tone: "ok" as const,
+    primaryFailure: false,
   },
   {
     id: "ORD_0024",
     label: "Missing Settlement",
     description: "Order has no linked settlement record.",
     tone: "error" as const,
+    primaryFailure: false,
   },
 ] as const;
 
@@ -139,9 +152,11 @@ function ResultsTable({
 
 function DemoScenarioCards({
   orders,
+  decisionsByOrderId,
   onSelect,
 }: {
   orders: OrderResult[];
+  decisionsByOrderId: Map<string, FinanceControllerDecision>;
   onSelect: (order: OrderResult) => void;
 }) {
   const byId = new Map(orders.map((order) => [order.order_id, order]));
@@ -154,6 +169,7 @@ function DemoScenarioCards({
       {DEMO_SCENARIOS.map((scenario) => {
         const order = byId.get(scenario.id);
         if (!order) return null;
+        const decision = decisionsByOrderId.get(scenario.id);
         const toneClass =
           scenario.tone === "ok"
             ? "border-[var(--color-success)]/25 hover:border-[var(--color-success)]/50"
@@ -174,6 +190,14 @@ function DemoScenarioCards({
             <span className="font-mono text-[11px] font-medium text-[var(--color-muted)]">
               {scenario.id}
             </span>
+            {scenario.primaryFailure ? (
+              <span
+                className="mt-1 inline-flex w-fit rounded-md bg-[var(--color-danger)]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--color-danger)]"
+                data-testid="primary-failure-badge"
+              >
+                Primary failure demo
+              </span>
+            ) : null}
             <span className="mt-2 text-sm font-semibold tracking-tight text-[var(--color-ink)]">
               {scenario.label}
             </span>
@@ -183,6 +207,7 @@ function DemoScenarioCards({
             <span className="mt-3">
               <StatusBadge status={order.status} reconciled={order.reconciled} />
             </span>
+            <AgentDecisionChip decision={decision} />
             <span className="mt-3 inline-flex items-center text-[11px] font-medium text-[var(--color-accent)]">
               Open order
               <ChevronRight className="ml-0.5 h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
@@ -201,12 +226,35 @@ export function BankImportPage() {
   const [error, setError] = useState<string | null>(null);
   const [report, setReport] = useState<ReconciliationReport | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<OrderResult | null>(null);
+  const [agentBatch, setAgentBatch] = useState<FinanceAgentRunResponse | null>(null);
+  const [agentLoading, setAgentLoading] = useState(false);
+  const [agentError, setAgentError] = useState<string | null>(null);
+
+  const runAgentOnResults = async (orderResults: OrderResult[]) => {
+    setAgentLoading(true);
+    setAgentError(null);
+    try {
+      const batch = await api.runFinanceControllerAgent({ order_results: orderResults });
+      setAgentBatch(batch);
+    } catch (err) {
+      setAgentBatch(null);
+      setAgentError(
+        err instanceof ApiClientError
+          ? err.message
+          : "Unable to run Finance Controller on imported results.",
+      );
+    } finally {
+      setAgentLoading(false);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0] ?? null;
     setFile(f);
     setError(null);
     setReport(null);
+    setAgentBatch(null);
+    setAgentError(null);
   };
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -216,6 +264,8 @@ export function BankImportPage() {
       setFile(f);
       setError(null);
       setReport(null);
+      setAgentBatch(null);
+      setAgentError(null);
     }
   }, []);
 
@@ -228,9 +278,12 @@ export function BankImportPage() {
     setLoading(true);
     setError(null);
     setReport(null);
+    setAgentBatch(null);
+    setAgentError(null);
     try {
       const result = await api.importBankCsv(file);
       setReport(result);
+      await runAgentOnResults(result.order_results);
     } catch (err) {
       setError(
         err instanceof ApiClientError
@@ -248,14 +301,31 @@ export function BankImportPage() {
     setFile(demoFile);
     setError(null);
     setReport(null);
+    setAgentBatch(null);
+    setAgentError(null);
   };
 
   const reset = () => {
     setFile(null);
     setError(null);
     setReport(null);
+    setAgentBatch(null);
+    setAgentError(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
+
+  const decisionsByOrderId = new Map(
+    (agentBatch?.decisions ?? []).map((d) => [d.order_id, decisionFromTrace(d)]),
+  );
+  const tracesByOrderId = new Map(
+    (agentBatch?.decisions ?? []).map((d) => [d.order_id, d]),
+  );
+  const selectedDecision = selectedOrder
+    ? decisionsByOrderId.get(selectedOrder.order_id) ?? null
+    : null;
+  const selectedTrace = selectedOrder
+    ? tracesByOrderId.get(selectedOrder.order_id) ?? null
+    : null;
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -264,12 +334,18 @@ export function BankImportPage() {
         subtitle="Reconcile a bank statement against production orders. The primary demo uses a deterministic CSV — not live Razorpay settlements."
       />
 
-      <section className="mb-8 rounded-xl border border-[var(--color-border)] bg-white px-5 py-4 shadow-[0_1px_3px_rgba(11,27,43,0.04)]">
+      <section className="mb-8 rounded-xl border border-[var(--color-border)] bg-white px-5 py-4 shadow-[0_1px_3px_rgba(11,27,43,0.04)]" data-testid="demo-walkthrough-hint">
         <p className="text-[13px] font-medium tracking-tight text-[var(--color-ink)]">
           Evaluator walkthrough
         </p>
         <p className="mt-1 text-sm leading-relaxed text-[var(--color-ink)]">
-          Load Demo CSV → Run Reconciliation → open a scenario card → Pipeline → Audit Trail → Explain with AI.
+          Load Demo CSV → Run Reconciliation → open a scenario → Pipeline → Agent Decision →
+          Approve/Reject → Recorded action → Audit Trail. Use{" "}
+          <span className="font-mono text-xs">ORD_0002</span> as the primary failure demo.
+          Decisions come from the API — not hardcoded in the UI.
+        </p>
+        <p className="mt-2 text-xs text-[var(--color-muted)]">
+          Human approval required · Money moved: false · Gemini is explanation/chat only
         </p>
       </section>
 
@@ -379,10 +455,18 @@ export function BankImportPage() {
             </div>
           </section>
 
+          <FinanceControllerPanel
+            data={agentBatch}
+            loading={agentLoading}
+            error={agentError}
+            onRetry={() => void runAgentOnResults(report.order_results)}
+            orderResults={report.order_results}
+          />
+
           <section className="mb-8">
             <SectionLabel
               title="Demo scenarios"
-              description="Five curated outcomes from the deterministic demo CSV. Click a card to inspect Pipeline and Audit Trail."
+              description="Five curated outcomes from the deterministic demo CSV. Agent decisions use the same imported order_results as Pipeline and Audit Trail."
             />
             {(() => {
               const demoIds = new Set<string>(DEMO_SCENARIOS.map((scenario) => scenario.id));
@@ -395,7 +479,13 @@ export function BankImportPage() {
                   />
                 );
               }
-              return <DemoScenarioCards orders={demoOrders} onSelect={setSelectedOrder} />;
+              return (
+                <DemoScenarioCards
+                  orders={demoOrders}
+                  decisionsByOrderId={decisionsByOrderId}
+                  onSelect={setSelectedOrder}
+                />
+              );
             })()}
           </section>
 
@@ -433,6 +523,8 @@ export function BankImportPage() {
       <OrderDetailDrawer
         order={selectedOrder}
         scenarioLabel={selectedOrder ? DEMO_SCENARIO_LABELS[selectedOrder.order_id] : undefined}
+        agentDecision={selectedDecision}
+        agentDecisionTrace={selectedTrace}
         onClose={() => setSelectedOrder(null)}
       />
     </div>

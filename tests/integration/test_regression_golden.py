@@ -1,4 +1,4 @@
-"""Full 50-order golden regression test."""
+"""Full operational-batch golden regression test."""
 
 from __future__ import annotations
 
@@ -41,18 +41,18 @@ def test_golden_regression_contract(full_fixture_copy: Path):
     scenarios = evaluation["scenario_evaluation"]
     global_exc = evaluation["global_exception_evaluation"]
 
-    assert evaluation["summary"]["orders_evaluated"] == 50
-    assert binary["true_positives"] == 26
+    assert evaluation["summary"]["orders_evaluated"] == 100
+    assert binary["true_positives"] == 52
     assert binary["false_positives"] == 0
     assert binary["false_negatives"] == 0
-    assert binary["true_negatives"] == 24
+    assert binary["true_negatives"] == 48
     assert binary["accuracy"] == 1.0
     assert binary["precision"] == 1.0
     assert binary["recall"] == 1.0
     assert binary["f1_score"] == 1.0
 
-    assert status["strict"]["correct"] == 39
-    assert status["relaxed"]["correct"] == 50
+    assert status["strict"]["correct"] == 78
+    assert status["relaxed"]["correct"] == 100
 
     for scenario_type, metrics in scenarios.items():
         assert metrics["binary_accuracy"] == 1.0, scenario_type
@@ -84,7 +84,7 @@ def test_evaluation_deterministic(full_fixture_copy: Path):
 def test_generated_at_from_input_timestamps(full_fixture_copy: Path):
     report = run_engine_pipeline(full_fixture_copy)
     generated_at = report["metadata"]["generated_at"]
-    assert generated_at == "2026-09-02T10:49:00"
+    assert generated_at == "2026-09-03T19:54:00"
 
 
 def test_reconcile_all_order_stability(full_fixture_copy: Path):

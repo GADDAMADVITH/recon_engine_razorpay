@@ -3,11 +3,18 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BankImportPage } from "../pages/BankImportPage";
-import { mockReport } from "./fixtures";
+import { ChatOrderProvider } from "../context/ChatOrderContext";
+import { mockFinanceAgentRun, mockReport } from "./fixtures";
 import { ApiClientError } from "../api/client";
 
 // Mock the api client
 const importMock = vi.fn();
+const runFinanceControllerAgentMock = vi.fn();
+const getFinanceApprovalQueueMock = vi.fn();
+const runFinanceControllerAgentPlanMock = vi.fn();
+const getFinanceControllerEvaluationMock = vi.fn();
+const getFinanceDemoStatusMock = vi.fn();
+const resetFinanceDemoActionsMock = vi.fn();
 
 vi.mock("../api/client", async () => {
   const actual = await vi.importActual<typeof import("../api/client")>("../api/client");
@@ -16,6 +23,14 @@ vi.mock("../api/client", async () => {
     api: {
       ...actual.api,
       importBankCsv: (...args: unknown[]) => importMock(...args),
+      runFinanceControllerAgent: (...args: unknown[]) => runFinanceControllerAgentMock(...args),
+      getFinanceApprovalQueue: (...args: unknown[]) => getFinanceApprovalQueueMock(...args),
+      runFinanceControllerAgentPlan: (...args: unknown[]) =>
+        runFinanceControllerAgentPlanMock(...args),
+      getFinanceControllerEvaluation: (...args: unknown[]) =>
+        getFinanceControllerEvaluationMock(...args),
+      getFinanceDemoStatus: (...args: unknown[]) => getFinanceDemoStatusMock(...args),
+      resetFinanceDemoActions: (...args: unknown[]) => resetFinanceDemoActionsMock(...args),
     },
   };
 });
@@ -23,7 +38,9 @@ vi.mock("../api/client", async () => {
 function renderPage() {
   return render(
     <MemoryRouter>
-      <BankImportPage />
+      <ChatOrderProvider>
+        <BankImportPage />
+      </ChatOrderProvider>
     </MemoryRouter>,
   );
 }
@@ -101,6 +118,100 @@ describe("BankImportPage", () => {
   beforeEach(() => {
     importMock.mockReset();
     importMock.mockResolvedValue(mockReportWithScenarios());
+    runFinanceControllerAgentMock.mockReset();
+    runFinanceControllerAgentMock.mockResolvedValue({
+      ...mockFinanceAgentRun,
+      records_processed: 5,
+      decisions: mockFinanceAgentRun.decisions,
+    });
+    getFinanceApprovalQueueMock.mockReset();
+    getFinanceApprovalQueueMock.mockResolvedValue({
+      run_id: mockFinanceAgentRun.run_id,
+      pending_count: 0,
+      items: [],
+      lifecycle: {
+        run_id: mockFinanceAgentRun.run_id,
+        total_decisions: 5,
+        no_action: 1,
+        pending_approval: 0,
+        approved: 0,
+        rejected: 0,
+        recorded: 0,
+        unresolved: 4,
+      },
+    });
+    runFinanceControllerAgentPlanMock.mockReset();
+    runFinanceControllerAgentPlanMock.mockResolvedValue({
+      run_id: mockFinanceAgentRun.run_id,
+      records_processed: 5,
+      unresolved_count: 4,
+      pending_approval_count: 4,
+      decisions_by_type: {},
+      batch_analysis: {
+        records_processed: 5,
+        reconciled_count: 1,
+        exception_count: 5,
+        unresolved_count: 4,
+        approval_required_count: 4,
+        decisions_by_type: {},
+      },
+      prioritized_work_queue: [],
+      agent_plan: {
+        objective: "plan",
+        observations: [],
+        prioritized_work: [],
+        proposed_actions: [],
+        unresolved_cases: { count: 4, by_decision: {}, by_exception: {} },
+        human_approval_requirements: {
+          required_count: 4,
+          rule: "approval",
+          money_moved: false,
+        },
+      },
+    });
+    getFinanceControllerEvaluationMock.mockReset();
+    getFinanceControllerEvaluationMock.mockResolvedValue({
+      dataset: "held_out_finance_controller_v1",
+      held_out: true,
+      measurement_note: "Measured on the held-out synthetic evaluation dataset.",
+      records_evaluated: 69,
+      correct_decisions: 69,
+      incorrect_decisions: 0,
+      accuracy: 1.0,
+    });
+    getFinanceDemoStatusMock.mockReset();
+    getFinanceDemoStatusMock.mockResolvedValue({
+      ready: true,
+      checks: {
+        api_reachable: true,
+        reconciliation_data_available: true,
+        agent_endpoint_available: true,
+        evaluation_endpoint_available: true,
+      },
+      operational_batch: { label: "Operational batch", records: 100 },
+      held_out_evaluation: {
+        label: "Held-out evaluation",
+        records_evaluated: 69,
+        accuracy: 1.0,
+      },
+      money_moved: false,
+      simulated_actions_only: true,
+      human_approval_required: true,
+      gemini_in_decision_path: false,
+      secrets_exposed: false,
+    });
+    resetFinanceDemoActionsMock.mockReset();
+    resetFinanceDemoActionsMock.mockResolvedValue({
+      reset: true,
+      scope: "local_demo_action_store",
+      datasets_untouched: true,
+      evaluation_untouched: true,
+      policy_untouched: true,
+      reconciliation_untouched: true,
+      money_moved: false,
+      secrets_exposed: false,
+      note: "Cleared.",
+    });
   });
 
   it("renders the upload area and action buttons", () => {
@@ -178,6 +289,8 @@ describe("BankImportPage", () => {
     expect(screen.getAllByText("ORD_0002").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("ORD_0003").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("ORD_0033").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByTestId("primary-failure-badge")).toHaveTextContent(/Primary failure demo/i);
+    expect(screen.getByTestId("demo-walkthrough-hint")).toHaveTextContent(/ORD_0002/i);
   });
 
   it("clicking a demo scenario opens the order drawer", async () => {

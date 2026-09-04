@@ -23,20 +23,20 @@ def test_existing_csv_report_still_works() -> None:
     response = client.get("/api/v1/reconciliation/report")
     assert response.status_code == 200
     report = response.json()
-    assert len(report["order_results"]) == 50
+    assert len(report["order_results"]) == 100
     assert report["metadata"]["data_source"] == "csv"
 
 
 def test_existing_csv_summary_still_works() -> None:
     response = client.get("/api/v1/reconciliation/summary")
     assert response.status_code == 200
-    assert response.json()["total_orders"] == 50
+    assert response.json()["total_orders"] == 100
 
 
 def test_existing_evaluation_still_works() -> None:
     response = client.get("/api/v1/evaluation")
     assert response.status_code == 200
-    assert response.json()["summary"]["orders_evaluated"] == 50
+    assert response.json()["summary"]["orders_evaluated"] == 100
 
 
 def test_health_still_works() -> None:

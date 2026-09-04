@@ -26,6 +26,18 @@ vi.mock("../hooks/useApi", () => ({
     error: null,
     refetch: vi.fn(),
   })),
+  useFinanceControllerBatch: vi.fn(() => ({
+    data: null,
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  })),
+  useFinanceControllerAgentRun: vi.fn(() => ({
+    data: null,
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  })),
   useEvaluation: vi.fn(() => ({
     data: {
       metadata: {
@@ -91,9 +103,9 @@ describe("marketing landing page", () => {
     expect(await screen.findByRole("heading", { name: /Reconcile on facts/i }, { timeout: 8000 })).toBeInTheDocument();
     expect(screen.getByText("Financial reconciliation infrastructure")).toBeInTheDocument();
     expect(screen.getByText(/Live reconciliation engine/i)).toBeInTheDocument();
-    expect(screen.getAllByText("50").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("26").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("24").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("100").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("52").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("48").length).toBeGreaterThan(0);
     expect(screen.getAllByText("52.0%").length).toBeGreaterThan(0);
   }, 10000);
 

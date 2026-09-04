@@ -27,6 +27,18 @@ vi.mock("../hooks/useApi", () => ({
     error: null,
     refetch: vi.fn(),
   })),
+  useFinanceControllerBatch: vi.fn(() => ({
+    data: null,
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  })),
+  useFinanceControllerAgentRun: vi.fn(() => ({
+    data: null,
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  })),
 }));
 
 vi.mock("../hooks/useRazorpaySync", () => ({

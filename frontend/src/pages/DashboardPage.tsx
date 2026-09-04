@@ -4,6 +4,7 @@ import {
   ReconciliationHealthRing,
   StatusDistributionViz,
 } from "../components/charts/ReconCharts";
+import { FinanceControllerPanel } from "../components/finance/FinanceControllerPanel";
 import {
   DataSourceSelector,
   RazorpayBankLimitationBanner,
@@ -22,7 +23,7 @@ import {
   SectionLabel,
 } from "../components/ui/primitives";
 import { useConsoleReport } from "../context/ConsoleReportContext";
-import { useHealth } from "../hooks/useApi";
+import { useFinanceControllerAgentRun, useHealth } from "../hooks/useApi";
 import { CONSOLE_PATHS, getSummaryExceptions, SUMMARY_TO_EXCEPTION_FILTER } from "../utils/format";
 import type { ReconciliationReport } from "../types/api";
 
@@ -38,6 +39,7 @@ function DashboardReportBody({
     data.summary.total_orders > 0
       ? data.summary.reconciled_orders / data.summary.total_orders
       : 0;
+  const finance = useFinanceControllerAgentRun(data.order_results);
 
   return (
     <>
@@ -70,6 +72,14 @@ function DashboardReportBody({
           total={data.summary.total_orders}
         />
       </section>
+
+      <FinanceControllerPanel
+        data={finance.data}
+        loading={finance.loading}
+        error={finance.error}
+        onRetry={() => void finance.refetch()}
+        orderResults={data.order_results}
+      />
 
       <div className="mb-14 grid gap-12 lg:grid-cols-2">
         <section>

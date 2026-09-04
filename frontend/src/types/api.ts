@@ -336,3 +336,321 @@ export interface RazorpayReconcileDemoResponse {
   scenarios: RazorpayDemoScenarioResult[];
   reconciliation: ReconciliationReport;
 }
+
+/** Allowlisted Finance Controller decisions (advisory / read-only). */
+export type FinanceControllerDecisionType =
+  | "NO_ACTION"
+  | "FLAG_FOR_REVIEW"
+  | "VERIFY_REFUND"
+  | "ESCALATE_MISSING_BANK"
+  | "ESCALATE_MISSING_SETTLEMENT";
+
+/** Original reconciliation facts preserved beside the agent decision. */
+export interface FinanceControllerOriginalResult {
+  order_id: string;
+  status: string;
+  reconciled: boolean;
+  confidence_score: number;
+  exception_types: string[];
+}
+
+/** Agent decision envelope — never overwrites reconciliation facts. */
+export interface FinanceControllerAgentDecision {
+  decision: FinanceControllerDecisionType | string;
+  action: string;
+  reason: string;
+  requires_approval: boolean;
+  evidence: Record<string, unknown>;
+  provider?: string;
+  agent?: string;
+  agent_version?: string;
+}
+
+/**
+ * One order decision from POST /api/v1/finance-controller/run.
+ * Flat fields mirror the agent payload; nested envelopes make ORIGINAL vs AGENT explicit.
+ */
+export interface FinanceControllerDecision {
+  order_id: string;
+  original_status: string;
+  original_reconciled: boolean;
+  confidence_score: number;
+  exception_types: string[];
+  decision: FinanceControllerDecisionType | string;
+  action: string;
+  reason: string;
+  evidence: Record<string, unknown>;
+  requires_approval: boolean;
+  provider?: string;
+  agent?: string;
+  agent_version?: string;
+  original_result: FinanceControllerOriginalResult;
+  agent_decision: FinanceControllerAgentDecision;
+}
+
+/** Batch response from POST /api/v1/finance-controller/run. */
+export interface FinanceControllerRunResponse {
+  agent: string;
+  agent_version: string;
+  provider: string;
+  records_processed: number;
+  no_action_count: number;
+  review_required_count: number;
+  exception_count: number;
+  unresolved_count: number;
+  decisions_by_type: Record<string, number>;
+  decisions: FinanceControllerDecision[];
+  data_source?: string;
+}
+
+/** Optional body — omit/empty to run on the production reconciliation report. */
+export interface FinanceControllerRunRequest {
+  order_results?: OrderResult[] | null;
+}
+
+/** Simulated, record-only action from POST /api/v1/finance-controller/actions/approve. */
+export interface FinanceActionRecordResponse {
+  action_id: string;
+  order_id: string;
+  agent_decision: string;
+  action_type: string;
+  approval_required: boolean;
+  approval_status: "PENDING_APPROVAL" | "APPROVED" | "REJECTED" | string;
+  action_status: "PENDING" | "RECORDED" | "REJECTED" | string;
+  created_at: string;
+  approved_at: string | null;
+  evidence: Record<string, unknown>;
+  audit_event: Record<string, unknown>;
+  simulated: boolean;
+  money_moved: boolean;
+  note: string;
+  idempotent_replay?: boolean;
+  original_result_unchanged?: boolean;
+}
+
+export interface FinanceControllerApproveRequest {
+  order_id: string;
+  agent_decision: string;
+  order_result?: OrderResult | null;
+  run_id?: string | null;
+}
+
+export interface FinanceControllerRejectRequest {
+  order_id: string;
+  agent_decision: string;
+  order_result?: OrderResult | null;
+  run_id?: string | null;
+}
+
+/** One decision trace from POST /api/v1/finance-controller/run-agent. */
+export interface FinanceAgentDecisionTrace {
+  order_id: string;
+  original_result: FinanceControllerOriginalResult;
+  audit_evidence_summary: Record<string, unknown>;
+  triggered_exceptions: string[];
+  decision: FinanceControllerDecisionType | string;
+  rationale: string;
+  agent_reason?: string;
+  requires_approval: boolean;
+  proposed_action: string | null;
+  timestamp: string;
+  provider?: string;
+  agent?: string;
+  agent_version?: string;
+}
+
+/** Agent workflow envelope from POST /api/v1/finance-controller/run-agent. */
+export interface FinanceAgentRunResponse {
+  run_id: string;
+  started_at: string;
+  completed_at: string;
+  elapsed_seconds: number;
+  records_processed: number;
+  no_action_count: number;
+  review_required_count: number;
+  unresolved_count: number;
+  exception_count?: number;
+  pending_approval_count: number;
+  decisions_by_type: Record<string, number>;
+  decisions: FinanceAgentDecisionTrace[];
+  data_source?: string;
+  provider?: string;
+  agent?: string;
+  agent_version?: string;
+}
+
+/** Human-in-the-loop lifecycle metrics for a run. */
+export interface FinanceLifecycleMetrics {
+  run_id: string | null;
+  timestamp?: string;
+  total_decisions: number;
+  no_action: number;
+  pending_approval: number;
+  approved: number;
+  rejected: number;
+  recorded: number;
+  unresolved: number;
+  review_required?: number;
+  decisions_by_type?: Record<string, number>;
+}
+
+export interface FinanceApprovalQueueItem {
+  run_id: string;
+  order_id: string;
+  decision: string;
+  rationale: string;
+  proposed_action: string | null;
+  exceptions: string[];
+  original_result: FinanceControllerOriginalResult;
+  requires_approval: boolean;
+  approval_status: string;
+  action_status: string;
+  lifecycle_status: string;
+  timestamp: string;
+}
+
+export interface FinanceApprovalQueueResponse {
+  run_id: string | null;
+  pending_count: number;
+  items: FinanceApprovalQueueItem[];
+  lifecycle: FinanceLifecycleMetrics;
+}
+
+export interface FinanceAgentRunHistoryItem {
+  run_id: string;
+  timestamp: string;
+  records_processed: number;
+  no_action_count: number;
+  review_required_count: number;
+  pending_approval_count: number;
+  unresolved_count: number;
+  decisions_by_type: Record<string, number>;
+  completed_action_count: number;
+  approved_action_count: number;
+  rejected_action_count: number;
+  recorded_action_count: number;
+  pending_action_count: number;
+}
+
+/** Batch analysis from POST /api/v1/finance-controller/agent-plan. */
+export interface FinanceBatchAnalysis {
+  records_processed: number;
+  reconciled_count: number;
+  exception_count: number;
+  unresolved_count: number;
+  decisions_by_type: Record<string, number>;
+  approval_required_count: number;
+  no_action_count?: number;
+  review_required_count?: number;
+}
+
+export interface FinanceWorkQueueItem {
+  order_id: string;
+  priority: number;
+  priority_reason?: string;
+  decision: string;
+  exceptions: string[];
+  rationale: string;
+  proposed_action: string | null;
+  requires_approval: boolean;
+  original_result: FinanceControllerOriginalResult;
+  evidence_reference?: Record<string, unknown>;
+  timestamp?: string;
+}
+
+export interface FinanceAgentPlanBody {
+  objective: string;
+  observations: string[];
+  prioritized_work: Array<{
+    order_id: string;
+    priority: number;
+    decision: string;
+    proposed_action: string | null;
+    rationale: string;
+  }>;
+  proposed_actions: Array<{ action: string; count: number }>;
+  unresolved_cases: {
+    count: number;
+    by_decision: Record<string, number>;
+    by_exception: Record<string, number>;
+  };
+  human_approval_requirements: {
+    required_count: number;
+    rule: string;
+    state_machine?: string;
+    money_moved: boolean;
+  };
+  note?: string;
+}
+
+export interface FinanceAgentPlanResponse {
+  run_id: string;
+  records_processed: number;
+  batch_analysis: FinanceBatchAnalysis;
+  prioritized_work_queue: FinanceWorkQueueItem[];
+  agent_plan: FinanceAgentPlanBody;
+  decisions_by_type: Record<string, number>;
+  unresolved_count: number;
+  pending_approval_count: number;
+  unresolved_groups?: {
+    by_decision: Record<string, string[]>;
+    by_exception: Record<string, string[]>;
+    decision_group_counts: Record<string, number>;
+    exception_group_counts: Record<string, number>;
+  };
+  money_moved?: boolean;
+  data_source?: string;
+}
+
+/** Held-out Finance Controller evaluation (separate from operational batch). */
+export interface FinanceControllerEvaluationResponse {
+  dataset: string;
+  held_out: boolean;
+  label_source?: string;
+  measurement_note: string;
+  records_evaluated: number;
+  correct_decisions: number;
+  incorrect_decisions: number;
+  accuracy: number;
+  throughput?: {
+    records_processed: number;
+    elapsed_seconds: number;
+    records_per_second: number | null;
+  };
+  per_decision?: Record<string, unknown>;
+  errors?: unknown[];
+}
+
+export interface FinanceDemoStatusResponse {
+  ready: boolean;
+  checks: {
+    api_reachable: boolean;
+    reconciliation_data_available: boolean;
+    agent_endpoint_available: boolean;
+    evaluation_endpoint_available: boolean;
+  };
+  operational_batch: { label: string; records: number };
+  held_out_evaluation: {
+    label: string;
+    records_evaluated: number;
+    accuracy: number | null;
+    measurement_note?: string;
+  };
+  money_moved: boolean;
+  simulated_actions_only: boolean;
+  human_approval_required: boolean;
+  gemini_in_decision_path: boolean;
+  secrets_exposed: boolean;
+}
+
+export interface FinanceDemoResetResponse {
+  reset: boolean;
+  scope: string;
+  datasets_untouched: boolean;
+  evaluation_untouched: boolean;
+  policy_untouched: boolean;
+  reconciliation_untouched: boolean;
+  money_moved: boolean;
+  secrets_exposed: boolean;
+  note: string;
+}

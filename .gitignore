@@ -13,3 +13,5 @@ frontend/node_modules/
 frontend/dist/
 frontend/.env
 *.tsbuildinfo
+data/finance_action_records.json
+data/finance_agent_runs.json

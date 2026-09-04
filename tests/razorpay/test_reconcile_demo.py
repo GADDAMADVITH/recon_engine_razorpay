@@ -130,7 +130,7 @@ def test_csv_report_unaffected_by_demo() -> None:
     assert response.status_code == 200
     report = response.json()
     assert report["metadata"]["data_source"] == "csv"
-    assert len(report["order_results"]) == 50
+    assert len(report["order_results"]) == 100
     assert "bank_source" not in report["metadata"]
 
 

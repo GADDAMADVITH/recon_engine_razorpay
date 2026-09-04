@@ -357,5 +357,5 @@ class TestDemoScenarioAudits:
         response = client.get("/api/v1/reconciliation/report")
         assert response.status_code == 200
         report = response.json()
-        assert len(report["order_results"]) == 50
+        assert len(report["order_results"]) == 100
         assert report["metadata"]["data_source"] == "csv"

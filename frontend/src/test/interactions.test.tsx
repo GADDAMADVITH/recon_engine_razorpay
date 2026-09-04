@@ -4,11 +4,69 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "../App";
 import { OrderDetailDrawer } from "../components/orders/OrderDetailDrawer";
+import { ChatOrderProvider } from "../context/ChatOrderContext";
 import { ConsoleReportProvider } from "../context/ConsoleReportContext";
 import { DashboardPage } from "../pages/DashboardPage";
 import { ExceptionsPage } from "../pages/ExceptionsPage";
 import { ReconciliationPage } from "../pages/ReconciliationPage";
-import { mockHookState, mockReport } from "./fixtures";
+import { makeFinanceDecision, mockHookState, mockReport } from "./fixtures";
+
+vi.mock("../api/client", async () => {
+  const actual = await vi.importActual<typeof import("../api/client")>("../api/client");
+  return {
+    ...actual,
+    api: {
+      ...actual.api,
+      runFinanceController: vi.fn(async ({ order_results }: { order_results?: typeof mockReport.order_results }) => ({
+        agent: "reconengine-finance-controller",
+        agent_version: "1.0.0",
+        provider: "deterministic_policy",
+        records_processed: order_results?.length ?? 0,
+        no_action_count: 0,
+        review_required_count: 0,
+        exception_count: 0,
+        unresolved_count: 0,
+        decisions_by_type: {},
+        decisions: (order_results ?? []).map((order) =>
+          makeFinanceDecision(order.order_id, "NO_ACTION", {
+            original_status: order.status,
+            original_reconciled: order.reconciled,
+            confidence_score: order.confidence_score,
+          }),
+        ),
+      })),
+      runFinanceControllerAgent: vi.fn(async ({ order_results }: { order_results?: typeof mockReport.order_results }) => ({
+        run_id: "FCRUN_test",
+        started_at: "2026-09-04T12:00:00Z",
+        completed_at: "2026-09-04T12:00:01Z",
+        elapsed_seconds: 0.01,
+        records_processed: order_results?.length ?? 0,
+        no_action_count: order_results?.length ?? 0,
+        review_required_count: 0,
+        unresolved_count: 0,
+        pending_approval_count: 0,
+        decisions_by_type: { NO_ACTION: order_results?.length ?? 0 },
+        decisions: (order_results ?? []).map((order) => ({
+          order_id: order.order_id,
+          original_result: {
+            order_id: order.order_id,
+            status: order.status,
+            reconciled: order.reconciled,
+            confidence_score: order.confidence_score,
+            exception_types: [],
+          },
+          audit_evidence_summary: {},
+          triggered_exceptions: [],
+          decision: "NO_ACTION",
+          rationale: "Reconciliation is successful and no blocking exception requires intervention.",
+          requires_approval: false,
+          proposed_action: null,
+          timestamp: "2026-09-04T12:00:00Z",
+        })),
+      })),
+    },
+  };
+});
 
 vi.mock("../hooks/useApi", () => ({
   useReconciliationReport: vi.fn(),
@@ -40,6 +98,18 @@ vi.mock("../hooks/useApi", () => ({
     data: { status: "ok", service: "recon-engine-api", version: "v1" },
     loading: false,
     refreshing: false,
+    error: null,
+    refetch: vi.fn(),
+  })),
+  useFinanceControllerBatch: vi.fn(() => ({
+    data: null,
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  })),
+  useFinanceControllerAgentRun: vi.fn(() => ({
+    data: null,
+    loading: false,
     error: null,
     refetch: vi.fn(),
   })),
@@ -188,7 +258,11 @@ describe("frontend interactions", () => {
   it("closes order drawer via backdrop click", async () => {
     const onClose = vi.fn();
     const user = userEvent.setup();
-    render(<OrderDetailDrawer order={mockReport.order_results[0]} onClose={onClose} />);
+    render(
+      <ChatOrderProvider>
+        <OrderDetailDrawer order={mockReport.order_results[0]} onClose={onClose} />
+      </ChatOrderProvider>,
+    );
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Close order details" }));
@@ -259,7 +333,11 @@ describe("order drawer close handler", () => {
   it("invokes onClose from close button", async () => {
     const onClose = vi.fn();
     const user = userEvent.setup();
-    render(<OrderDetailDrawer order={mockReport.order_results[0]} onClose={onClose} />);
+    render(
+      <ChatOrderProvider>
+        <OrderDetailDrawer order={mockReport.order_results[0]} onClose={onClose} />
+      </ChatOrderProvider>,
+    );
 
     const dialog = screen.getByRole("dialog");
     await user.click(within(dialog).getByLabelText("Close"));

@@ -33,6 +33,12 @@ export function formatExceptionLabel(type: string): string {
   return words.replace(/^\w/, (c) => c.toUpperCase());
 }
 
+/** Human-readable Finance Controller decision (e.g. FLAG_FOR_REVIEW → "Flag for review"). */
+export function formatAgentDecisionLabel(decision: string): string {
+  const words = decision.replace(/_/g, " ").toLowerCase();
+  return words.replace(/^\w/, (c) => c.toUpperCase());
+}
+
 export function getPrimaryException(
   exceptions: { type: string }[],
 ): string | null {

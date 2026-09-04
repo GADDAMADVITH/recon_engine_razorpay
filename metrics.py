@@ -12,7 +12,7 @@ REPORT_PATH = DATA_DIR / "report.json"
 EVALUATION_PATH = DATA_DIR / "evaluation.json"
 
 EVALUATION_GRAIN = "order"
-EXPECTED_ORDER_COUNT = 50
+EXPECTED_ORDER_COUNT = 100
 
 RELAXED_EQUIVALENT_SUCCESS_STATUSES = frozenset(
     {"reconciled", "reconciled_within_timestamp_tolerance"}

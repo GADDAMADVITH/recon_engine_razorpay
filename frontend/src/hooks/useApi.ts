@@ -2,7 +2,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { api, ApiClientError } from "../api/client";
 import type {
   EvaluationResponse,
+  FinanceAgentRunResponse,
+  FinanceControllerRunResponse,
   HealthResponse,
+  OrderResult,
   ReconciliationReport,
   ReconciliationSummary,
 } from "../types/api";
@@ -74,4 +77,105 @@ export function useEvaluation() {
 export function useHealth() {
   const loader = useCallback(() => api.health(), []);
   return useAsyncData<HealthResponse>(loader);
+}
+
+/**
+ * Run the Finance Controller on engine-computed order results.
+ * Pass null to skip loading. Uses the same order_results shown in the UI —
+ * the agent never invents reconciliation facts.
+ */
+export function useFinanceControllerBatch(orderResults: OrderResult[] | null) {
+  const [data, setData] = useState<FinanceControllerRunResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const orderResultsRef = useRef(orderResults);
+  orderResultsRef.current = orderResults;
+
+  const orderKey = orderResults
+    ? `${orderResults.length}:${orderResults.map((o) => `${o.order_id}:${o.status}:${o.confidence_score}`).join("|")}`
+    : "";
+
+  const refetch = useCallback(async () => {
+    const current = orderResultsRef.current;
+    if (!current || current.length === 0) {
+      setData(null);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await api.runFinanceController({ order_results: current });
+      setData(result);
+    } catch (err) {
+      setData(null);
+      setError(
+        err instanceof ApiClientError
+          ? err.message
+          : "Unable to run Finance Controller.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [orderKey]);
+
+  useEffect(() => {
+    void refetch();
+  }, [refetch]);
+
+  return { data, loading, error, refetch };
+}
+
+/** Production batch: empty POST → current reconciliation report. */
+export function useFinanceControllerProduction() {
+  const loader = useCallback(() => api.runFinanceController(), []);
+  return useAsyncData<FinanceControllerRunResponse>(loader);
+}
+
+/**
+ * Agent workflow run with decision traces (POST /finance-controller/run-agent).
+ * Pass null to skip. Uses the same order_results shown in the UI.
+ */
+export function useFinanceControllerAgentRun(orderResults: OrderResult[] | null) {
+  const [data, setData] = useState<FinanceAgentRunResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const orderResultsRef = useRef(orderResults);
+  orderResultsRef.current = orderResults;
+
+  const orderKey = orderResults
+    ? `${orderResults.length}:${orderResults.map((o) => `${o.order_id}:${o.status}:${o.confidence_score}`).join("|")}`
+    : "";
+
+  const refetch = useCallback(async () => {
+    const current = orderResultsRef.current;
+    if (!current || current.length === 0) {
+      setData(null);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await api.runFinanceControllerAgent({ order_results: current });
+      setData(result);
+    } catch (err) {
+      setData(null);
+      setError(
+        err instanceof ApiClientError
+          ? err.message
+          : "Unable to run Finance Controller agent.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [orderKey]);
+
+  useEffect(() => {
+    void refetch();
+  }, [refetch]);
+
+  return { data, loading, error, refetch };
 }

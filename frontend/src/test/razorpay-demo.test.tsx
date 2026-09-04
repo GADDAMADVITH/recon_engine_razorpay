@@ -30,6 +30,18 @@ vi.mock("../hooks/useApi", () => ({
     error: null,
     refetch: vi.fn(),
   })),
+  useFinanceControllerBatch: vi.fn(() => ({
+    data: null,
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  })),
+  useFinanceControllerAgentRun: vi.fn(() => ({
+    data: null,
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  })),
 }));
 
 vi.mock("../hooks/useRazorpaySync", () => ({
@@ -44,6 +56,31 @@ vi.mock("../api/client", async () => {
       ...actual.api,
       razorpayReconcileDemo: (...args: unknown[]) => demoMock(...args),
       razorpaySync: (...args: unknown[]) => syncMock(...args),
+      runFinanceController: vi.fn(async () => ({
+        agent: "reconengine-finance-controller",
+        agent_version: "1.0.0",
+        provider: "deterministic_policy",
+        records_processed: 0,
+        no_action_count: 0,
+        review_required_count: 0,
+        exception_count: 0,
+        unresolved_count: 0,
+        decisions_by_type: {},
+        decisions: [],
+      })),
+      runFinanceControllerAgent: vi.fn(async () => ({
+        run_id: "FCRUN_test",
+        started_at: "2026-09-04T12:00:00Z",
+        completed_at: "2026-09-04T12:00:01Z",
+        elapsed_seconds: 0.01,
+        records_processed: 0,
+        no_action_count: 0,
+        review_required_count: 0,
+        unresolved_count: 0,
+        pending_approval_count: 0,
+        decisions_by_type: {},
+        decisions: [],
+      })),
     },
   };
 });

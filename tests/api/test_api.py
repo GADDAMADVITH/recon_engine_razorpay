@@ -33,10 +33,10 @@ def test_reconciliation_report_returns_200():
     assert response.status_code == 200
 
 
-def test_reconciliation_report_contains_fifty_orders():
+def test_reconciliation_report_contains_hundred_orders():
     response = client.get("/api/v1/reconciliation/report")
     report = response.json()
-    assert len(report["order_results"]) == 50
+    assert len(report["order_results"]) == 100
 
 
 def test_reconciliation_summary_consistent_with_report():
@@ -55,9 +55,9 @@ def test_reconciliation_summary_returns_200():
 
 def test_reconciliation_summary_reconciled_unreconciled_counts():
     summary = client.get("/api/v1/reconciliation/summary").json()
-    assert summary["reconciled_orders"] == 26
-    assert summary["unreconciled_orders"] == 24
-    assert summary["total_orders"] == 50
+    assert summary["reconciled_orders"] == 52
+    assert summary["unreconciled_orders"] == 48
+    assert summary["total_orders"] == 100
 
 
 def test_evaluation_returns_200():
@@ -65,9 +65,9 @@ def test_evaluation_returns_200():
     assert response.status_code == 200
 
 
-def test_evaluation_reports_fifty_orders():
+def test_evaluation_reports_hundred_orders():
     evaluation = client.get("/api/v1/evaluation").json()
-    assert evaluation["summary"]["orders_evaluated"] == 50
+    assert evaluation["summary"]["orders_evaluated"] == 100
 
 
 def test_evaluation_binary_f1_is_perfect():

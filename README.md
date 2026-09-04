@@ -185,6 +185,13 @@ Command Center “Run reconciliation” refreshes the **production CSV** report;
 | `POST` | `/api/v1/reconciliation/audit/explain` | Gemini explanation for that supplied result |
 | `POST` | `/api/v1/reconciliation/import-bank` | Multipart bank CSV upload + reconcile |
 | `GET` | `/api/v1/evaluation` | Engine metrics vs `ground_truth.json` |
+| `POST` | `/api/v1/finance-controller/run` | Advisory Finance Controller on recon results (read-only) |
+| `POST` | `/api/v1/finance-controller/run-agent` | Agent run + decision trace (same deterministic policy) |
+| `POST` | `/api/v1/finance-controller/agent-plan` | Batch orchestration: analysis, priority queue, work plan |
+| `GET` | `/api/v1/finance-controller/evaluation` | Finance Controller metrics on held-out labeled dataset |
+| `GET` | `/api/v1/finance-controller/demo-status` | Demo readiness checks (no secrets) |
+| `POST` | `/api/v1/finance-controller/demo-reset` | Clear local demo action records only |
+| `POST` | `/api/v1/finance-controller/actions/approve` | Human-gated simulated action record (no money movement) |
 | `POST` | `/api/v1/sources/razorpay/sync` | Live Razorpay fetch + map + reconcile when possible |
 | `POST` | `/api/v1/sources/razorpay/reconcile-demo` | Synthetic Razorpay-shaped demo (no live Razorpay) |
 | `POST` | `/api/v1/sources/razorpay/verify-payment` | Server-side Checkout signature verify (dev utility) |
@@ -225,13 +232,169 @@ Verified in this submission-readiness pass:
 - **Confidence scoring** — attached to each order result by the engine.
 - **AI separated from recon** — Gemini sees compact audit JSON; it cannot rewrite engine facts.
 - **Test coverage** — unit, API, Razorpay adapter, audit, bank import, and frontend UI tests.
-- **Deterministic demo data** — `data/demo_bank.csv` for evaluation when live settlement lag would hide the story.
+- **Deterministic demo data** — `data/demo_bank.csv` for walkthrough when live settlement lag would hide the story.
+- **Finance Controller evaluation** — held-out labeled dataset (`data/finance_controller_eval_v1.json`) scored by `finance_agent_eval.py`; separate from demo/production batches.
 
 This is an internship **MVP**, not a claim of production readiness (no multi-tenant auth, no hosted deployment contract, no SLA).
 
 ---
 
-## 13. Security notes
+## 13. Finance Controller evaluation (Track 04)
+
+The Finance Controller is an advisory decision layer over deterministic
+reconciliation evidence. Evaluation measures whether those decisions match
+**held-out expected labels**.
+
+### Demo vs held-out
+
+| | Demo / product path | Held-out evaluation path |
+|--|---------------------|---------------------------|
+| Data | Production CSVs + `data/demo_bank.csv` | `data/finance_controller_eval_v1.json` |
+| Purpose | Product walkthrough + live 100-record agent batch | Measured decision accuracy |
+| IDs | `ORD_*` | `FCEVAL_*` |
+
+### How labels were created
+
+Expected decisions were authored from a human **labeling guide** (priority over
+exception types → allowlisted decision). Labels were **not** produced by running
+the agent and copying its output.
+
+### Measured results (held-out synthetic dataset)
+
+Run:
+
+```fish
+./venv/bin/python finance_agent_eval.py
+# or GET /api/v1/finance-controller/evaluation
+```
+
+**Measured on the held-out synthetic evaluation dataset** (not production accuracy):
+
+| Metric | Value |
+|--------|-------|
+| Records evaluated | 69 |
+| Correct / incorrect | 69 / 0 |
+| Accuracy | 1.0 |
+| Errors in exception list | 0 |
+
+Per-decision (all classes present): precision = recall = F1 = 1.0 for
+`NO_ACTION`, `FLAG_FOR_REVIEW`, `VERIFY_REFUND`, `ESCALATE_MISSING_BANK`,
+`ESCALATE_MISSING_SETTLEMENT`.
+
+Throughput fields (`records_processed`, `elapsed_seconds`, `records_per_second`)
+are included in the JSON result. Treat timing as informational, not a benchmark.
+
+Confusion matrix and full error list (when non-empty) are in
+`data/finance_controller_evaluation.json`.
+
+**Limitation:** Perfect held-out accuracy means the agent currently matches the
+published labeling guide on these synthetic fixtures. It is **not** evidence of
+production ops accuracy.
+
+### Operational 100-record batch
+
+Verified live agent batch on the production reconciliation report:
+
+- records_processed = 100
+- NO_ACTION = 40, FLAG_FOR_REVIEW = 32, ESCALATE_MISSING_BANK = 10,
+  VERIFY_REFUND = 10, ESCALATE_MISSING_SETTLEMENT = 8
+- review_required / unresolved / pending_approval = 60
+
+### Three layers (keep separate)
+
+| Layer | Role | Module / surface |
+|-------|------|------------------|
+| **Deterministic Finance Controller policy** | Classification / safety boundary — allowlisted decisions only | `finance_agent.py` |
+| **Agent orchestration** | Batch analysis, grouping, deterministic prioritization, work planning | `finance_agent_plan.py`, `POST .../agent-plan` |
+| **Gemini** | Explanation / conversational interface only | `ai_explainer.py`, chat — **never** decisions or priority |
+
+Orchestration reuses the same policy decisions; it does not replace them with an LLM.
+
+---
+
+## 13b. Human-gated finance actions (simulated)
+
+```
+Agent Decision
+      ↓
+Requires Approval?
+      ↓
+Human Approval
+      ↓
+Simulated Action Record
+      ↓
+Audit Event
+```
+
+`POST /api/v1/finance-controller/actions/approve` records a **simulated** follow-up
+after a human approves an approval-gated agent decision. The server recomputes the
+Finance Controller decision from engine evidence and never trusts the client claim.
+
+Mapped record-only actions:
+
+| Decision | Simulated action |
+|----------|------------------|
+| `FLAG_FOR_REVIEW` | `RECORD_REVIEW` |
+| `VERIFY_REFUND` | `RECORD_REFUND_VERIFICATION` |
+| `ESCALATE_MISSING_BANK` | `RECORD_MISSING_BANK_ESCALATION` |
+| `ESCALATE_MISSING_SETTLEMENT` | `RECORD_MISSING_SETTLEMENT_ESCALATION` |
+
+**ReconEngine does not move money or execute live Razorpay financial actions in this MVP.**
+`NO_ACTION` cannot be approved. Approvals are idempotent. Reconciliation status,
+amounts, and confidence are never modified.
+
+---
+
+## 13c. Track 04 Evaluation Walkthrough
+
+Recommended live demo sequence (API on port **8001**):
+
+1. Start API on port 8001
+   `./venv/bin/uvicorn api:app --host 127.0.0.1 --port 8001`
+2. Open ReconEngine (frontend console)
+3. Open **Bank Import**
+4. **Load Demo CSV**
+5. **Run Reconciliation**
+6. Open **ORD_0002** (primary failure demonstration)
+7. Inspect reconciliation evidence (Pipeline)
+8. Inspect Finance Controller decision + rationale + proposed action
+9. Open **Agent Work Queue** / Agent Plan on the Finance Controller panel
+10. **Approve** or **Reject** (human-gated)
+11. Inspect the recorded/rejected simulated action (`Money moved: false`)
+12. Open **Audit Trail**
+13. Open Finance Controller dashboard (console home)
+14. Show **100-record operational batch** metrics
+15. Show **69-record held-out evaluation** (policy fidelity wording)
+16. Open **Explain with AI** / chatbot **only** as an explanation interface
+
+Explicit boundaries:
+
+- Gemini does **not** determine financial decisions.
+- Gemini does **not** approve actions.
+- Gemini does **not** move money.
+- The deterministic reconciliation engine and Finance Controller policy remain the financial source of truth.
+- Actions are **simulated** (record-only).
+- **Human approval is required** for every non-`NO_ACTION` decision.
+
+Optional: **Reset demo actions** clears local simulated action state only — not CSVs, held-out labels, or policy.
+
+### Track 04 compliance checklist
+
+| Requirement | Evidence |
+|-------------|----------|
+| 50+ synthetic records | **100** operational records |
+| Finance-ops loop | Reconcile → Analyze → Prioritize → Human Review → Approve/Reject → Record Action → Audit |
+| Measured throughput | Agent run duration + held-out `throughput` fields |
+| Measured accuracy | **69-record** held-out synthetic evaluation (policy fidelity) |
+| Honest exception list | **60** unresolved operational cases + Agent Work Queue |
+| Human approval | Approval queue + approve/reject APIs |
+| Failure handled gracefully | Prefer **ORD_0002** bank amount mismatch |
+| Audit trail | Structured audit + finance action audit events |
+| No cherry-picking | Full 100-record batch metrics shown |
+
+---
+
+## 14. Security notes
 
 Verified from the current code and ignore rules:
 
@@ -242,31 +405,39 @@ Verified from the current code and ignore rules:
 
 ---
 
-## 14. Known limitations
+## 15. Known limitations
 
 - **Live Razorpay settlements are not instant.** A Checkout test payment may not have a settlement (or bank credit) in time for a demo. That is processor timing, not an engine defect. Use **Bank Import + demo CSV** for a reliable walkthrough.
 - Razorpay **does not provide bank statement rows**. Sync can leave bank-side gaps by design; the UI states this.
 - `GET .../audit` and `GET .../audit/explain` always use the **production CSV report**. After a bank import, the drawer uses **POST** `/audit` and `/audit/explain` with the imported `order_result` so Pipeline and Audit stay aligned.
 - Gemini requires `GEMINI_API_KEY`. Without it, Explain with AI returns an availability error; reconciliation still works.
 - Default model is **`gemini-3.5-flash`**. `gemini-3.6-flash` is listed by Google but was observed to stall on this API surface.
+- Finance Controller held-out accuracy is synthetic policy-fidelity only — not production ops accuracy.
 
 ---
 
-## 15. Project structure
+## 16. Project structure
 
 ```
 recon_engine/
 ├── api.py                 # FastAPI surface
 ├── recon_engine.py        # Matching, status, confidence
 ├── audit.py               # Structured audit (read-only)
-├── ai_explainer.py        # Gemini REST client
-├── metrics.py             # Evaluation vs ground truth
+├── finance_agent.py       # Advisory Finance Controller (deterministic policy)
+├── finance_agent_run.py   # Agent run / decision trace
+├── finance_agent_plan.py  # Batch orchestration / work plan
+├── finance_agent_eval.py  # Held-out FC evaluation harness
+├── finance_actions.py     # Human-gated simulated actions
+├── ai_explainer.py        # Gemini REST client (explain/chat only)
+├── metrics.py             # Engine evaluation vs ground truth
 ├── data_gen.py            # Seeded synthetic CSVs + ground_truth
 ├── ARCHITECTURE.md        # Engine / dataset / evaluation detail
 ├── data/
 │   ├── orders.csv, settlements.csv, refunds.csv, bank.csv
 │   ├── demo_bank.csv      # Evaluator demo bank file
-│   └── ground_truth.json  # Evaluation only
+│   ├── ground_truth.json  # Engine evaluation only
+│   ├── finance_controller_eval_v1.json      # Held-out FC labels
+│   └── finance_controller_evaluation.json # FC eval output
 ├── integrations/razorpay/ # Read-only client, sync, demo fixtures
 ├── frontend/              # Vite + React console
 └── tests/                 # pytest

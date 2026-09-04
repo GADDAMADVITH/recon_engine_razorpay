@@ -73,7 +73,7 @@ class TestImportBankEndpoint:
     def test_total_orders_equals_production_dataset(self):
         resp = _upload(MINIMAL_VALID_CSV)
         # The production CSV has 50 orders; all are reconciled against uploaded bank rows
-        assert resp.json()["summary"]["total_orders"] == 50
+        assert resp.json()["summary"]["total_orders"] == 100
 
     def test_malformed_csv_returns_400(self):
         resp = _upload(MALFORMED_CSV)
@@ -95,7 +95,7 @@ class TestImportBankEndpoint:
     def test_existing_report_endpoint_unchanged(self):
         resp = client.get("/api/v1/reconciliation/report")
         assert resp.status_code == 200
-        assert resp.json()["summary"]["total_orders"] == 50
+        assert resp.json()["summary"]["total_orders"] == 100
 
 
 class TestImportBankScenarios:
