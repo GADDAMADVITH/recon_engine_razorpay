@@ -210,6 +210,18 @@ describe("frontend interactions", () => {
     expect(screen.getAllByText(/System configuration and connection details/i).length).toBeGreaterThan(0);
   }, 15_000);
 
+  it("navigates to the landing page from ReconEngine branding", async () => {
+    const user = userEvent.setup();
+    renderWithRouter("/console");
+
+    const brand = screen.getByTestId("console-brand-link");
+    expect(brand).toHaveAttribute("href", "/");
+    await user.click(brand);
+    expect(
+      await screen.findByRole("heading", { name: /Reconcile on facts/i }, { timeout: 8000 }),
+    ).toBeInTheDocument();
+  }, 15_000);
+
   it("filters reconciliation table by search", async () => {
     const user = userEvent.setup();
     renderConsolePage(<ReconciliationPage />);

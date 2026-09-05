@@ -335,7 +335,7 @@ export function BankImportPage() {
       />
 
       <section className="mb-8 rounded-xl border border-[var(--color-border)] bg-white px-5 py-4 shadow-[0_1px_3px_rgba(11,27,43,0.04)]" data-testid="demo-walkthrough-hint">
-        <p className="text-[13px] font-medium tracking-tight text-[var(--color-ink)]">
+        <p className="text-[11px] font-medium tracking-wide text-[var(--color-muted)]">
           Evaluator walkthrough
         </p>
         <p className="mt-1 text-sm leading-relaxed text-[var(--color-ink)]">

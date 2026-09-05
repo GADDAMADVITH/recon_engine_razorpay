@@ -13,13 +13,13 @@ export function PageHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <header className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <h1 className="text-[2rem] font-medium tracking-[-0.045em] text-[var(--color-ink)] sm:text-[2.35rem]">
+    <header className="mb-8 flex flex-col gap-3 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
+      <div className="min-w-0">
+        <h1 className="text-[1.75rem] font-medium tracking-[-0.04em] text-[var(--color-ink)] sm:text-[2.1rem]">
           {title}
         </h1>
         {subtitle ? (
-          <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-[var(--color-muted)] sm:text-[16px]">
+          <p className="mt-1.5 max-w-2xl text-[14px] leading-relaxed text-[var(--color-muted)] sm:text-[15px]">
             {subtitle}
           </p>
         ) : null}
@@ -39,13 +39,13 @@ export function SectionLabel({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-5 flex items-end justify-between gap-4 border-b border-[var(--color-border)] pb-4">
-      <div>
+    <div className="mb-4 flex items-end justify-between gap-4 border-b border-[var(--color-border)] pb-3.5">
+      <div className="min-w-0">
         <h2 className="text-[13px] font-medium tracking-tight text-[var(--color-ink)]">
           {title}
         </h2>
         {description ? (
-          <p className="mt-1.5 text-sm text-[var(--color-muted)]">{description}</p>
+          <p className="mt-1 text-sm leading-relaxed text-[var(--color-muted)]">{description}</p>
         ) : null}
       </div>
       {action}
@@ -122,16 +122,19 @@ export function MetricCard({
     default: "text-[var(--color-ink)]",
   };
   return (
-    <div className="flex flex-col gap-2 rounded-2xl border border-[var(--color-border)] bg-white px-5 py-5 shadow-[0_1px_0_rgba(11,27,43,0.04),0_8px_24px_rgba(11,27,43,0.04)]">
+    <div className="console-card @container flex min-w-0 flex-col gap-1.5 rounded-xl border border-[var(--color-border)] bg-white px-3 py-3.5 shadow-[0_1px_0_rgba(11,27,43,0.03),0_6px_18px_rgba(11,27,43,0.035)] sm:gap-2 sm:px-3.5 sm:py-4">
       <span
         className={cn(
-          "text-[2.35rem] font-medium leading-none tabular-nums tracking-[-0.045em]",
+          // nowrap: never break "100" / "24ms"; clamp uses card width (cqi) so type shrinks before overflow
+          "whitespace-nowrap text-[clamp(1.05rem,0.55rem+11cqi,2rem)] font-medium leading-none tabular-nums tracking-[-0.04em]",
           accentColors[accent ?? "default"],
         )}
       >
         {value}
       </span>
-      <span className="text-[13px] font-medium text-[var(--color-muted)]">{label}</span>
+      <span className="text-[12px] font-medium leading-snug text-[var(--color-muted)] sm:text-[13px]">
+        {label}
+      </span>
     </div>
   );
 }
@@ -339,7 +342,7 @@ export function InteractiveRow({
     <button
       type="button"
       onClick={onClick}
-      className="group flex w-full items-center gap-4 border-b border-[var(--color-border)] py-4 text-left transition-colors last:border-b-0 hover:bg-black/[0.02] focus-visible:bg-black/[0.02]"
+      className="group flex w-full items-center gap-4 border-b border-[var(--color-border)] py-3.5 text-left transition-colors duration-150 last:border-b-0 hover:bg-black/[0.02] focus-visible:bg-black/[0.02]"
     >
       <div className="min-w-0 flex-1">
         <p className="text-[15px] font-medium text-[var(--color-ink)]">{label}</p>
@@ -377,7 +380,7 @@ export function SettingRow({
 
 export function LoadingState({ label = "Loading reconciliation data..." }: { label?: string }) {
   return (
-    <div className="flex min-h-[320px] flex-col items-center justify-center rounded-xl border border-[var(--color-border)] bg-white shadow-[0_1px_3px_rgba(11,27,43,0.04)]">
+    <div className="flex min-h-[220px] flex-col items-center justify-center rounded-xl border border-[var(--color-border)] bg-white px-6 py-10 shadow-[0_1px_3px_rgba(11,27,43,0.04)]">
       <div
         className="mb-4 h-5 w-5 animate-[spin_0.8s_linear_infinite] rounded-full border-2 border-[var(--color-border)] border-t-[var(--color-accent)]"
         role="status"
@@ -396,10 +399,10 @@ export function ErrorState({
   onRetry?: () => void;
 }) {
   return (
-    <div className="flex min-h-[320px] flex-col items-center justify-center rounded-xl border border-[var(--color-danger)]/20 bg-white text-center shadow-[0_1px_3px_rgba(11,27,43,0.04)]">
+    <div className="flex min-h-[220px] flex-col items-center justify-center rounded-xl border border-[var(--color-danger)]/20 bg-white px-6 py-10 text-center shadow-[0_1px_3px_rgba(11,27,43,0.04)]">
       <div className="mb-1 h-2 w-2 rounded-full bg-[var(--color-danger)]" aria-hidden />
-      <p className="mt-3 text-base font-semibold text-[var(--color-ink)]">Unable to load data</p>
-      <p className="mt-2 max-w-md px-6 text-sm text-[var(--color-muted)]">{message}</p>
+      <p className="mt-3 text-base font-semibold tracking-tight text-[var(--color-ink)]">Unable to load data</p>
+      <p className="mt-2 max-w-md text-sm leading-relaxed text-[var(--color-muted)]">{message}</p>
       {onRetry ? (
         <Button variant="primary" className="mt-6" onClick={onRetry}>
           Retry connection
@@ -411,8 +414,8 @@ export function ErrorState({
 
 export function EmptyState({ title, description }: { title: string; description: string }) {
   return (
-    <div className="rounded-xl border border-dashed border-[var(--color-border)] bg-white px-8 py-14 text-center">
-      <p className="text-[15px] font-semibold text-[var(--color-ink)]">{title}</p>
+    <div className="rounded-xl border border-dashed border-[var(--color-border)] bg-white px-6 py-12 text-center sm:px-8 sm:py-14">
+      <p className="text-[15px] font-semibold tracking-tight text-[var(--color-ink)]">{title}</p>
       <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-[var(--color-muted)]">{description}</p>
     </div>
   );

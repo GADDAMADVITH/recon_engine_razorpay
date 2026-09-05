@@ -174,11 +174,12 @@ describe("Phase 4B.4 Razorpay reconcile demo UI", () => {
     const user = userEvent.setup();
     renderDashboard();
 
-    expect(screen.queryByRole("button", { name: /run phase 4a demo/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /run settlement demo/i })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Razorpay" }));
 
-    expect(screen.getByRole("button", { name: /run phase 4a demo/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /run settlement demo/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Settlement & Bank Reconciliation/i })).toBeInTheDocument();
     expect(screen.getByText("Demo — Synthetic Bank Data")).toBeInTheDocument();
     expect(
       screen.getByText(/Bank transactions are synthetic fixtures for demonstration only/i),
@@ -189,7 +190,7 @@ describe("Phase 4B.4 Razorpay reconcile demo UI", () => {
     const user = userEvent.setup();
     render(<RazorpayDemoPanel />);
 
-    await user.click(screen.getByRole("button", { name: /run phase 4a demo/i }));
+    await user.click(screen.getByRole("button", { name: /run settlement demo/i }));
 
     await waitFor(() => expect(demoMock).toHaveBeenCalledTimes(1));
     expect(syncMock).not.toHaveBeenCalled();
@@ -206,10 +207,10 @@ describe("Phase 4B.4 Razorpay reconcile demo UI", () => {
     );
 
     render(<RazorpayDemoPanel />);
-    await user.click(screen.getByRole("button", { name: /run phase 4a demo/i }));
+    await user.click(screen.getByRole("button", { name: /run settlement demo/i }));
 
-    expect(screen.getByText(/Running Phase 4A demo scenarios/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /run phase 4a demo/i })).toBeDisabled();
+    expect(screen.getByText(/Running settlement demo scenarios/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /run settlement demo/i })).toBeDisabled();
 
     resolveDemo(demoResponse());
     await waitFor(() =>
@@ -221,7 +222,7 @@ describe("Phase 4B.4 Razorpay reconcile demo UI", () => {
     const user = userEvent.setup();
     render(<RazorpayDemoPanel />);
 
-    await user.click(screen.getByRole("button", { name: /run phase 4a demo/i }));
+    await user.click(screen.getByRole("button", { name: /run settlement demo/i }));
 
     await waitFor(() => expect(screen.getByText("successful reconciliation")).toBeInTheDocument());
 
@@ -245,7 +246,7 @@ describe("Phase 4B.4 Razorpay reconcile demo UI", () => {
     const user = userEvent.setup();
     render(<RazorpayDemoPanel />);
 
-    await user.click(screen.getByRole("button", { name: /run phase 4a demo/i }));
+    await user.click(screen.getByRole("button", { name: /run settlement demo/i }));
 
     await waitFor(() =>
       expect(screen.getByText(/Demo — Synthetic Bank Data \(synthetic_fixture\)/i)).toBeInTheDocument(),
@@ -260,7 +261,7 @@ describe("Phase 4B.4 Razorpay reconcile demo UI", () => {
     demoMock.mockRejectedValue(new ApiClientError("Demo endpoint unavailable", 503));
 
     render(<RazorpayDemoPanel />);
-    await user.click(screen.getByRole("button", { name: /run phase 4a demo/i }));
+    await user.click(screen.getByRole("button", { name: /run settlement demo/i }));
 
     await waitFor(() => expect(screen.getByText("Demo failed")).toBeInTheDocument());
     expect(screen.getByText("Demo endpoint unavailable")).toBeInTheDocument();

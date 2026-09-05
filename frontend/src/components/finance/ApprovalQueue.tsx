@@ -27,7 +27,7 @@ function LifecycleStrip({ metrics }: { metrics: FinanceLifecycleMetrics }) {
       {cells.map((cell) => (
         <div
           key={cell.label}
-          className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)]/60 px-2.5 py-2"
+          className="console-card rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)]/60 px-2.5 py-2"
         >
           <p className="text-sm font-semibold tabular-nums text-[var(--color-ink)]">{cell.value}</p>
           <p className="mt-0.5 text-[10px] leading-tight text-[var(--color-muted)]">{cell.label}</p>

@@ -136,8 +136,13 @@ export function useFinanceControllerProduction() {
 /**
  * Agent workflow run with decision traces (POST /finance-controller/run-agent).
  * Pass null to skip. Uses the same order_results shown in the UI.
+ * Set autoRun=false for demo dashboards that require an explicit Run click.
  */
-export function useFinanceControllerAgentRun(orderResults: OrderResult[] | null) {
+export function useFinanceControllerAgentRun(
+  orderResults: OrderResult[] | null,
+  options?: { autoRun?: boolean },
+) {
+  const autoRun = options?.autoRun !== false;
   const [data, setData] = useState<FinanceAgentRunResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -174,8 +179,12 @@ export function useFinanceControllerAgentRun(orderResults: OrderResult[] | null)
   }, [orderKey]);
 
   useEffect(() => {
+    if (!autoRun) {
+      setLoading(false);
+      return;
+    }
     void refetch();
-  }, [refetch]);
+  }, [refetch, autoRun]);
 
-  return { data, loading, error, refetch };
+  return { data, setData, loading, error, refetch };
 }

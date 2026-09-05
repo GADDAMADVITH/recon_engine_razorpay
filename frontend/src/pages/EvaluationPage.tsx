@@ -28,7 +28,7 @@ export function EvaluationPage() {
         subtitle="Evaluation uses ground truth to measure engine correctness. Ground truth never participates in production reconciliation."
       />
 
-      <div className="mb-10 rounded-xl border border-[var(--color-border)] bg-white px-5 py-4 shadow-[0_1px_3px_rgba(11,27,43,0.04)]">
+      <div className="console-card mb-8 rounded-xl border border-[var(--color-border)] bg-white px-5 py-4 shadow-[0_1px_3px_rgba(11,27,43,0.04)]">
         <p className="text-sm leading-relaxed text-[var(--color-muted)]">
           This page measures reconciliation engine quality against labeled scenarios.
           It reflects research and validation metrics — not live production transaction data.
@@ -37,7 +37,7 @@ export function EvaluationPage() {
         </p>
       </div>
 
-      <section className="mb-14">
+      <section className="mb-10 sm:mb-12">
         <EvaluationMetricsGrid
           f1={binary.f1_score}
           precision={binary.precision}
@@ -46,7 +46,7 @@ export function EvaluationPage() {
         />
       </section>
 
-      <section className="mb-14">
+      <section className="mb-10 sm:mb-12">
         <SectionLabel title="Classification Matrix" />
         <ConfusionMatrix
           tp={binary.true_positives}
@@ -56,7 +56,7 @@ export function EvaluationPage() {
         />
       </section>
 
-      <section className="mb-14 grid gap-10 border-b border-[var(--color-border)] pb-14 sm:grid-cols-2">
+      <section className="mb-10 grid gap-8 border-b border-[var(--color-border)] pb-10 sm:mb-12 sm:grid-cols-2 sm:gap-10 sm:pb-12">
         <DisplayMetric
           value={formatPercent(data.status_evaluation.strict.accuracy)}
           label="Strict Status Accuracy"

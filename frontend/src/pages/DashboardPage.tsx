@@ -39,12 +39,12 @@ function DashboardReportBody({
     data.summary.total_orders > 0
       ? data.summary.reconciled_orders / data.summary.total_orders
       : 0;
-  const finance = useFinanceControllerAgentRun(data.order_results);
+      const finance = useFinanceControllerAgentRun(data.order_results, { autoRun: false });
 
   return (
     <>
       {/* KPI cards */}
-      <div className="mb-12 grid grid-cols-2 gap-5 sm:grid-cols-4">
+      <div className="mb-10 grid grid-cols-2 gap-3 sm:mb-12 sm:grid-cols-4 sm:gap-4">
         <MetricCard value={data.summary.total_orders} label="Total orders" accent="brand" />
         <MetricCard
           value={data.summary.reconciled_orders}
@@ -63,7 +63,7 @@ function DashboardReportBody({
         />
       </div>
 
-      <section className="mb-14 border-b border-[var(--color-border)] pb-14">
+      <section className="mb-10 border-b border-[var(--color-border)] pb-10 sm:mb-12 sm:pb-12">
         <SectionLabel title="Reconciliation Health" />
         <ReconciliationHealthRing
           rate={reconciliationRate}
@@ -79,9 +79,12 @@ function DashboardReportBody({
         error={finance.error}
         onRetry={() => void finance.refetch()}
         orderResults={data.order_results}
+        requireManualRun
+        onAgentRunComplete={(run) => finance.setData(run)}
+        onAgentRunClear={() => finance.setData(null)}
       />
 
-      <div className="mb-14 grid gap-12 lg:grid-cols-2">
+      <div className="mb-10 grid gap-10 lg:mb-12 lg:grid-cols-2 lg:gap-12">
         <section>
           <SectionLabel title="Status Distribution" description="Breakdown by reconciliation outcome" />
           <StatusDistributionViz statusCounts={data.status_counts} />

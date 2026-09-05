@@ -10,10 +10,16 @@ import { ErrorState, LoadingState, MetricCard } from "../ui/primitives";
  */
 export function AgentWorkQueue({
   orderResults,
+  initialPlan = null,
+  refreshToken,
 }: {
   orderResults?: OrderResult[] | null;
+  /** Prefer plan already produced by the Run Agent flow when present. */
+  initialPlan?: FinanceAgentPlanResponse | null;
+  /** Bumps refresh when a new agent run completes. */
+  refreshToken?: string | number | null;
 }) {
-  const [plan, setPlan] = useState<FinanceAgentPlanResponse | null>(null);
+  const [plan, setPlan] = useState<FinanceAgentPlanResponse | null>(initialPlan);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
@@ -44,8 +50,12 @@ export function AgentWorkQueue({
   }, [orderKey]);
 
   useEffect(() => {
+    if (initialPlan) {
+      setPlan(initialPlan);
+      return;
+    }
     void refresh();
-  }, [refresh]);
+  }, [refresh, initialPlan, refreshToken]);
 
   const analysis = plan?.batch_analysis;
   const topItems = (plan?.prioritized_work_queue ?? []).slice(0, 8);

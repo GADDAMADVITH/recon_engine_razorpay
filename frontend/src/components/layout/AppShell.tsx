@@ -33,9 +33,14 @@ const navGroups = [
 
 function ConsoleWordmark() {
   return (
-    <Link to={CONSOLE_PATHS.home} className="flex items-center gap-2.5">
+    <Link
+      to="/"
+      className="flex items-center gap-2.5 rounded-md outline-offset-2"
+      aria-label="ReconEngine home"
+      data-testid="console-brand-link"
+    >
       <span
-        className="flex h-7 w-7 items-center justify-center rounded-[5px] bg-[var(--color-ink)]"
+        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[5px] bg-[var(--color-ink)]"
         aria-hidden
       >
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
@@ -44,7 +49,7 @@ function ConsoleWordmark() {
           <rect x="1" y="9.6" width="9.5" height="1.4" rx="0.5" fill="#06B6D4" />
         </svg>
       </span>
-      <span>
+      <span className="min-w-0">
         <p className="text-[15px] font-semibold tracking-tight text-[var(--color-ink)]">ReconEngine</p>
         <p className="text-[11px] text-[var(--color-muted)]">Financial Operations</p>
       </span>
@@ -73,11 +78,11 @@ export function Sidebar({
       />
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-[260px] flex-col border-r border-[var(--color-border)] bg-white transition-transform duration-300 ease-[var(--ease-out)] lg:static lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex h-svh w-[260px] shrink-0 flex-col border-r border-[var(--color-border)] bg-white transition-transform duration-300 ease-[var(--ease-out)] lg:static lg:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="px-6 pt-7 pb-6">
+        <div className="px-5 pt-6 pb-5 lg:px-6 lg:pt-7">
           <ConsoleWordmark />
         </div>
 
@@ -145,7 +150,7 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
   const health = useHealth();
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[var(--color-border)] bg-white/85 backdrop-blur-md">
+    <header className="z-30 shrink-0 border-b border-[var(--color-border)] bg-white/85 backdrop-blur-md">
       <div className="flex h-14 items-center justify-between gap-4 px-5 lg:px-10">
         <div className="flex items-center gap-4">
           <button

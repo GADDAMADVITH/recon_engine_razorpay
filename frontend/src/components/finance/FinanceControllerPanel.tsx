@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { api, ApiClientError } from "../../api/client";
 import type {
   FinanceAgentDecisionTrace,
+  FinanceAgentPlanResponse,
   FinanceAgentRunResponse,
   FinanceControllerEvaluationResponse,
   FinanceControllerRunResponse,
@@ -19,9 +20,10 @@ import {
 } from "../ui/primitives";
 import { ApprovalQueue } from "./ApprovalQueue";
 import { AgentWorkQueue } from "./AgentWorkQueue";
+import { AgentRunLauncher } from "./AgentRunLauncher";
 
 const WORKFLOW_STEPS = [
-  "Reconcile",
+  "Reconciliation",
   "Analyze",
   "Prioritize",
   "Human Review",
@@ -55,21 +57,27 @@ function isAgentRun(data: FinancePanelData): data is FinanceAgentRunResponse {
 function WorkflowStrip() {
   return (
     <div
-      className="mb-6 rounded-xl border border-[var(--color-border)] bg-white px-4 py-4 shadow-[0_1px_3px_rgba(11,27,43,0.04)]"
+      className="console-card mb-6 rounded-xl border border-[var(--color-border)] bg-white px-4 py-4 shadow-[0_1px_3px_rgba(11,27,43,0.04)]"
       data-testid="finance-ops-workflow"
     >
       <p className="text-[11px] font-medium tracking-wide text-[var(--color-muted)]">
         Finance-ops loop
+      </p>
+      <p className="mt-1 text-xs text-[var(--color-muted)]">
+        Reconciliation truth → deterministic decisions → orchestration → human approval → simulated
+        record → audit. The agent never moves money.
       </p>
       <ol className="mt-3 flex flex-wrap items-center gap-x-1 gap-y-2">
         {WORKFLOW_STEPS.map((step, index) => (
           <li key={step} className="flex items-center gap-1">
             <span
               className={cn(
-                "rounded-md border border-[var(--color-border)] bg-[var(--color-bg)]/70 px-2 py-1 text-[11px] font-medium text-[var(--color-ink)]",
+                "rounded-md border border-[var(--color-border)] bg-[var(--color-bg)]/70 px-2 py-1 text-[11px] font-medium text-[var(--color-ink)] transition-colors",
                 step === "Human Review" || step === "Approve/Reject"
                   ? "border-[var(--color-warning)]/40 text-[var(--color-warning)]"
-                  : null,
+                  : step === "Reconciliation"
+                    ? "border-[var(--color-accent-blue)]/30 text-[var(--color-accent-blue)]"
+                    : null,
               )}
             >
               {step}
@@ -101,33 +109,33 @@ function WorkflowStrip() {
 function ArchitectureFlow() {
   return (
     <div
-      className="rounded-xl border border-[var(--color-border)] bg-white px-5 py-5 shadow-[0_1px_3px_rgba(11,27,43,0.04)]"
+      className="console-card h-fit self-start rounded-xl border border-[var(--color-border)] bg-white px-5 py-4 shadow-[0_1px_3px_rgba(11,27,43,0.04)]"
       data-testid="finance-controller-architecture"
     >
       <p className="text-[11px] font-medium tracking-wide text-[var(--color-muted)]">
         Decision architecture
       </p>
-      <p className="mt-1 text-sm text-[var(--color-muted)]">
+      <p className="mt-1 text-sm leading-relaxed text-[var(--color-muted)]">
         The agent sits downstream of reconciliation. It does not alter engine results.
       </p>
-      <ol className="mt-5 space-y-0">
+      <ol className="mt-4 space-y-0">
         {PIPELINE_STEPS.map((step, index) => (
           <li key={step.title} className="relative pl-0">
-            <div className="rounded-lg border border-[var(--color-border)] border-l-[3px] border-l-[var(--color-accent-blue)] bg-[var(--color-bg)]/60 px-4 py-3">
+            <div className="rounded-lg border border-[var(--color-border)] border-l-[3px] border-l-[var(--color-accent-blue)] bg-[var(--color-bg)]/60 px-3.5 py-2.5">
               <p className="text-sm font-semibold tracking-tight text-[var(--color-ink)]">
                 {step.title}
               </p>
-              <p className="mt-0.5 text-xs text-[var(--color-muted)]">{step.caption}</p>
+              <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-muted)]">{step.caption}</p>
             </div>
             {index < PIPELINE_STEPS.length - 1 ? (
-              <div className="flex justify-center py-1.5" aria-hidden>
+              <div className="flex justify-center py-1" aria-hidden>
                 <ArrowDown className="h-3.5 w-3.5 text-[var(--color-muted)]" strokeWidth={1.5} />
               </div>
             ) : null}
           </li>
         ))}
       </ol>
-      <p className="mt-4 text-xs leading-relaxed text-[var(--color-muted)]">
+      <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
         Classification is deterministic policy. Orchestration plans and prioritizes the batch.
         Gemini remains explanation/chat only — never in the decision path.
       </p>
@@ -502,7 +510,7 @@ function AgentRunSummary({ data }: { data: FinanceAgentRunResponse }) {
           : ""}
       </p>
       <div
-        className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6"
+        className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6"
         data-testid="agent-run-metrics"
       >
         <MetricCard value={data.records_processed} label="Records processed" accent="brand" />
@@ -534,6 +542,9 @@ export function FinanceControllerPanel({
   error,
   onRetry,
   orderResults,
+  requireManualRun = false,
+  onAgentRunComplete,
+  onAgentRunClear,
 }: {
   data: FinancePanelData | null;
   loading: boolean;
@@ -541,9 +552,18 @@ export function FinanceControllerPanel({
   onRetry?: () => void;
   /** Engine order_results for approve/reject (same facts as the run). */
   orderResults?: OrderResult[] | null;
+  /** Dashboard demo: wait for explicit Run before showing agent results. */
+  requireManualRun?: boolean;
+  onAgentRunComplete?: (run: FinanceAgentRunResponse) => void;
+  onAgentRunClear?: () => void;
 }) {
+  const [planFromRun, setPlanFromRun] = useState<FinanceAgentPlanResponse | null>(null);
+  const approvalRefId = "agent-approval-section";
+
+  const showResults = Boolean(data);
+
   return (
-    <section className="mb-14" data-testid="finance-controller-panel">
+    <section className="mb-10 sm:mb-12" data-testid="finance-controller-panel">
       <SectionLabel
         title="Finance Controller Agent"
         description="Closes one finance-ops loop over the reconciliation batch: classify exceptions, prioritize review, gate simulated actions behind human approval."
@@ -552,8 +572,30 @@ export function FinanceControllerPanel({
       <WorkflowStrip />
 
       <div className="mb-6">
-        <DemoReadiness onReset={onRetry} />
+        <DemoReadiness
+          onReset={() => {
+            onAgentRunClear?.();
+            setPlanFromRun(null);
+            onRetry?.();
+          }}
+        />
       </div>
+
+      {requireManualRun && orderResults && orderResults.length > 0 ? (
+        <AgentRunLauncher
+          stageDelayMs={import.meta.env.MODE === "test" ? 0 : 180}
+          orderResults={orderResults}
+          latestRun={data && isAgentRun(data) ? data : null}
+          onClearResults={() => {
+            onAgentRunClear?.();
+            setPlanFromRun(null);
+          }}
+          onComplete={(run, plan) => {
+            setPlanFromRun(plan);
+            onAgentRunComplete?.(run);
+          }}
+        />
+      ) : null}
 
       {loading && !data ? (
         <LoadingState label="Running Finance Controller on reconciliation results…" />
@@ -561,9 +603,22 @@ export function FinanceControllerPanel({
 
       {error && !data ? <ErrorState message={error} onRetry={onRetry} /> : null}
 
-      {data ? (
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-          <div>
+      {requireManualRun && !data && !loading ? (
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+          <p
+            className="rounded-xl border border-dashed border-[var(--color-border)] bg-white px-5 py-6 text-center text-sm text-[var(--color-muted)]"
+            data-testid="agent-run-awaiting"
+          >
+            Run the Finance Controller Agent to analyze this batch, generate decisions, and build the
+            prioritized work queue.
+          </p>
+          <ArchitectureFlow />
+        </div>
+      ) : null}
+
+      {data && showResults ? (
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+          <div className="min-w-0">
             {isAgentRun(data) ? <AgentRunSummary data={data} /> : null}
 
             {!isAgentRun(data) ? (
@@ -615,8 +670,14 @@ export function FinanceControllerPanel({
                   unresolvedCount={data.unresolved_count}
                   recordsProcessed={data.records_processed}
                 />
-                <AgentWorkQueue orderResults={orderResults} />
-                <ApprovalQueue runId={data.run_id} orderResults={orderResults} onChanged={onRetry} />
+                <div id={approvalRefId}>
+                  <AgentWorkQueue
+                    orderResults={orderResults}
+                    initialPlan={planFromRun}
+                    refreshToken={data.run_id}
+                  />
+                  <ApprovalQueue runId={data.run_id} orderResults={orderResults} onChanged={onRetry} />
+                </div>
                 <HeldOutEvaluationStrip />
               </>
             ) : null}

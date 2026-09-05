@@ -4,7 +4,7 @@ import { api, ApiClientError } from "../../api/client";
 import type { RazorpayReconcileDemoResponse } from "../../types/api";
 
 /**
- * Compact Phase 4A demo panel.
+ * Compact settlement/bank reconciliation demo panel (synthetic bank fixtures).
  * Kept separate from live Razorpay sync so demo synthetic banks are never confused with live data.
  */
 export function RazorpayDemoPanel() {
@@ -32,18 +32,18 @@ export function RazorpayDemoPanel() {
 
   return (
     <section
-      className="mb-10 rounded-xl border border-dashed border-[var(--color-border)] bg-[var(--color-bg)] p-5"
-      aria-label="Phase 4A reconciliation demo"
+      className="console-card mb-10 rounded-xl border border-dashed border-[var(--color-border)] bg-white/80 p-5"
+      aria-label="Settlement and bank reconciliation demo"
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-semibold tracking-wide text-[var(--color-warning)]">
+          <p className="text-[11px] font-medium tracking-wide text-[var(--color-warning)]">
             Demo — Synthetic Bank Data
           </p>
-          <h2 className="mt-1 text-base font-semibold text-[var(--color-ink)]">
-            Phase 4A reconciliation demo
+          <h2 className="mt-1 text-[15px] font-semibold tracking-tight text-[var(--color-ink)]">
+            Settlement &amp; Bank Reconciliation
           </h2>
-          <p className="mt-1 max-w-2xl text-sm text-[var(--color-muted)]">
+          <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-[var(--color-muted)]">
             Bank transactions are synthetic fixtures for demonstration only. They are not provided by
             Razorpay and are not derived from settlement UTR. This does not replace live Razorpay sync.
           </p>
@@ -51,22 +51,24 @@ export function RazorpayDemoPanel() {
         <Button
           type="button"
           variant="secondary"
+          size="sm"
           onClick={() => void runDemo()}
           disabled={loading}
-          aria-label="Run Phase 4A Demo"
+          aria-label="Run settlement demo"
+          className="shrink-0"
         >
-          {loading ? "Running demo…" : "Run Phase 4A Demo"}
+          {loading ? "Running demo…" : "Run Settlement Demo"}
         </Button>
       </div>
 
       {loading ? (
         <p className="mt-4 text-sm text-[var(--color-muted)]" role="status">
-          Running Phase 4A demo scenarios…
+          Running settlement demo scenarios…
         </p>
       ) : null}
 
       {error ? (
-        <div className="mt-4 rounded-lg border border-[var(--color-danger)]/30 bg-red-50 px-3 py-2 text-sm text-[var(--color-danger)]">
+        <div className="mt-4 rounded-lg border border-[var(--color-danger)]/30 bg-red-50/80 px-3 py-2 text-sm text-[var(--color-danger)]">
           <p className="font-medium">Demo failed</p>
           <p className="mt-1">{error}</p>
           <Button
@@ -84,7 +86,7 @@ export function RazorpayDemoPanel() {
       {demo ? (
         <div className="mt-5 space-y-4">
           <aside
-            className="rounded-lg border border-[var(--color-warning)]/35 bg-amber-50 px-3 py-2 text-xs text-[var(--color-ink)]"
+            className="rounded-lg border border-[var(--color-warning)]/35 bg-amber-50/90 px-3 py-2 text-xs text-[var(--color-ink)]"
             role="note"
           >
             <p className="font-semibold text-[var(--color-warning)]">
@@ -97,7 +99,7 @@ export function RazorpayDemoPanel() {
             {demo.scenarios.map((scenario) => (
               <li
                 key={scenario.scenario_id}
-                className="rounded-lg border border-[var(--color-border)] bg-white px-4 py-3 text-sm"
+                className="console-card rounded-lg border border-[var(--color-border)] bg-white px-4 py-3 text-sm"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>

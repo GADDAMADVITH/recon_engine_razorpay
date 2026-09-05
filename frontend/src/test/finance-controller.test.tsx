@@ -159,6 +159,13 @@ function renderDashboard() {
   );
 }
 
+async function runAgentFromDashboard(user = userEvent.setup()) {
+  const button = await screen.findByTestId("run-finance-controller-agent");
+  await user.click(button);
+  await screen.findByTestId("agent-run-complete-card");
+  return user;
+}
+
 describe("Finance Controller dashboard panel", () => {
   beforeEach(() => {
     mockedUseReport.mockReturnValue(mockHookState(mockReport));
@@ -197,7 +204,24 @@ describe("Finance Controller dashboard panel", () => {
         approval_required_count: 60,
         decisions_by_type: mockFinanceAgentRun.decisions_by_type,
       },
-      prioritized_work_queue: [],
+      prioritized_work_queue: [
+        {
+          order_id: "ORD_0024",
+          priority: 105,
+          decision: "ESCALATE_MISSING_SETTLEMENT",
+          exceptions: ["MISSING_SETTLEMENT"],
+          rationale: "Settlement is missing; escalation is required.",
+          proposed_action: "RECORD_MISSING_SETTLEMENT_ESCALATION",
+          requires_approval: true,
+          original_result: {
+            order_id: "ORD_0024",
+            status: "unreconciled_missing_settlement",
+            reconciled: false,
+            confidence_score: 20,
+            exception_types: ["MISSING_SETTLEMENT"],
+          },
+        },
+      ],
       agent_plan: {
         objective: "Close one finance-ops loop.",
         observations: ["Processed 100 records."],
@@ -258,12 +282,16 @@ describe("Finance Controller dashboard panel", () => {
     });
   });
 
-  it("loads Finance Controller metrics from the API", async () => {
+  it("loads Finance Controller metrics from the API after Run", async () => {
     renderDashboard();
     await waitFor(() =>
       expect(screen.getByTestId("finance-controller-panel")).toBeInTheDocument(),
     );
+    expect(screen.getByTestId("run-finance-controller-agent")).toBeInTheDocument();
+    expect(runFinanceControllerAgentMock).not.toHaveBeenCalled();
+    await runAgentFromDashboard();
     expect(runFinanceControllerAgentMock).toHaveBeenCalled();
+    expect(runFinanceControllerAgentPlanMock).toHaveBeenCalled();
     const metrics = screen.getByTestId("agent-run-metrics");
     expect(within(metrics).getByText("Records processed")).toBeInTheDocument();
     expect(within(metrics).getByText("No action")).toBeInTheDocument();
@@ -276,6 +304,7 @@ describe("Finance Controller dashboard panel", () => {
 
   it("renders correct metric values from the API response", async () => {
     renderDashboard();
+    await runAgentFromDashboard();
     const metrics = await screen.findByTestId("agent-run-metrics");
     expect(within(metrics).getByText("40")).toBeInTheDocument();
     expect(within(metrics).getAllByText("60")).toHaveLength(3);
@@ -302,7 +331,8 @@ describe("Finance Controller dashboard panel", () => {
     renderDashboard();
     expect(await screen.findByTestId("finance-ops-workflow")).toBeInTheDocument();
     expect(screen.getByTestId("money-moved-false-badge")).toHaveTextContent(/Money moved: false/i);
-    expect(screen.getByText(/60 require human review/i)).toBeInTheDocument();
+    await runAgentFromDashboard();
+    expect(screen.getAllByText(/60 require human review/i).length).toBeGreaterThanOrEqual(1);
     expect(await screen.findByTestId("exception-summary")).toBeInTheDocument();
     expect(await screen.findByTestId("held-out-evaluation")).toBeInTheDocument();
     expect(screen.getByTestId("held-out-agreement-copy")).toHaveTextContent(
@@ -315,7 +345,8 @@ describe("Finance Controller dashboard panel", () => {
     expect(screen.getByTestId("demo-readiness-badge")).toHaveTextContent(/Ready/i);
   });
 
-  it("shows loading state while the agent batch is in flight", async () => {
+  it("shows running stages while the agent batch is in flight", async () => {
+    const user = userEvent.setup();
     let resolveBatch: (value: FinanceAgentRunResponse) => void = () => {};
     runFinanceControllerAgentMock.mockImplementation(
       () =>
@@ -324,19 +355,21 @@ describe("Finance Controller dashboard panel", () => {
         }),
     );
     renderDashboard();
-    expect(
-      await screen.findByText(/Running Finance Controller on reconciliation results/i),
-    ).toBeInTheDocument();
+    await user.click(await screen.findByTestId("run-finance-controller-agent"));
+    expect(await screen.findByTestId("agent-run-progress")).toBeInTheDocument();
+    expect(screen.getByText(/Finance Controller Agent is analyzing/i)).toBeInTheDocument();
+    await waitFor(() => expect(runFinanceControllerAgentMock).toHaveBeenCalled());
     resolveBatch(mockFinanceAgentRun);
-    await waitFor(() =>
-      expect(screen.getByTestId("agent-run-metrics")).toBeInTheDocument(),
-    );
+    expect(await screen.findByTestId("agent-run-complete-card")).toBeInTheDocument();
   });
 
   it("shows error state when the Finance Controller API fails", async () => {
+    const user = userEvent.setup();
     runFinanceControllerAgentMock.mockRejectedValue(new Error("boom"));
     renderDashboard();
-    expect(await screen.findByText(/Unable to run Finance Controller/i)).toBeInTheDocument();
+    await user.click(await screen.findByTestId("run-finance-controller-agent"));
+    expect(await screen.findByTestId("agent-run-error")).toBeInTheDocument();
+    expect(screen.queryByTestId("agent-run-complete-card")).not.toBeInTheDocument();
   });
 });
 

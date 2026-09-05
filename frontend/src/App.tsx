@@ -29,12 +29,12 @@ function ConsoleLayout() {
   return (
     <ConsoleReportProvider>
       <ChatOrderProvider>
-        <div className="min-h-screen bg-[var(--color-bg)] lg:flex">
+        <div className="flex h-svh overflow-hidden bg-[var(--color-bg)]">
           <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-          <div className="relative flex min-h-screen min-w-0 flex-1 flex-col overflow-hidden">
+          <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
             <ConsoleAtmosphere />
             <Topbar onMenuClick={() => setSidebarOpen(true)} />
-            <main className="relative z-10 flex-1 px-5 py-10 lg:px-12 lg:py-12">
+            <main className="relative z-10 min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-5 py-10 lg:px-12 lg:py-12">
               <PageWrapper>
                 <Outlet />
               </PageWrapper>

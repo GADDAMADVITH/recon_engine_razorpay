@@ -118,7 +118,41 @@ select {
 }
 
 .page-enter {
-  animation: fade-in 0.35s var(--ease-out) both;
+  animation: fade-in 0.3s var(--ease-out) both;
+}
+
+.agent-run-enter {
+  animation: marketing-fade-up 0.35s var(--ease-out) both;
+}
+
+@keyframes agent-stage-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+.agent-stage-pulse {
+  animation: agent-stage-pulse 1s ease-in-out infinite;
+}
+
+.console-card {
+  transition:
+    border-color 0.18s var(--ease-out),
+    box-shadow 0.22s var(--ease-out),
+    transform 0.22s var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .console-card:hover {
+    border-color: color-mix(in srgb, var(--color-accent-blue) 22%, var(--color-border));
+    box-shadow: 0 1px 0 rgba(11, 27, 43, 0.03), 0 10px 28px rgba(11, 27, 43, 0.05);
+  }
 }
 
 .drawer-overlay {
@@ -375,7 +409,14 @@ select {
   .console-atmosphere__glow,
   .marketing-signal-x,
   .marketing-signal-y,
-  .marketing-live-pulse {
+  .marketing-live-pulse,
+  .agent-stage-pulse,
+  .agent-run-enter,
+  .page-enter {
     animation: none !important;
+  }
+
+  .console-card:hover {
+    transform: none;
   }
 }
